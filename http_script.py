@@ -2,7 +2,8 @@ import time
 
 # webdriver это и есть набор команд для управления браузером
 from selenium import webdriver
-
+print("\n\n\nHTTP start")
+print("----------------------------------------------------------------------------")
 # инициализируем драйвер браузера. После этой команды вы должны увидеть новое открытое окно браузера
 driver = webdriver.Chrome()
 
@@ -44,23 +45,7 @@ except:
     pass
 
 
-driver.get("")
-time.sleep(5)
-
-driver.get("")
-time.sleep(5)
-
-driver.get("")
-time.sleep(5)
-
-driver.get("")
-time.sleep(5)
-
-driver.get("")
-time.sleep(5)
-
-
-driver.get("")
-time.sleep(5)
 # После выполнения всех действий мы должны не забыть закрыть окно браузера
-# driver.quit()
+driver.quit()
+print("\n----------------------------------------------------------------------------")
+print("HTTP end")
