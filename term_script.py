@@ -11,7 +11,7 @@ os.system("putty -telnet  lord.stabs.org")
 
 print("\n\TELNET connecting 35.185.12.150")
 os.system("putty -telnet 35.185.12.150")
-
+# taskkill /IM putty.exe /F
 print("----------------------------------------------------------------------------")
 print("TERMINAL TELNET end")
 
