@@ -1,3 +1,7 @@
+"""
+Скрипт для автоматического тестирования загрузки FTP.
+"""
+
 import os
 import time
 
@@ -25,11 +29,13 @@ def ftp_test(download_list: list):
         time.sleep(60)
 
     print("\n----------------------------------------------------------------------------")
-    print("FTP end")
-    return
+    return print("FTP end")
+
+
 
 
 ftp_list = ["ftp://alta.ru/packets/distr/ts.zip",
             "ftp://alta.ru/packets/distr/gtdw.zip",
             "ftp://alta.ru/packets/distr/maximum.zip"]
 ftp_test(ftp_list)
+
