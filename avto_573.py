@@ -10,6 +10,7 @@
 
 import time  # библиотека для работы со временем
 import subprocess  # библеотека для работы с командами и процессами ОС
+
 from selenium import webdriver  # webdriver это набор методов для управления браузером
 
 
@@ -26,7 +27,7 @@ def cmd_time():
     gmt_time = time.gmtime()
     gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
 
-    return "{} (UTC {})".format(local_time_str, gmt_time_str)
+    return "{} (GMT {})".format(local_time_str, gmt_time_str)
 
 
 def web_test(protocol: str, websait_list: list):
