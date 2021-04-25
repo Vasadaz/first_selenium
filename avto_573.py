@@ -3,14 +3,15 @@
 Скрипт для автоматического тестирования 573.
 Логирование команд просисходит в консоле.
 Для работы кода нужно стороннее ПО:
-1) Python >= v3.8 с прописыванием в среду переменных PATH;
+1) Python >= v3.8 с прописыванием в PATH;
 2) Putty;
-3) Папка chromedriver скопирована в C:\ и прописанна в среду переменных PATH.
+3) Папка chromedriver скопирована в C:\ и прописанна в PATH.
 """
 
 import time  # библиотека для работы со временем
 import subprocess  # библеотека для работы с командами и процессами ОС
 from selenium import webdriver  # webdriver это набор методов для управления браузером
+
 
 def cmd_time():
     # Функция для возврата месного и GMT времения
@@ -26,6 +27,7 @@ def cmd_time():
     gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
 
     return "{} (UTC {})".format(local_time_str, gmt_time_str)
+
 
 def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
@@ -51,11 +53,11 @@ def web_test(protocol: str, websait_list: list):
             driver.get(el)
         except:
             print("***** CONTROL ERROR *****")  # Логирование.
-        time.sleep(10) # Пауза 10 секунд.
+        time.sleep(10)  # Пауза 10 секунд.
 
     # Метод для закрытия окна браузера.
     driver.quit()
-    driver.quit() # Дублирование метода для надёжности, не всегда выполняется с первого раза.
+    driver.quit()  # Дублирование метода для надёжности, не всегда выполняется с первого раза.
 
     # Логирование.
     print("\nClose browser")
@@ -80,7 +82,7 @@ def ftp_test(download_list: list):
         # Метод для выполнения команды в консоле, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
         subprocess.run(["wget", el])
-        time.sleep(60) # Пауза 60 секунд.
+        time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
     print("\n----------------------------------------------------------------------------")
@@ -101,12 +103,12 @@ def terminal_test(protocol: str, servers_list: list, ):
 
     # Итерация по элементам списка servers_list
     for el in servers_list:
-        print("\n{}\n{} {}".format(cmd_time(), protocol, el)) # Логирование.
+        print("\n{}\n{} {}".format(cmd_time(), protocol, el))  # Логирование.
 
         # Метод для выполнения команды в консоле, который НЕ ожидает завершения команды и переходит к следующей строке.
         # Команда для соединения по указаному протоколу через putty >>> putty -ssh 195.144.107.198
         subprocess.Popen(["putty", flag, el])
-        time.sleep(10) # Пауза 10 секунд.
+        time.sleep(10)  # Пауза 10 секунд.
 
         # Метод для выполнения команды в консоле, который ожидает завершения команды.
         # Команда для завершения процесса putty >>> putty -ssh 195.144.107.198
@@ -153,7 +155,6 @@ https_list = ["https://yandex.ru",
               "https://mossad.gov.il",
               "https://sis.gov.uk",
               "https://bnd.bund.de"]
-
 
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоле без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
