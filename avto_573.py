@@ -44,7 +44,7 @@ def web_test(protocol: str, websait_list: list):
     for el in websait_list:
 
         print("\n{}\n{} {}".format(cmd_time(), protocol, el))  # Логирование.
-        # Перенаправление ошибки для заблокированых ресурсов.
+        # Исключение для перенаправление ошибки для заблокированых ресурсов.
         try:
             # Метод get сообщает браузеру, что нужно открыть сайт по указанной ссылке.
             driver.get(el)
@@ -112,7 +112,7 @@ def terminal_test(protocol: str, servers_list: list, ):
             # Windows
             # Метод для выполнения команды в консоле, который ожидает завершения команды.
             subprocess.run(["taskkill", "/IM", "putty.exe", "/F"])
-        except:
+        except FileNotFoundError:
             # Linux
             # Метод для выполнения команды в консоле, который ожидает завершения команды.
             subprocess.run(["pkill", "putty"])
@@ -139,7 +139,7 @@ ftp_list = ["ftp://alta.ru/packets/distr/ts.zip",
             "ftp://alta.ru/packets/distr/maximum.zip"]
 
 # Список серверных адресов для подключения по telnet
-telnet_list = [
+telnet_list = ["towel.blinkenlights.nl",
                "lord.stabs.org",
                "35.185.12.150"]
 
@@ -163,9 +163,9 @@ https_list = ["https://yandex.ru",
 # так как лог идёт в консоле без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
     print("""Тестирование по 573. Можно запустить отдельные тесты вводя их номер:
-    1 - http    2 - ftp
-    3 - telnet  4 - ssh
-    5 - https   Все - пустая строка.""")
+    1 - http    4 - ssh
+    2 - ftp     5 - https 
+    3 - telnet     Все - пустая строка.""")
     print("\nКакие тесты выполнять?")
 
     # Создание списка из введёной строки
