@@ -38,7 +38,7 @@ Chromedriver официальный драйвер для управления C
    ![img.png](img/img4.png)
    ![img.png](img/img5.png)
 3. Проверка установки командой >>> chromedriver
-4. Установка selenium командой >>> pip install selenium
+4. Установка selenium командой >>> pip3 install selenium
 
 ### Linux:
 1. Переходим в директорию /test_573/soft_for_script/linux
@@ -47,4 +47,4 @@ Chromedriver официальный драйвер для управления C
    - sudo chown root:root /usr/local/bin/chromedriver
    - sudo chmod +x /usr/local/bin/chromedriver
 3. Проверка установки командой >>> chromedriver
-4. Установка selenium командой >>> pip install selenium
+4. Установка selenium командой >>> pip3 install selenium
