@@ -16,6 +16,7 @@
 
 ___
 ## Дополнитльное ПО
+
 ### Windows:
 1. Установить Python не ниже v3.8. При установки обязательно
    указать добавление в PATH.
@@ -26,6 +27,8 @@ ___
 1. Chrome >= v90
 ___
 ## Установка chromedriver
+Chromedriver официальный драйвер для управления Chrome.
+Скрипт использует библиотеку selenium для управления браузером.
 ### Windows:
 1. Скопировать директорию /soft_for_script/win/chromedriver в корень C:\
 2. Добавить в PATH путь C:\chromedriver
@@ -34,6 +37,7 @@ ___
    ![img.png](img/img4.png)
    ![img.png](img/img5.png)
 3. Проверка установки командой >>> chromedriver
+4. Установка selenium командой >>> pip install selenium
 
 ### Linux:
 1. Переходим в директорию /soft_for_script/linux
@@ -42,3 +46,4 @@ ___
    - sudo chown root:root /usr/local/bin/chromedriver
    - sudo chmod +x /usr/local/bin/chromedriver
 3. Проверка установки командой >>> chromedriver
+4. Установка selenium командой >>> pip install selenium
