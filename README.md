@@ -22,9 +22,10 @@ ___
    указать добавление в PATH.
    ![img.png](img/img1.png)
 2. Установить Putty
-3. Chrome >= v90
+3. Установить Chrome >= v90
 ### Linux:
-1. Chrome >= v90
+1. Установить wget командой >>> sudo apt install wget
+2. Установить Chrome >= v90
 ___
 ## Установка chromedriver
 Chromedriver официальный драйвер для управления Chrome.
