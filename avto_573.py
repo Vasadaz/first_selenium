@@ -10,20 +10,36 @@ import subprocess  # библеотека для работы с команда�
 from selenium import webdriver  # webdriver это набор методов для управления браузером
 
 
-def cmd_time():
+def cmd_time(time_or_date="time") -> str:
     # Функция для возврата месного и GMT времения
-
-    # Месное время
+    # time_or_date - маркер для возврата времени(time_or_date="time") или даты(time_or_date="date")
+    # По умолчанию time_or_date="time"
+    # Месное дата и время
     local_time = time.localtime()
-    # Форматирование времени в привычный вид, т.е. из 1:14:3 в 01:14:03.
-    # tm_hour, tm_min, tm_sec методы для возвращения единиц времени.
-    local_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(local_time.tm_hour, local_time.tm_min, local_time.tm_sec)
-
-    # GMT время
+    # GMT дата и время
     gmt_time = time.gmtime()
-    gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
 
-    return "{} (GMT {})".format(local_time_str, gmt_time_str)
+    # Условие для возврата даты или времени.
+    if time_or_date == "time":
+        # Форматирование времени в привычный вид, т.е. из 1:14:3 в 01:14:03.
+        # tm_hour, tm_min, tm_sec методы для возвращения единиц времени.
+        # Месное время
+        local_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(local_time.tm_hour, local_time.tm_min, local_time.tm_sec)
+        # GMT время
+        gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
+        # Возврат времени в формате "чч:мм:сс (GMT чч:мм:сс)"
+        return "{} (GMT {})".format(local_time_str, gmt_time_str)
+    else:
+        # Форматирование дыты в привычный вид, т.е. из 1:14:3 в 01:14:03.
+        # tm_hour, tm_min, tm_sec методы для возвращения единиц времени.
+        # Месное время
+        local_time_str = "{:0>2d}.{:0>2d}.{:4d}".format(local_time.tm_mday, local_time.tm_mon, local_time.tm_year)
+        # GMT время
+        gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_mday, gmt_time.tm_mon, gmt_time.tm_year)
+        # Возврат времени в формате "чч:мм:сс (GMT чч:мм:сс)"
+        return "DATE {} (GMT {})".format(local_time_str, gmt_time_str)
+
+
 
 
 def web_test(protocol: str, websait_list: list):
@@ -162,14 +178,18 @@ https_list = ["https://yandex.ru",
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоле без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
+    print("START " * 8)
     print("""Тестирование по 573. Можно запустить отдельные тесты вводя их номер:
     1 - http    4 - ssh
     2 - ftp     5 - https 
     3 - telnet     Все - пустая строка.""")
-    print("\nКакие тесты выполнять?")
+    print("Какие тесты выполнять?")
+
 
     # Создание списка из введёной строки
     marker_test_list = [el for el in input().strip()]
+
+    print(cmd_time(time_or_date="date"))  # Логирование - дата
 
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:
@@ -182,3 +202,4 @@ while True:
     terminal_test("TELNET", telnet_list) if "3" in marker_test_list else None
     terminal_test("SSH", ssh_list) if "4" in marker_test_list else None
     web_test("HTTPS", https_list) if "5" in marker_test_list else None
+    print("END   " * 8 , "\n\n\n\n")
