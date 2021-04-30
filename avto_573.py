@@ -183,10 +183,10 @@ while True:
     1 - http    4 - ssh
     2 - ftp     5 - https 
     3 - telnet  Все - пустая строка.""")
-    print("Какие тесты выполнять?")
+
 
     # Создание списка из введёной строки
-    marker_test_list = [el for el in input().strip()]
+    marker_test_list = [el for el in input("\nКакие тесты выполнять?\n").strip()]
 
     # Логирование
     print("\n\n")
