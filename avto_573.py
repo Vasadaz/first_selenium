@@ -94,7 +94,7 @@ def ftp_test(download_list: list):
 
         # Метод для выполнения команды в консоле, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
-        subprocess.run(["wget", el])
+        subprocess.run(["wget", "-P", "FTP_573", el])
         time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
