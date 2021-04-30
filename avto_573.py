@@ -2,6 +2,14 @@
 """
 Скрипт для автоматического тестирования 573.
 Логирование команд просисходит в консоле.
+
+Форматирование текста в консоле имеет остаточный эфект, т.е. весь следующий текст поподает под влияния форматирования.
+Нужно каждую отформатированную строку в конце обнулять кодом \033[0m. В комментриях к форматированию строки указывается
+стиль форматирования, удаление форматирования будет всекда у каждой строки. Используемые форматы:
+\033[0m Удаление форматирования;
+\033[1m Жирный текст;
+\033[32m Зелёный текст;
+\033[36m Бирюзовый текст.
 """
 
 import time  # библиотека для работы со временем
@@ -37,7 +45,7 @@ def cmd_time(time_or_date="time") -> str:
         # GMT время
         gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_mday, gmt_time.tm_mon, gmt_time.tm_year)
         # Возврат времени в формате "чч:мм:сс (GMT чч:мм:сс)"
-        return "DATE {} (GMT {})".format(local_time_str, gmt_time_str)
+        return "\033[1mDATE {} (GMT {})\033[0m".format(local_time_str, gmt_time_str)  # Жирный текст
 
 
 
@@ -47,10 +55,10 @@ def web_test(protocol: str, websait_list: list):
     # protocol - нужен для логирования;
     # websait_list - список сайтов для теста.
 
-    # Логирование.
-    print("\n\n{} start".format(protocol))
-    print("----------------------------------------------------------------------------")
-    print("Open browser")
+    # Логирование
+    print("\033[32m\n\n{} start\033[0m".format(protocol)) # Зелёный текст
+    print("\033[32m-\033[0m" * 76)  # Зелёный текст строка разграничитель лога ------------------
+    print("Open browser") # Белый цвет
 
     # Инициализируем драйвер браузера. После этой команды будет открыто новое окно браузера.
     driver = webdriver.Chrome()
@@ -74,8 +82,8 @@ def web_test(protocol: str, websait_list: list):
 
     # Логирование.
     print("\nClose browser")
-    print("----------------------------------------------------------------------------")
-    return print("{} end".format(protocol))
+    print("\033[32m-\033[0m" * 76)  # Зелёный текст строка разграничитель лога ------------------
+    return print("\033[32m{} end\033[0m".format(protocol))  # Зелёный текст
 
 
 def ftp_test(download_list: list):
@@ -83,8 +91,8 @@ def ftp_test(download_list: list):
     # download_list - список ресурсрв для скачивания по ftp.
 
     # Логирование.
-    print("\n\nFTP start")
-    print("----------------------------------------------------------------------------")
+    print("\033[32m\n\nFTP start\033[0m")  # Зелёный текст
+    print("\033[32m-\033[0m" * 76)  # Зелёный текст строка разграничитель лога ------------------
 
     # Итерация по элементам списка download_list.
     for el in download_list:
@@ -98,8 +106,8 @@ def ftp_test(download_list: list):
         time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
-    print("\n----------------------------------------------------------------------------")
-    return print("FTP end")
+    print("\033[32m-\033[0m" * 76)  # Зелёный текст строка разграничитель лога ------------------
+    return print("\033[32mFTP end\033[0m") # Зелёный текст
 
 
 def terminal_test(protocol: str, servers_list: list, ):
@@ -108,8 +116,8 @@ def terminal_test(protocol: str, servers_list: list, ):
     # servers_list - список серверных адресов для теста.
 
     # Логирование.
-    print("\n\n{} start".format(protocol))
-    print("----------------------------------------------------------------------------")
+    print("\033[32m\n\n{} start\033[0m".format(protocol)) # Зелёный текст
+    print("\033[32m-\033[0m" * 76)  # Зелёный текст строка разграничитель лога ------------------
 
     # Определение протокола путём длинны аргумента protocol
     flag = "-telnet" if len(protocol) > 3 else "-ssh"
@@ -134,8 +142,8 @@ def terminal_test(protocol: str, servers_list: list, ):
             subprocess.run(["pkill", "putty"])
 
     # Логирование.
-    print("\n----------------------------------------------------------------------------")
-    return print("{} end".format(protocol))
+    print("\033[32m-\033[0m" * 76)  # Зелёный текст строка разграничитель лога ------------------
+    return print("\033[32m{} end\033[0m".format(protocol)) # Зелёный текст
 
 
 # Список сайтов для теста http
@@ -183,15 +191,14 @@ while True:
     1 - http    4 - ssh
     2 - ftp     5 - https 
     3 - telnet  Все - пустая строка.""")
-    print("Какие тесты выполнять?")
 
     # Создание списка из введёной строки
-    marker_test_list = [el for el in input().strip()]
+    marker_test_list = [el for el in input("\033[32m\033[1m\nКакие тесты выполнять?\n").strip()]
 
     # Логирование
     print("\n\n")
-    print("START " * 8)
-    print(cmd_time(time_or_date="date"), end="")  # Логирование - дата
+    print("\033[36mSTART \033[0m" * 8)  # Бирюзовый текст
+    print(cmd_time(time_or_date="date"), end="")  # Дата
 
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:
@@ -207,5 +214,5 @@ while True:
 
     # Логирование
     print()
-    print(cmd_time(time_or_date="date"))  # Логирование - дата
-    print("END   " * 8 , "\n\n\n\n")
+    print(cmd_time(time_or_date="date"))  # Дата
+    print("\033[36mEND   " * 8 , "\n\n\n\n\033[0m")  # Бирюзовый текст
