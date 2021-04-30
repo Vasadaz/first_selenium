@@ -178,18 +178,20 @@ https_list = ["https://yandex.ru",
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоле без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
-    print("START " * 8)
+
     print("""Тестирование по 573. Можно запустить отдельные тесты вводя их номер:
     1 - http    4 - ssh
     2 - ftp     5 - https 
-    3 - telnet     Все - пустая строка.""")
+    3 - telnet  Все - пустая строка.""")
     print("Какие тесты выполнять?")
-
 
     # Создание списка из введёной строки
     marker_test_list = [el for el in input().strip()]
 
-    print(cmd_time(time_or_date="date"))  # Логирование - дата
+    # Логирование
+    print("\n\n")
+    print("START " * 8)
+    print(cmd_time(time_or_date="date"), end="")  # Логирование - дата
 
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:
@@ -202,4 +204,8 @@ while True:
     terminal_test("TELNET", telnet_list) if "3" in marker_test_list else None
     terminal_test("SSH", ssh_list) if "4" in marker_test_list else None
     web_test("HTTPS", https_list) if "5" in marker_test_list else None
+
+    # Логирование
+    print()
+    print(cmd_time(time_or_date="date"))  # Логирование - дата
     print("END   " * 8 , "\n\n\n\n")
