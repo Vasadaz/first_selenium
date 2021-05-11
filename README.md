@@ -42,7 +42,7 @@ Chromedriver официальный драйвер для управления C
 
 ### Linux:
 1. Переходим в директорию /test_573/soft_for_script/linux
-2. Выполняем команды:
+2. Запустить скрипт avto_setting.sh или выполняем команды:
    - sudo mv chromedriver /usr/local/bin/chromedriver
    - sudo chown root:root /usr/local/bin/chromedriver
    - sudo chmod +x /usr/local/bin/chromedriver
