@@ -32,7 +32,9 @@ Chromedriver официальный драйвер для управления C
 Скрипт использует библиотеку selenium для управления браузером.
 ### Windows:
 1. Скопировать директорию /soft_for_script/win/chromedriver в корень C:\
-2. Добавить в PATH путь C:\chromedriver
+2. Добавить в PATH путь C:\chromedriver с помощью одного из способов:
+2.1. Команда >>> setx /m MYWEBPC "C:\chromedriver" 
+2.2. Графический интерфейс:
    ![img.png](img/img2.png)
    ![img.png](img/img3.png)
    ![img.png](img/img4.png)
