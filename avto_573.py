@@ -30,13 +30,13 @@ def cmd_time(time_or_date="time") -> str:
         # Возврат времени в формате "чч:мм:сс (GMT чч:мм:сс)"
         return "{} (GMT {})".format(local_time_str, gmt_time_str)
     else:
-        # Форматирование дыты в привычный вид, т.е. из 1:14:3 в 01:14:03.
-        # tm_hour, tm_min, tm_sec методы для возвращения единиц времени.
-        # Месное время
+        # Форматирование дыты в привычный вид, т.е. из 6.1.21 в 06.01.21.
+        # tm_mday, tm_mon, tm_year методы для возвращения единиц времени.
+        # Месная дата
         local_time_str = "{:0>2d}.{:0>2d}.{:4d}".format(local_time.tm_mday, local_time.tm_mon, local_time.tm_year)
-        # GMT время
+        # GMT дата
         gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_mday, gmt_time.tm_mon, gmt_time.tm_year)
-        # Возврат времени в формате "чч:мм:сс (GMT чч:мм:сс)"
+        # Возврат даты в формате "ДД.ММ.ГГ (GMT ДД.ММ.ГГ)"
         return "DATE {} (GMT {})".format(local_time_str, gmt_time_str)
 
 
