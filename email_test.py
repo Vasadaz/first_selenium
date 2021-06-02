@@ -15,19 +15,26 @@ from email.mime.text import MIMEText  # Тип для Текст/HTML
 from email.mime.multipart import MIMEMultipart  # Многокомпонентный объект
 
 
-def emailing(addr_from,addr_from_pass, addr_to, host):
-    msg = MIMEMultipart()  # Создаем сообщение
-    msg["From"] = addr_from  # Отправитель
-    msg["To"] = addr_to  # Получатель
-    msg["Subject"] = "Это ПИТОНОВСКОЕ письмо!!!"  # Тема сообщения
+def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, list_bcc=None):
+    # Все данные в списках должныи иметь строковый тип
+    # list_from список отправителя, формат: [email , pass, почтовый сервера, порт почтового сервера]
+    # list_to список получателя, формат: [email №1, ..., email №n]
+    # list_msg список для формирования письма, формат: [тема письма, текст письма, путь к относительный путь]
+    # list_cc (необязательный аргумент) список адресов копии, формат: [email №1, ..., email №n]
+    # list_bcc (необязательный аргумент) список адресов скрытой копии, формат: [email №1, ..., email №n]
+    #
+    #
 
-    body = "Текст внутри сообщения"
+    msg = MIMEMultipart()  # Создаем сообщение
+    msg["From"] = list_from[0]  # Отправитель
+    msg["To"] = list_to # Получатель
+    msg["Subject"] = list_msg[0]  # Тема сообщения
+
+    body = list_msg[1]
     msg.attach(MIMEText(body, "plain"))  # Добавляем в сообщение текст
 
     filepath = "./email/constitution.pdf"  # Имя файла в абсолютном или относительном формате
     filename = "constitution.pdf" # Только имя файла
-
-    encoding = None  # Определение типа файла
 
     with open(filepath, "rb") as fp:
       file = MIMEBase("application", "pdf")  # Используем общий MIME-тип
@@ -38,15 +45,15 @@ def emailing(addr_from,addr_from_pass, addr_to, host):
     file.add_header("Content-Disposition", "attachment", filename=filename)  # Добавляем заголовки
     msg.attach(file) # Присоединяем файл к сообщению
 
-    server = smtplib.SMTP(host, 587)  # Создаем объект SMTP
+    server = smtplib.SMTP(list_from[2], list_from[3])  # Создаем объект SMTP
     server.starttls()  # Начинаем шифрованный обмен по TLS
-    server.login(addr_from, addr_from_pass)  # Получаем доступ
+    server.login(list_from[0], list_from[1])  # Получаем доступ
     server.send_message(msg)  # Отправляем сообщение
-    print("Отправили от {} на {}".format(addr_from, addr_to))
+    print("Отправили от {} на {}".format(list_from[0], list_to))
     server.quit()  # Выходим
 
-emailing("test@rtc-nt.ru","","rtc-nt-test1@yandex.ru","mail.nic.ru")
 
-emailing("rtc-nt-test1@yandex.ru", "", "test@rtc-nt.ru", "smtp.yandex.ru")
+send_email("test@rtc-nt.ru", "", "rtc-nt-test1@yandex.ru", "mail.nic.ru")
+send_email("rtc-nt-test1@yandex.ru", "", "test@rtc-nt.ru", "smtp.yandex.ru")
 
 
