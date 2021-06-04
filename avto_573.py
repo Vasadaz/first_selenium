@@ -35,7 +35,7 @@ def cmd_time(time_or_date="time") -> str:
         # Месная дата
         local_time_str = "{:0>2d}.{:0>2d}.{:4d}".format(local_time.tm_mday, local_time.tm_mon, local_time.tm_year)
         # GMT дата
-        gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_mday, gmt_time.tm_mon, gmt_time.tm_year)
+        gmt_time_str = "{:0>2d}.{:0>2d}.{:0>2d}".format(gmt_time.tm_mday, gmt_time.tm_mon, gmt_time.tm_year)
         # Возврат даты в формате "ДД.ММ.ГГ (GMT ДД.ММ.ГГ)"
         return "DATE {} (GMT {})".format(local_time_str, gmt_time_str)
 
