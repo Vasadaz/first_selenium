@@ -7,7 +7,8 @@
 import time  # библиотека для работы со временем
 import subprocess  # библеотека для работы с командами и процессами ОС
 
-from selenium import webdriver  # webdriver это набор методов для управления браузером
+from selenium import webdriver, common
+# webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
 
 
 def cmd_time(time_or_date="time") -> str:
@@ -40,8 +41,6 @@ def cmd_time(time_or_date="time") -> str:
         return "DATE {} (GMT {})".format(local_time_str, gmt_time_str)
 
 
-
-
 def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
     # protocol - нужен для логирования;
@@ -64,7 +63,7 @@ def web_test(protocol: str, websait_list: list):
         try:
             # Метод get сообщает браузеру, что нужно открыть сайт по указанной ссылке.
             driver.get(el)
-        except:
+        except common.exceptions.WebDriverException:
             print("***** CONTROL ERROR *****")  # Логирование.
         time.sleep(10)  # Пауза 10 секунд.
 
@@ -179,18 +178,18 @@ https_list = ["https://yandex.ru",
 # так как лог идёт в консоле без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
 
-    print("""Тестирование по 573. Можно запустить отдельные тесты вводя их номер:
-    1 - http    4 - ssh
-    2 - ftp     5 - https 
-    3 - telnet  Все - пустая строка.""")
-
+    print("""Тестирование по 573.
+    
+1 - http    4 - ssh
+2 - ftp     5 - https 
+3 - telnet  Все - пустая строка.""")
 
     # Создание списка из введёной строки
     marker_test_list = [el for el in input("\nКакие тесты выполнять?\n").strip()]
 
     # Логирование
     print("\n\n")
-    print("START " * 8)
+    print("START_" * 8)
     print(cmd_time(time_or_date="date"), end="")  # Логирование - дата
 
     # Условие для выполнения всех тестов.
@@ -208,4 +207,4 @@ while True:
     # Логирование
     print()
     print(cmd_time(time_or_date="date"))  # Логирование - дата
-    print("END   " * 8 , "\n\n\n\n")
+    print("END___" * 8, "\n\n\n\n")
