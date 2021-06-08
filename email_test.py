@@ -38,7 +38,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
     # Добавление копии
     for el in list_cc:
-        msg["Сc"] = el  # Копия
+        msg["СC"] = el  # Копия
 
     # Добавление скрытой копии
     for el in list_bcc:
@@ -70,13 +70,13 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
 from_1 = ["test@rtc-nt.ru", "", "mail.nic.ru", "587"]
 to_1 = ["rtc-nt-test1@yandex.ru"]
-cc_1 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
+#cc_1 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 bcc_1 = ["rtc-nt-test4@yandex.ru"]
 msg_1 = ["Отправка письма с 3 получателями, вложением, скрытой копией",
          "Текст письма"
          "./email/constitution.pdf"]
 
-send_email(from_1, to_1, msg_1, list_cc=cc_1, list_bcc=bcc_1)
+send_email(from_1, to_1, msg_1, list_bcc=bcc_1)
 
 
 # send_email("rtc-nt-test1@yandex.ru", "", "test@rtc-nt.ru", "smtp.yandex.ru")
