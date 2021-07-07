@@ -19,7 +19,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     # Все данные в списках должныи иметь строковый тип
     # list_from список отправителя, формат: [email , pass, почтовый сервера, порт почтового сервера]
     # list_to список получателя, формат: [email №1, ..., email №n]
-    # list_msg список для формирования письма, формат: [тема письма, текст письма, путь к относительный путь]
+    # list_msg список для формирования письма, формат: [тема письма, текст письма, относительный путь к файлу]
     # list_cc (необязательный аргумент) список адресов копии, формат: [email №1, ..., email №n]
     # list_bcc (необязательный аргумент) список адресов скрытой копии, формат: [email №1, ..., email №n]
 
@@ -67,16 +67,17 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     print("Отправили от {} на {}".format(list_from[0], list_to))
     server.quit()  # Выходим
 
-
-from_1 = ["test@rtc-nt.ru", "", "mail.nic.ru", "587"]
+# Вставь пароль для отправки |
+#                            V
+from_1 = ["test@rtc-nt.ru", " ", "mail.nic.ru", "587"]
 to_1 = ["rtc-nt-test1@yandex.ru"]
 #cc_1 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 bcc_1 = ["rtc-nt-test4@yandex.ru"]
 msg_1 = ["Отправка письма с 3 получателями, вложением, скрытой копией",
-         "Текст письма"
+         "Текст письма Python",
          "./email/constitution.pdf"]
 
 send_email(from_1, to_1, msg_1, list_bcc=bcc_1)
 
 
-# send_email("rtc-nt-test1@yandex.ru", "", "test@rtc-nt.ru", "smtp.yandex.ru")
+#send_email("rtc-nt-test1@yandex.ru", "", "test@rtc-nt.ru", "smtp.yandex.ru")
