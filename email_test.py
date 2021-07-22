@@ -78,6 +78,3 @@ msg_1 = ["Отправка письма с 3 получателями, влож�
          "./email/constitution.pdf"]
 
 send_email(from_1, to_1, msg_1, list_bcc=bcc_1)
-
-
-#send_email("rtc-nt-test1@yandex.ru", "", "test@rtc-nt.ru", "smtp.yandex.ru")
