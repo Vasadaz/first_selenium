@@ -32,7 +32,8 @@ class EchoBot(ClientXMPP):
         # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
         if self.how_first_send == 1:
             print("I'm first sender!")
-            first_msg = self.make_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
+            #first_msg = self.make_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
+            first_msg = self.make_message(mto="test-rtc-nt@jabber.ru", mbody="test out", mtype='chat')
             first_msg.send()
             print(f'SEND №1:\n  {first_msg}\n\n')
 
@@ -72,7 +73,8 @@ class EchoBot(ClientXMPP):
 # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
 # Логин и пароля от кого будет идти ответ
-xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 1)
+xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2', 1)
+# xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 1)
 
 # Подключение к серверу XMPP jabber
 xmpp.connect()
