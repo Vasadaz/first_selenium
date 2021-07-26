@@ -10,24 +10,31 @@ https://github.com/louiz/slixmpp
 
 import time
 from slixmpp import ClientXMPP
-
-
 # import logging  # Для системного логирования
 
-class EchoBot(ClientXMPP):
 
+class EchoBot(ClientXMPP):
+    # Атрибуты:
+    # jid = аккаунт test@jabber.ru
+    # password = пароль от jid
+    # how_first_send = None/1 условие для самостоятельной иницииации диалога, кто первый начинает?
     def __init__(self, jid, password, how_first_send=None):
         ClientXMPP.__init__(self, jid, password)
+        print(f"CONNECT as {jid}")
         self.how_first_send = how_first_send
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
 
     def session_start(self, event):
+
         self.send_presence()
         self.get_roster()
         # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
-        if self.how_first_send != None:
-            self.send_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
+        if self.how_first_send == 1:
+            print("I'm first sender!")
+            first_msg = self.make_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
+            first_msg.send()
+            print(f'SEND №1:\n  {first_msg}\n\n')
 
     def message(self, msg):
         # print(msg)
@@ -40,22 +47,27 @@ class EchoBot(ClientXMPP):
 
         # Условие для тестового ответа
         if msg['body'] == "test out":
+            print(f'INPUT №1:\n  {msg}\n\n')
             time.sleep(10)
-            msg.reply("test in").send()
+            msg.reply("test in").send()  # Отправляем на тотже атрес иткуда пришло сообщение
+            print(f'SEND №2:\n  {msg}\n\n')
 
         # Условие для контрольного ответа
         elif msg['body'] == "test in":
+            print(f'INPUT №2:\n  {msg}\n\n')
             time.sleep(10)
-            msg.reply("Отправка сообщения").send()
+            msg.reply("Отправка сообщения").send()  # Отправляем на тотже атрес иткуда пришло сообщение
+            print(f'SEND №3:\n  {msg}\n\n')
 
         # Условие для контрольного ответа
         elif msg['body'] == "Отправка сообщения":
+            print(f'INPUT №3:\n  {msg}\n\n')
             time.sleep(10)
-            msg.reply("Получение сообщения").send()
-        else:
-            print("Not message")
+            msg.reply("Получение сообщения").send()  # Отправляем на тотже атрес иткуда пришло сообщение
+            print(f'SEND №4:\n  {msg}\n\n')
 
-
+        elif msg['body'] == "Полученик сообщения":
+            print(f'INPUT №4:\n  {msg}\n\n')
 # Системное логирование
 # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
@@ -69,4 +81,6 @@ xmpp.connect()
 # timeout = время его работы в секундах;
 # forever = True/False атрибут вечной работы;
 xmpp.process(timeout=40)
+
+# Отключение от сервера
 xmpp.disconnect()
