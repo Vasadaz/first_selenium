@@ -24,6 +24,8 @@ class EchoBot(ClientXMPP):
     def session_start(self, event):
         self.send_presence()
         self.get_roster()
+        # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
+        self.send_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
 
     def message(self, msg):
         # print(msg)
@@ -34,18 +36,14 @@ class EchoBot(ClientXMPP):
         # <request xmlns="urn:xmpp:receipts" />
         # </message>
 
-        # Условие для тестового ответа
-        if msg['body'] == "test out":
-            time.sleep(10)
-            msg.reply("test in").send()
-
         # Условие для контрольного ответа
-        elif msg['body'] == "Отправка сообщения":
+        if msg['body'] == "test in":
             time.sleep(10)
-            msg.reply("Получение сообщения").send()
+            msg.reply("Отправка сообщения").send()
+
 
         # Ответ на любое другое сообщение
-        else:
+        elif msg['body'] != "Получение сообщения":
             time.sleep(10)
             msg.reply(f"OT: {msg['from']} \nПОЛУЧЕНО: {msg['body']}").send()
 
@@ -53,7 +51,7 @@ if __name__ == '__main__':
     #logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
     # Логин и пароля от кого будет идти ответ
-    xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2')
+    xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2')
 
     # Подключение к серверу XMPP jabber
     xmpp.connect()
@@ -61,4 +59,4 @@ if __name__ == '__main__':
     # Процесс мониторинга сообщенией, атрибуты:
     # timeout = время его работы в секундах;
     # forever = True/False атрибут вечной работы;
-    xmpp.process(timeout=100)
+    xmpp.process(timeout=60)

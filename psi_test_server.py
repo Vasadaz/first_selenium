@@ -25,6 +25,12 @@ class EchoBot(ClientXMPP):
         self.send_presence()
         self.get_roster()
 
+        """
+        self.send_message(mto="test-rtc-nt@jabber.ru",
+                          mbody="test out",
+                          mtype='chat')
+        """
+
     def message(self, msg):
         # print(msg)
         # Вид msg:
@@ -61,4 +67,4 @@ if __name__ == '__main__':
     # Процесс мониторинга сообщенией, атрибуты:
     # timeout = время его работы в секундах;
     # forever = True/False атрибут вечной работы;
-    xmpp.process(timeout=100)
+    xmpp.process(timeout=60)
