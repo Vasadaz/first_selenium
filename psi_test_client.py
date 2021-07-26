@@ -8,22 +8,23 @@
 https://github.com/louiz/slixmpp
 """
 
-import logging
 import time
 from slixmpp import ClientXMPP
 
+
+# import logging  # Для системного логирования
 
 class EchoBot(ClientXMPP):
 
     def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
-
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
 
-    def session_start(self, event):
+    def session_start(self):
         self.send_presence()
         self.get_roster()
+
         # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
         self.send_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
 
@@ -41,22 +42,34 @@ class EchoBot(ClientXMPP):
             time.sleep(10)
             msg.reply("Отправка сообщения").send()
 
-
         # Ответ на любое другое сообщение
         elif msg['body'] != "Получение сообщения":
             time.sleep(10)
             msg.reply(f"OT: {msg['from']} \nПОЛУЧЕНО: {msg['body']}").send()
 
-if __name__ == '__main__':
-    #logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
+        # Условие для тестового ответа
+        if msg['body'] == "test out":
+            time.sleep(10)
+            msg.reply("test in").send()
 
-    # Логин и пароля от кого будет идти ответ
-    xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2')
+        # Условие для контрольного ответа
+        elif msg['body'] == "Отправка сообщения":
+            time.sleep(10)
+            msg.reply("Получение сообщения").send()
+        else:
+            print("Not message")
 
-    # Подключение к серверу XMPP jabber
-    xmpp.connect()
 
-    # Процесс мониторинга сообщенией, атрибуты:
-    # timeout = время его работы в секундах;
-    # forever = True/False атрибут вечной работы;
-    xmpp.process(timeout=60)
+# Системное логирование
+# logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
+
+# Логин и пароля от кого будет идти ответ
+xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2')
+
+# Подключение к серверу XMPP jabber
+xmpp.connect()
+
+# Процесс мониторинга сообщенией, атрибуты:
+# timeout = время его работы в секундах;
+# forever = True/False атрибут вечной работы;
+xmpp.process(timeout=40)
