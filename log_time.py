@@ -1,6 +1,7 @@
 """
 Файлдля определения времени
 """
+import time
 
 def cmd_time(time_or_date="time") -> str:
     # Функция для возврата месного и GMT времения
