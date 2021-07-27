@@ -45,7 +45,8 @@ class EchoBot(ClientXMPP):
             print("I'm first sender!")
             first_msg = self.make_message(mto=self.jid_to, mbody="test out", mtype='chat')
             first_msg.send()
-            print(f'SEND №1 {cmd_time()}:\n  {first_msg}\n\n')
+            first_msg_log = str(first_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+            print(f'SEND №1 {cmd_time()}:{first_msg_log}\n\n')
 
     def message(self, msg):
         # print(msg)
@@ -60,32 +61,39 @@ class EchoBot(ClientXMPP):
         if self.jid_to is not None:
             # Условие для контрольного ответа
             if msg['body'] == "test in":
-                print(f'INPUT №2:\n  {msg}\n\n')
+                msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+                print(f'INPUT №2 {cmd_time()}:{msg_log}\n\n')
                 time.sleep(10)
                 answer_msg = msg.reply("Отправка сообщения")  # Создание обратного сообщения
                 answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
-                print(f'SEND №3 {cmd_time()}:\n  {answer_msg}\n\n')
+                answer_msg_log = str(answer_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+                print(f'SEND №3 {cmd_time()}:{answer_msg_log}\n\n')
 
             # условие окончания переписуки
             elif msg['body'] == "Получение сообщения":
-                print(f'INPUT №4 {cmd_time()}:\n  {msg}\n\n')
+                msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+                print(f'INPUT №4 {cmd_time()}:{msg_log}\n\n')
 
         else:
             # Условие для тестового ответа
             if msg['body'] == "test out":
-                print(f'INPUT №1 {cmd_time()}:\n  {msg}\n\n')
+                msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+                print(f'INPUT №1 {cmd_time()}:{msg_log}\n\n')
                 time.sleep(10)
                 answer_msg = msg.reply("test in")  # Создание обратного сообщения
                 answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
-                print(f'SEND №2 {cmd_time()}:\n  {answer_msg}\n\n')
+                answer_msg_log = str(answer_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+                print(f'SEND №2 {cmd_time()}:{answer_msg_log}\n\n')
 
             # Условие для контрольного ответа
             elif msg['body'] == "Отправка сообщения":
-                print(f'INPUT №3 {cmd_time()}:\n  {msg}\n\n')
+                msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+                print(f'INPUT №3 {cmd_time()}:{msg_log}\n\n')
                 time.sleep(10)
                 answer_msg = msg.reply("Получение сообщения")  # Создание обратного сообщения
                 answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
-                print(f'SEND №4 {cmd_time()}:\n  {answer_msg}\n\n')
+                answer_msg_log = str(answer_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
+                print(f'SEND №4 {cmd_time()}:{answer_msg_log}\n\n')
 
 
 def start_im_test():
@@ -113,4 +121,4 @@ def start_im_test():
     print("\n----------------------------------------------------------------------------")
     return print("IM end")
 
-#start_im_test()
+start_im_test()
