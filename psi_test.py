@@ -50,29 +50,35 @@ class EchoBot(ClientXMPP):
         # <request xmlns="urn:xmpp:receipts" />
         # </message>
 
-        # Условие для тестового ответа
-        if msg['body'] == "test out":
-            print(f'INPUT №1:\n  {msg}\n\n')
-            time.sleep(10)
-            msg.reply("test in").send()  # Отправляем на тотже адрес откуда пришло сообщение
-            print(f'SEND №2:\n  {msg}\n\n')
+        # Условие для определения инициатора диалога.
+        if self.how_first_send == 1:
+            # Условие для контрольного ответа
+            if msg['body'] == "test in":
+                print(f'INPUT №2:\n  {msg}\n\n')
+                time.sleep(10)
+                msg.reply("Отправка сообщения").send()  # Отправляем на тотже адрес откуда пришло сообщение
+                print(f'SEND №3:\n  {msg}\n\n')
 
-        # Условие для контрольного ответа
-        elif msg['body'] == "test in":
-            print(f'INPUT №2:\n  {msg}\n\n')
-            time.sleep(10)
-            msg.reply("Отправка сообщения").send()  # Отправляем на тотже адрес откуда пришло сообщение
-            print(f'SEND №3:\n  {msg}\n\n')
+            # условие окончания переписуки
+            elif msg['body'] == "Полученик сообщения":
+                print(f'INPUT №4:\n  {msg}\n\n')
 
-        # Условие для контрольного ответа
-        elif msg['body'] == "Отправка сообщения":
-            print(f'INPUT №3:\n  {msg}\n\n')
-            time.sleep(10)
-            msg.reply("Получение сообщения").send()  # Отправляем на тотже адрес откуда пришло сообщение
-            print(f'SEND №4:\n  {msg}\n\n')
+        else:
+            # Условие для тестового ответа
+            if msg['body'] == "test out":
+                print(f'INPUT №1:\n  {msg}\n\n')
+                time.sleep(10)
+                msg.reply("test in").send()  # Отправляем на тотже адрес откуда пришло сообщение
+                print(f'SEND №2:\n  {msg}\n\n')
 
-        elif msg['body'] == "Полученик сообщения":
-            print(f'INPUT №4:\n  {msg}\n\n')
+            # Условие для контрольного ответа
+            elif msg['body'] == "Отправка сообщения":
+                print(f'INPUT №3:\n  {msg}\n\n')
+                time.sleep(10)
+                msg.reply("Получение сообщения").send()  # Отправляем на тотже адрес откуда пришло сообщение
+                print(f'SEND №4:\n  {msg}\n\n')
+
+
 # Системное логирование
 # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
