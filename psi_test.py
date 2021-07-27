@@ -5,17 +5,20 @@
 Работа с XMPP
 
 Источник:
-https://github.com/louiz/slixmpp
+
 """
 
 import time
 from slixmpp import ClientXMPP
 # import logging  # Для системного логирования
 
-# Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
+
+'''
+# Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
+# Источник: https://github.com/saghul/aiodns/issues/78
 import asyncio
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
+'''
 
 class EchoBot(ClientXMPP):
     # Атрибуты:
