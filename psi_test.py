@@ -77,7 +77,7 @@ class EchoBot(ClientXMPP):
 # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
 # Логин и пароля от кого будет идти ответ
-xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2'https://github.com/saghul/aiodns/issues/78)
+xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2')
 # xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 1)
 
 # Подключение к серверу XMPP jabber
