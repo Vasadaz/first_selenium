@@ -10,6 +10,7 @@
 
 import time
 from slixmpp import ClientXMPP
+
 # import logging  # Для системного логирования
 
 
@@ -19,6 +20,7 @@ from slixmpp import ClientXMPP
 import asyncio
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 '''
+
 
 class EchoBot(ClientXMPP):
     # Атрибуты:
@@ -39,7 +41,7 @@ class EchoBot(ClientXMPP):
         # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
         if self.how_first_send == 1:
             print("I'm first sender!")
-            #first_msg = self.make_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
+            # first_msg = self.make_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
             first_msg = self.make_message(mto="test-rtc-nt@jabber.ru", mbody="test out", mtype='chat')
             first_msg.send()
             print(f'SEND №1:\n  {first_msg}\n\n')
@@ -64,7 +66,7 @@ class EchoBot(ClientXMPP):
                 print(f'SEND №3:\n  {answer_msg}\n\n')
 
             # условие окончания переписуки
-            elif msg['body'] == "Полученик сообщения":
+            elif msg['body'] == "Получение сообщения":
                 print(f'INPUT №4:\n  {msg}\n\n')
 
         else:
@@ -80,10 +82,9 @@ class EchoBot(ClientXMPP):
             elif msg['body'] == "Отправка сообщения":
                 print(f'INPUT №3:\n  {msg}\n\n')
                 time.sleep(10)
-                answer_msg = msg.reply("Получение сообщения") # Создание обратного сообщения
+                answer_msg = msg.reply("Получение сообщения")  # Создание обратного сообщения
                 answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
                 print(f'SEND №4:\n  {answer_msg}\n\n')
-
 
 
 # Системное логирование
