@@ -13,6 +13,8 @@ from selenium import webdriver, common
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time
 
+# Функция для тестирования IM из файла test_im.py
+from test_im import start_im_test
 
 def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
@@ -175,7 +177,7 @@ while True:
     # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
     web_test("HTTP", http_list) if "1" in marker_test_list else None
     # Место для тестов email
-    # Место для тестов im
+    start_im_test() if "3" in marker_test_list else None
     # Место для тестов voip
     ftp_test(ftp_list) if "5" in marker_test_list else None
     terminal_test("TELNET", telnet_list) if "6" in marker_test_list else None
