@@ -59,7 +59,7 @@ class EchoBot(ClientXMPP):
             if msg['body'] == "test in":
                 print(f'INPUT №2:\n  {msg}\n\n')
                 time.sleep(10)
-                answer_msg = msg.reply("Отправка сообщения").send()  # Создание обратного сообщения
+                answer_msg = msg.reply("Отправка сообщения")  # Создание обратного сообщения
                 answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
                 print(f'SEND №3:\n  {answer_msg}\n\n')
 
@@ -80,7 +80,7 @@ class EchoBot(ClientXMPP):
             elif msg['body'] == "Отправка сообщения":
                 print(f'INPUT №3:\n  {msg}\n\n')
                 time.sleep(10)
-                answer_msg = msg.reply("Получение сообщения").send()  # Создание обратного сообщения
+                answer_msg = msg.reply("Получение сообщения") # Создание обратного сообщения
                 answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
                 print(f'SEND №4:\n  {answer_msg}\n\n')
 
@@ -99,7 +99,7 @@ xmpp.connect()
 # Процесс мониторинга сообщенией, атрибуты:
 # timeout = время его работы в секундах;
 # forever = True/False атрибут вечной работы;
-xmpp.process(timeout=40)
+xmpp.process(timeout=60)
 
 # Отключение от сервера
 xmpp.disconnect()
