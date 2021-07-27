@@ -180,12 +180,14 @@ while True:
 
     print("""Тестирование по 573.
     
-1 - http    4 - ssh
-2 - ftp     5 - https 
-3 - telnet  Все - пустая строка""")
+1 - http        5 - ftp
+2 - email(None) 6 - telnet  
+3 - im          7 - ssh 
+4 - voip(None)  8 - https 
+""")
 
     # Создание списка из введёной строки
-    marker_test_list = [el for el in input("\nКакие тесты выполнять?\n").strip()]
+    marker_test_list = [el for el in input("\nКакие тесты выполнять? (12345678)\n").strip()]
 
     # Логирование
     print("\n\n")
@@ -195,14 +197,17 @@ while True:
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:
         # Добавление в marker_test_list всех маркеров тестов.
-        marker_test_list = ["1", "2", "3", "4", "5"]
+        marker_test_list = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
     # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
     web_test("HTTP", http_list) if "1" in marker_test_list else None
-    ftp_test(ftp_list) if "2" in marker_test_list else None
-    terminal_test("TELNET", telnet_list) if "3" in marker_test_list else None
-    terminal_test("SSH", ssh_list) if "4" in marker_test_list else None
-    web_test("HTTPS", https_list) if "5" in marker_test_list else None
+    # Место для тестов email
+    # Место для тестов im
+    # Место для тестов voip
+    ftp_test(ftp_list) if "5" in marker_test_list else None
+    terminal_test("TELNET", telnet_list) if "6" in marker_test_list else None
+    terminal_test("SSH", ssh_list) if "7" in marker_test_list else None
+    web_test("HTTPS", https_list) if "8" in marker_test_list else None
 
     # Логирование
     print()
