@@ -7,10 +7,13 @@
 путём закрытия кнсоли. Изпользуются дополнительные ПО взависимости от ОС.
 Можно запустить отдельные тесты вводя их номера:
 - 1 - http
-- 2 - ftp
-- 3 - telnet
-- 4 - ssh
-- 5 - https
+- 2 - email(None)
+- 3 - im
+- 4 - voip(None)
+- 5 - ftp
+- 6 - telnet
+- 7 - ssh
+- 8 - https
 - Все - пустая строка.
 > 135 >>> Запуск тестов для http, telnet, https
 
@@ -40,7 +43,8 @@ Chromedriver официальный драйвер для управления C
    ![img.png](img/img4.png)
    ![img.png](img/img5.png)
 3. Проверка установки командой >>> chromedriver
-4. Установка selenium командой >>> pip3 install selenium
+4. Установка selenium для тестов 1 и 8 >>> pip3 install selenium
+5. Установка slixmpp для теста 3 >>> pip3 install selenium
 
 ### Linux:
 1. Переходим в директорию /test_573/soft_for_script/linux
