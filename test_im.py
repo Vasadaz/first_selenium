@@ -27,10 +27,10 @@ class EchoBot(ClientXMPP):
     # jid = аккаунт test@jabber.ru
     # password = пароль от jid
     # how_first_send = None/1 условие для самостоятельной иницииации диалога, кто первый начинает?
-    def __init__(self, jid, password, how_first_send=None):
+    def __init__(self, jid, password, jid_to=None):
         ClientXMPP.__init__(self, jid, password)
         print(f"CONNECT as {jid}")
-        self.how_first_send = how_first_send
+        self. jid_to = jid_to
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
 
@@ -39,10 +39,9 @@ class EchoBot(ClientXMPP):
         self.send_presence()
         self.get_roster()
         # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
-        if self.how_first_send == 1:
+        if self.jid_to != None:
             print("I'm first sender!")
-            # first_msg = self.make_message(mto="rtc-nt-test1@jabber.ru", mbody="test out", mtype='chat')
-            first_msg = self.make_message(mto="test-rtc-nt@jabber.ru", mbody="test out", mtype='chat')
+            first_msg = self.make_message(mto=self.jid_to, mbody="test out", mtype='chat')
             first_msg.send()
             print(f'SEND №1:\n  {first_msg}\n\n')
 
@@ -56,7 +55,7 @@ class EchoBot(ClientXMPP):
         # </message>
 
         # Условие для определения инициатора диалога.
-        if self.how_first_send == 1:
+        if self.jid_to != None:
             # Условие для контрольного ответа
             if msg['body'] == "test in":
                 print(f'INPUT №2:\n  {msg}\n\n')
@@ -92,7 +91,7 @@ class EchoBot(ClientXMPP):
 
 # Логин и пароля от кого будет идти ответ
 xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2')
-# xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 1)
+#xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru')
 
 # Подключение к серверу XMPP jabber
 xmpp.connect()
