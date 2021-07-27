@@ -59,8 +59,9 @@ class EchoBot(ClientXMPP):
             if msg['body'] == "test in":
                 print(f'INPUT №2:\n  {msg}\n\n')
                 time.sleep(10)
-                msg.reply("Отправка сообщения").send()  # Отправляем на тотже адрес откуда пришло сообщение
-                print(f'SEND №3:\n  {msg}\n\n')
+                answer_msg = msg.reply("Отправка сообщения").send()  # Создание обратного сообщения
+                answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
+                print(f'SEND №3:\n  {answer_msg}\n\n')
 
             # условие окончания переписуки
             elif msg['body'] == "Полученик сообщения":
@@ -71,15 +72,18 @@ class EchoBot(ClientXMPP):
             if msg['body'] == "test out":
                 print(f'INPUT №1:\n  {msg}\n\n')
                 time.sleep(10)
-                msg.reply("test in").send()  # Отправляем на тотже адрес откуда пришло сообщение
-                print(f'SEND №2:\n  {msg}\n\n')
+                answer_msg = msg.reply("test in")  # Создание обратного сообщения
+                answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
+                print(f'SEND №2:\n  {answer_msg}\n\n')
 
             # Условие для контрольного ответа
             elif msg['body'] == "Отправка сообщения":
                 print(f'INPUT №3:\n  {msg}\n\n')
                 time.sleep(10)
-                msg.reply("Получение сообщения").send()  # Отправляем на тотже адрес откуда пришло сообщение
-                print(f'SEND №4:\n  {msg}\n\n')
+                answer_msg = msg.reply("Получение сообщения").send()  # Создание обратного сообщения
+                answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
+                print(f'SEND №4:\n  {answer_msg}\n\n')
+
 
 
 # Системное логирование
