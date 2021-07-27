@@ -12,6 +12,10 @@ import time
 from slixmpp import ClientXMPP
 # import logging  # Для системного логирования
 
+# Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
+import asyncio
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 
 class EchoBot(ClientXMPP):
     # Атрибуты:
@@ -73,7 +77,7 @@ class EchoBot(ClientXMPP):
 # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
 # Логин и пароля от кого будет идти ответ
-xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2', 1)
+xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2'https://github.com/saghul/aiodns/issues/78)
 # xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 1)
 
 # Подключение к серверу XMPP jabber
