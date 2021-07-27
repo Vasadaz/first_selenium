@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """
+СЕРВЕРНЫЙ АВТООТВЯЕТЧИК
 Скрипт для автоматического тестирования im тестов 573.
 Логирование команд просисходит в консоле.
 Работа с XMPP
@@ -14,12 +15,12 @@ from slixmpp import ClientXMPP
 # import logging  # Для системного логирования
 
 
-#'''
+'''
 # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
 # Источник: https://github.com/saghul/aiodns/issues/78
 import asyncio
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-#'''
+'''
 
 
 class EchoBot(ClientXMPP):
@@ -90,7 +91,8 @@ class EchoBot(ClientXMPP):
 # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
 # Логин и пароля от кого будет идти ответ
-xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru')
+xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2')
+
 
 # Подключение к серверу XMPP jabber
 xmpp.connect()
@@ -98,9 +100,10 @@ xmpp.connect()
 # Процесс мониторинга сообщенией, атрибуты:
 # timeout = время его работы в секундах;
 # forever = True/False атрибут вечной работы;
-xmpp.process(timeout=40)
+xmpp.process()
 
 # Отключение от сервера
 xmpp.disconnect()
 
 print(f"DISCONNECT")
+input("\nEXIT?")
