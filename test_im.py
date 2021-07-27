@@ -100,7 +100,9 @@ xmpp.connect()
 # Процесс мониторинга сообщенией, атрибуты:
 # timeout = время его работы в секундах;
 # forever = True/False атрибут вечной работы;
-xmpp.process(timeout=60)
+xmpp.process(timeout=40)
 
 # Отключение от сервера
 xmpp.disconnect()
+
+print(f"DISCONNECT")
