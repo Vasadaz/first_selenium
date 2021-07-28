@@ -31,7 +31,7 @@ class EchoBot(ClientXMPP):
     # password = пароль от jid
     def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
-        print(""""Это ответная часть для теста №3 IM (test_im.py).
+        print("""Это ответная часть для теста №3 IM (test_im.py).
 Скрипт работает до принудительного завершения, логирование происходит в только в консоле.
 
 Для его работы необходимо ПО:
