@@ -164,7 +164,7 @@ while True:
 """)
 
     # Создание списка из введёной строки
-    marker_test_list = [el for el in input("\nКакие тесты выполнять? (12345678)\n").strip()]
+    marker_test_list = [el for el in input("Какие тесты выполнять? (12345678)\n").strip()]
 
     # Логирование
     print("\n\n")
@@ -176,15 +176,42 @@ while True:
         # Добавление в marker_test_list всех маркеров тестов.
         marker_test_list = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
-    # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
-    web_test("HTTP", http_list) if "1" in marker_test_list else None
-    print("Тест EMAIL не готов!") if "2" in marker_test_list else None  # Место для тестов email
-    start_im_test() if "3" in marker_test_list else None
-    print("Тест VOIP не готов!") if "4" in marker_test_list else None  # Место для тестов voip
-    ftp_test(ftp_list) if "5" in marker_test_list else None
-    terminal_test("TELNET", telnet_list) if "6" in marker_test_list else None
-    terminal_test("SSH", ssh_list) if "7" in marker_test_list else None
-    web_test("HTTPS", https_list) if "8" in marker_test_list else None
+    while True:
+        # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
+        if "1" in marker_test_list:
+            web_test("HTTP", http_list)
+            marker_test_list.remove("1")
+
+        if "2" in marker_test_list:
+            print("Тест EMAIL не готов!")  # Место для тестов email
+            marker_test_list.remove("2")
+
+        if "3" in marker_test_list:
+            start_im_test()
+            marker_test_list.remove("3")
+
+        if "4" in marker_test_list:
+            print("Тест VOIP не готов!")  # Место для тестов voip
+            marker_test_list.remove("4")
+
+        if "5" in marker_test_list:
+            ftp_test(ftp_list)
+            marker_test_list.remove("5")
+
+        if "6" in marker_test_list:
+            terminal_test("TELNET", telnet_list)
+            marker_test_list.remove("6")
+
+        if "7" in marker_test_list:
+            terminal_test("SSH", ssh_list)
+            marker_test_list.remove("7")
+
+        if "8" in marker_test_list:
+            web_test("HTTPS", https_list)
+            marker_test_list.remove("8")
+
+        if len(marker_test_list) == 0:
+            break
 
     # Логирование
     print()
