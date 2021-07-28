@@ -183,7 +183,7 @@ while True:
             marker_test_list.remove("1")
 
         if "2" in marker_test_list:
-            print("Тест EMAIL не готов!")  # Место для тестов email
+            print("\nТест EMAIL не готов!")  # Место для тестов email
             marker_test_list.remove("2")
 
         if "3" in marker_test_list:
@@ -191,7 +191,7 @@ while True:
             marker_test_list.remove("3")
 
         if "4" in marker_test_list:
-            print("Тест VOIP не готов!")  # Место для тестов voip
+            print("\nТест VOIP не готов!")  # Место для тестов voip
             marker_test_list.remove("4")
 
         if "5" in marker_test_list:
