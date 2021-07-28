@@ -31,6 +31,15 @@ class EchoBot(ClientXMPP):
     # password = пароль от jid
     def __init__(self, jid, password):
         ClientXMPP.__init__(self, jid, password)
+        print(""""Это ответная часть для теста №3 IM (test_im.py).
+Скрипт работает до принудительного завершения, логирование происходит в только в консоле.
+
+Для его работы необходимо ПО:
+1. Установить Python не ниже v3.8. При установки обязательно
+   указать добавление в PATH.
+   ![img.png](img/img1.png)
+2. Установка slixmpp для теста 3 >>> pip3 install slixmpp
+        """)
         print(f"CONNECT as {jid}")
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)

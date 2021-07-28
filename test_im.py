@@ -31,6 +31,11 @@ class EchoBot(ClientXMPP):
     # how_first_send = None/1 условие для самостоятельной иницииации диалога, кто первый начинает?
     def __init__(self, jid, password, jid_to):
         ClientXMPP.__init__(self, jid, password)
+        print("""Для работы этого теста необходимо запустить ответную часть test_im_serv.py на другом ПК.
+Для его работы необходимо ПО:
+1. Установить Python не ниже v3.8. При установки обязательно
+   указать добавление в PATH.
+2. Установка slixmpp для теста 3 >>> pip3 install slixmpp\n""")
         print(f"CONNECT as {jid}")
         self.jid_to = jid_to
         self.add_event_handler("session_start", self.session_start)
