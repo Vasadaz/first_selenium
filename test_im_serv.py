@@ -39,7 +39,6 @@ class EchoBot(ClientXMPP):
 Для его работы необходимо ПО:
 1. Установить Python не ниже v3.8. При установки обязательно
    указать добавление в PATH.
-   ![img.png](img/img1.png)
 2. Установка slixmpp для теста 3 >>> pip3 install slixmpp
         """)
         print(f"CONNECT as {jid}")
