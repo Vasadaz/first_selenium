@@ -5,7 +5,7 @@
 Работа с XMPP
 
 Источник:
-
+https://slixmpp.readthedocs.io/en/latest/index.html
 """
 
 import time
