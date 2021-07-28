@@ -108,6 +108,3 @@ xmpp.process()
 
 # Отключение от сервера
 xmpp.disconnect()
-
-print(f"DISCONNECT")
-input("\nEXIT?")
