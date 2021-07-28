@@ -52,6 +52,8 @@ class EchoBot(ClientXMPP):
 
         # Условие для тестового ответа
         if msg['body'] == "test out":
+            print("\n\nIM start")
+            print("----------------------------------------------------------------------------")
             msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
             print(f'INPUT №1 {cmd_time()}:{msg_log}\n\n')
             time.sleep(10)
@@ -68,8 +70,9 @@ class EchoBot(ClientXMPP):
             answer_msg = msg.reply("Получение сообщения")  # Создание обратного сообщения
             answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
             answer_msg_log = str(answer_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-            print(f'SEND №4 {cmd_time()}:{answer_msg_log}\n\n')
-
+            print(f'SEND №4 {cmd_time()}:{answer_msg_log}')
+            print("----------------------------------------------------------------------------")
+            return print("IM end")
 
 
 # Системное логирование

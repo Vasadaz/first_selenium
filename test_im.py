@@ -36,6 +36,7 @@ class EchoBot(ClientXMPP):
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
 
+
     def session_start(self, event):
         self.send_presence()
         self.get_roster()
@@ -46,6 +47,7 @@ class EchoBot(ClientXMPP):
         first_msg.send()
         first_msg_log = str(first_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
         print(f'SEND №1 {cmd_time()}:{first_msg_log}\n\n')
+
 
     def message(self, msg):
         # print(msg)
@@ -72,8 +74,6 @@ class EchoBot(ClientXMPP):
             print(f'INPUT №4 {cmd_time()}:{msg_log}\n\n')
 
 
-
-
 def start_im_test():
     # Системное логирование
     # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
@@ -90,7 +90,7 @@ def start_im_test():
     # Процесс мониторинга сообщенией, атрибуты:
     # timeout = время его работы в секундах;
     # forever = True/False атрибут вечной работы;
-    xmpp.process()
+    xmpp.process(timeout=60)
 
     # Отключение от сервера
     xmpp.disconnect()
