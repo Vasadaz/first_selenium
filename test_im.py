@@ -100,8 +100,13 @@ def start_im_test():
     # forever = True/False атрибут вечной работы;
     xmpp.process(timeout=60)
 
-    # Отключение от сервера
-    xmpp.disconnect()
+    # Подключение к серверу XMPP jabber
+    # disable_starttls=True отключаем шифрование, т.е TLS и поддержку STARTTLS.
+    # Параметр должен стоять и у клиента и у сервера.
+    # Источники:
+    # https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
+    # https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
+    xmpp.connect(disable_starttls=True)
 
     print(f"DISCONNECT")
     print("\n----------------------------------------------------------------------------")

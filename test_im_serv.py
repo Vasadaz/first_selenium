@@ -94,7 +94,12 @@ class EchoBot(ClientXMPP):
 xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2')
 
 # Подключение к серверу XMPP jabber
-xmpp.connect()
+# disable_starttls=True отключаем шифрование, т.е TLS и поддержку STARTTLS.
+# Параметр должен стоять и у клиента и у сервера.
+# Источники:
+# https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
+# https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
+xmpp.connect(disable_starttls=True)
 
 # Процесс мониторинга сообщенией, атрибуты:
 # timeout = время его работы в секундах;
