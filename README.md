@@ -15,7 +15,7 @@
 - 7 - ssh
 - 8 - https
 - Все - пустая строка.
-> 135 >>> Запуск тестов для http, telnet, https
+> 168 >>> Запуск тестов для http, telnet, https
 
 ___
 ## Дополнитльное ПО
@@ -30,7 +30,7 @@ ___
 1. Установить wget командой >>> sudo apt install wget
 2. Установить Chrome >= v90
 ___
-## Установка chromedriver
+## Установка chromedriver и других модулей теста.
 Chromedriver официальный драйвер для управления Chrome.
 Скрипт использует библиотеку selenium для управления браузером.
 ### Windows:
@@ -44,7 +44,7 @@ Chromedriver официальный драйвер для управления C
    ![img.png](img/img5.png)
 3. Проверка установки командой >>> chromedriver
 4. Установка selenium для тестов 1 и 8 >>> pip3 install selenium
-5. Установка slixmpp для теста 3 >>> pip3 install selenium
+5. Установка slixmpp для теста 3 >>> pip3 install slixmpp
 
 ### Linux:
 1. Переходим в директорию /test_573/soft_for_script/linux
@@ -54,3 +54,15 @@ Chromedriver официальный драйвер для управления C
    - sudo chmod +x /usr/local/bin/chromedriver
 3. Проверка установки командой >>> chromedriver
 4. Установка selenium командой >>> pip3 install selenium
+5. Установка slixmpp для теста 3 >>> pip3 install slixmpp
+___
+## Примечание к тестам
+### №3 IM
+Для работы этого теста необходимо запустить ответную часть test_im_serv.py на другом ПК.
+Скрипт работает до принудительного завершения, логирование происходит в только в консоле.
+
+Для его работы необходимо ПО:
+1. Установить Python не ниже v3.8. При установки обязательно
+   указать добавление в PATH.
+   ![img.png](img/img1.png)
+2. Установка slixmpp для теста 3 >>> pip3 install slixmpp
