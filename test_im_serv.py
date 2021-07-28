@@ -17,12 +17,14 @@ from log_time import cmd_time
 # import logging  # Для системного логирования
 
 
-'''
-# Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
-# Источник: https://github.com/saghul/aiodns/issues/78
-import asyncio
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-'''
+try:
+    # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
+    # Источник: https://github.com/saghul/aiodns/issues/78
+    import asyncio
+
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+except AttributeError:
+    print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
 
 
 class EchoBot(ClientXMPP):
@@ -44,20 +46,21 @@ class EchoBot(ClientXMPP):
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
 
-
     def session_start(self, event):
         self.send_presence()
         self.get_roster()
 
-
     def message(self, msg):
         # print(msg)
         # Вид msg:
-        # <message from="test-rtc-nt@jabber.ru/DESKTOP-0T8DF1D" to="rtc-nt-test1@jabber.ru/12115888673434915089" xml:lang="ru" id="ab22a" type="chat">
-        # <body>555</body>
-        # <active xmlns="http://jabber.org/protocol/chatstates" />
-        # <request xmlns="urn:xmpp:receipts" />
-        # </message>
+        #   <message from="rtc-nt-test1@jabber.ru/6908052297956221828"
+        # to="test-rtc-nt@jabber.ru/6162992849949770130" type="chat" xml:lang="en"
+        # id="2e23b4aa49a8429e8b5a1a9f95ae5de3">
+        # 	<origin-id xmlns="urn:xmpp:sid:0" id="2e23b4aa49a8429e8b5a1a9f95ae5de3" />
+        # 	<body>
+        # 			Получение сообщения
+        # 	</body>
+        # 	</message>
 
         # Условие для тестового ответа
         if msg['body'] == "test out":
@@ -89,7 +92,6 @@ class EchoBot(ClientXMPP):
 
 # Логин и пароля от кого будет идти ответ
 xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2')
-
 
 # Подключение к серверу XMPP jabber
 xmpp.connect()

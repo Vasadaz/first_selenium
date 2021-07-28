@@ -39,7 +39,7 @@ def web_test(protocol: str, websait_list: list):
             # Метод get сообщает браузеру, что нужно открыть сайт по указанной ссылке.
             driver.get(el)
         except common.exceptions.WebDriverException:
-            print("***** CONTROL ERROR *****")  # Логирование.
+            print("***** WEB: CONTROL ERROR - NOT ANSWER *****")  # Логирование.
         time.sleep(10)  # Пауза 10 секунд.
 
     # Метод для закрытия окна браузера.
@@ -106,6 +106,7 @@ def terminal_test(protocol: str, servers_list: list, ):
             # Linux
             # Метод для выполнения команды в консоле, который ожидает завершения команды.
             subprocess.run(["pkill", "putty"])
+            print("***** TERM: CONTROL ERROR - NOT WINDOWS *****")
 
     # Логирование.
     print("\n----------------------------------------------------------------------------")
