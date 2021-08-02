@@ -9,3 +9,80 @@ SMTP https://code.tutsplus.com/ru/tutorials/sending-emails-in-python-with-smtp--
 IMAP http://python-3.ru/page/imap-email-python
 POP3 https://www.code-learner.com/python-use-pop3-to-read-email-example/
 """
+
+# import necessary packages
+
+
+import smtplib  # Импортируем библиотеку по работе с SMTP
+from email import encoders  # Импортируем энкодер
+from email.mime.base import MIMEBase  # Общий тип файла
+from email.mime.text import MIMEText  # Тип для Текст/HTML
+from email.mime.multipart import MIMEMultipart  # Многокомпонентный объект
+
+
+def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, list_bcc=None):
+    # Все данные в списках должныи иметь строковый тип
+    # list_from список отправителя, формат: [email , pass, почтовый сервера, порт почтового сервера]
+    # list_to список получателя, формат: [email №1, ..., email №n]
+    # list_msg список для формирования письма, формат: [тема письма, текст письма, относительный путь к файлу]
+    # list_cc (необязательный аргумент) список адресов копии, формат: [email №1, ..., email №n]
+    # list_bcc (необязательный аргумент) список адресов скрытой копии, формат: [email №1, ..., email №n]
+
+    if list_cc is None:
+        list_cc = []
+    if list_bcc is None:
+        list_bcc = []
+
+    msg = MIMEMultipart()  # Создаем сообщение
+    msg["From"] = list_from[0]  # Отправитель
+    # Добавление получателей
+    for el in list_to:
+        msg["To"] = el  # Получатель
+
+    msg["Subject"] = list_msg[0]  # Тема сообщения
+
+    # Добавление копии
+    for el in list_cc:
+        msg["Сopy"] = el  # Копия
+
+    # Добавление скрытой копии
+    for el in list_bcc:
+        msg["Bcc"] = el  # Скрытая копия
+
+    msg.attach(MIMEText(list_msg[1], "plain"))  # Добавляем в сообщение текст
+
+    # Условие для определение вложения у письма
+    if len(msg) > 2:
+        filepath = "./email/constitution.pdf"  # Относительный путь к файлу во вложении
+        filename = "constitution.pdf"  # Только имя файла
+
+        with open(filepath, "rb") as fp:
+            file = MIMEBase("application", "pdf")  # Используем общий MIME-тип
+            file.set_payload(fp.read())  # Добавляем содержимое общего типа (полезную нагрузку)
+            fp.close()
+
+        encoders.encode_base64(file)  # Содержимое должно кодироваться как Base64
+        file.add_header("Content-Disposition", "attachment", filename=filename)  # Добавляем заголовки
+        msg.attach(file)  # Присоединяем файл к сообщению
+
+    server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP
+    server.starttls()  # Начинаем шифрованный обмен по TLS
+    server.login(list_from[0], list_from[1])  # Получаем доступ
+    server.send_message(msg)  # Отправляем сообщение
+    print("Отправили от {} на {}".format(list_from[0], list_to))
+    server.quit()  # Выходим
+
+# Вставь пароль для отправки |
+#                            V
+from_1 = ["test@rtc-nt.ru", " ", "mail.nic.ru", "587"]
+to_1 = ["rtc-nt-test1@yandex.ru"]
+#cc_1 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
+bcc_1 = ["rtc-nt-test4@yandex.ru"]
+msg_1 = ["Отправка письма с 3 получателями, вложением, скрытой копией",
+         "Текст письма Python",
+         "./email/constitution.pdf"]
+
+#send_email(from_1, to_1, msg_1, list_bcc=bcc_1)
+
+
+send_email("rtc-nt-test1@yandex.ru", "", "test@rtc-nt.ru", "smtp.yandex.ru")
