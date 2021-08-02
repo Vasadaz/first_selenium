@@ -17,6 +17,8 @@ from log_time import cmd_time
 from test_im import start_im_test
 
 
+VERSION = "v1.3.3"
+
 def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
     # protocol - нужен для логирования;
@@ -155,7 +157,7 @@ https_list = ["https://yandex.ru",
 # так как лог идёт в консоле без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
 
-    print("""Тестирование по 573.
+    print(f"""Тестирование по 573 {VERSION}
     
 1 - http        5 - ftp
 2 - email(None) 6 - telnet  
