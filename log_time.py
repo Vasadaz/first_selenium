@@ -22,7 +22,7 @@ def cmd_time(time_or_date="time") -> str:
         gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
         # Возврат времени в формате "чч:мм:сс (GMT чч:мм:сс)"
         return "{} (GMT {})".format(local_time_str, gmt_time_str)
-    else:
+    elif time_or_date == "date":
         # Форматирование дыты в привычный вид, т.е. из 6.1.21 в 06.01.21.
         # tm_mday, tm_mon, tm_year методы для возвращения единиц времени.
         # Месная дата
@@ -31,3 +31,5 @@ def cmd_time(time_or_date="time") -> str:
         gmt_time_str = "{:0>2d}.{:0>2d}.{:0>2d}".format(gmt_time.tm_mday, gmt_time.tm_mon, gmt_time.tm_year)
         # Возврат даты в формате "ДД.ММ.ГГ (GMT ДД.ММ.ГГ)"
         return "DATE {} (GMT {})".format(local_time_str, gmt_time_str)
+    else:
+        print('НЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"')

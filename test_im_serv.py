@@ -63,35 +63,35 @@ class EchoBot(ClientXMPP):
         # 	</message>
 
         # Условие для тестового ответа
-        if msg['body'] == "test out":
-            print("\n\nIM start")
+        if msg["body"] == "test out":
+            print(f"\n\nIM start {cmd_time(time_or_date='date')}")
             print("----------------------------------------------------------------------------")
             msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-            print(f'INPUT №1 {cmd_time()}:{msg_log}\n\n')
+            print(f"INPUT №1 {cmd_time()}:{msg_log}\n\n")
             time.sleep(10)
             answer_msg = msg.reply("test in")  # Создание обратного сообщения
             answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
             answer_msg_log = str(answer_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-            print(f'SEND №2 {cmd_time()}:{answer_msg_log}\n\n')
+            print(f"SEND №2 {cmd_time()}:{answer_msg_log}\n\n")
 
         # Условие для контрольного ответа
-        elif msg['body'] == "Отправка сообщения":
+        elif msg["body"] == "Отправка сообщения":
             msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-            print(f'INPUT №3 {cmd_time()}:{msg_log}\n\n')
+            print(f"INPUT №3 {cmd_time()}:{msg_log}\n\n")
             time.sleep(10)
             answer_msg = msg.reply("Получение сообщения")  # Создание обратного сообщения
             answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
             answer_msg_log = str(answer_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
             print(f'SEND №4 {cmd_time()}:{answer_msg_log}')
             print("----------------------------------------------------------------------------")
-            return print("IM end")
+            return print(f"IM end {cmd_time(time_or_date='date')}")
 
 
 # Системное логирование
 # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
 
 # Логин и пароля от кого будет идти ответ
-xmpp = EchoBot('rtc-nt-test1@jabber.ru', 'zaq123edcxsw2')
+xmpp = EchoBot("rtc-nt-test1@jabber.ru", "zaq123edcxsw2")
 
 # Подключение к серверу XMPP jabber
 # disable_starttls=True отключаем шифрование, т.е TLS и поддержку STARTTLS.
