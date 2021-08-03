@@ -56,8 +56,8 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
     # Условие для определение вложения у письма
     if len(list_msg) > 2:
-        filepath = "./email/constitution.pdf"  # Относительный путь к файлу во вложении
-        filename = "constitution.pdf"  # Только имя файла
+        filepath = f"./email/{list_msg[2]}"  # Относительный путь к файлу во вложении
+        filename = f"{list_msg[2]}"  # Только имя файла
 
         with open(filepath, "rb") as fp:
             file = MIMEBase("application", "pdf")  # Используем общий MIME-тип
@@ -87,7 +87,7 @@ to_1 = ["rtc-nt-test1@yandex.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex
 bcc_1 = ["rtc-nt-test4@yandex.ru"]
 msg_1 = ["Отправка письма с 3 получателями, вложением, скрытой копией",  # Тема письма
          "Текст письма Python",  # Текст письма
-         "./email/constitution.pdf"]  # Прикреплённый файл
+         "constitution.pdf"]  # Прикреплённый файл из ./email/
 
 # Письмо №3
 to_3 = ["rtc-nt-test1@yandex.ru"]
