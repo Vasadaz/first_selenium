@@ -5,6 +5,7 @@
 Работа с IMAP, SMTP, POP3
 
 Источник:
+https://habr.com/ru/post/51772/
 SMTP https://code.tutsplus.com/ru/tutorials/sending-emails-in-python-with-smtp--cms-29975
      https://habr.com/ru/post/495256/
 IMAP http://python-3.ru/page/imap-email-python
@@ -72,13 +73,14 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
 
     server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
-    server.set_debuglevel(1)
     # server.starttls()  # Начинаем шифрованный обмен по TLS
+    server.set_debuglevel(1)  # Системные логи, дебагер
     server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
     server.send_message(msg)  # Отправляем сообщение
     print("Отправили от {} на {}\n".format(list_from[0], list_to))
     server.quit()  # Выходим
 
+    print("--------------------------------------------------\n\n\n")
     time.sleep(10)
 
 
