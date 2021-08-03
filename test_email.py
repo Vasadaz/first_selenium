@@ -30,6 +30,8 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     # list_cc (необязательный аргумент) список адресов копии, формат: [email №1, ..., email №n]
     # list_bcc (необязательный аргумент) список адресов скрытой копии, формат: [email №1, ..., email №n]
 
+
+
     if list_cc is None:
         list_cc = []
     if list_bcc is None:
@@ -68,9 +70,11 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
         file.add_header("Content-Disposition", "attachment", filename=filename)  # Добавляем заголовки
         msg.attach(file)  # Присоединяем файл к сообщению
 
-    server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP
+
+    server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
+    server.set_debuglevel(1)
     # server.starttls()  # Начинаем шифрованный обмен по TLS
-    server.login(list_from[0], list_from[1], initial_response_ok=False)  # Получаем доступ
+    server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
     server.send_message(msg)  # Отправляем сообщение
     print("Отправили от {} на {}\n".format(list_from[0], list_to))
     server.quit()  # Выходим
