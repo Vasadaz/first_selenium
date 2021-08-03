@@ -6,6 +6,8 @@
 
 Источник:
 https://habr.com/ru/post/51772/
+https://habr.com/ru/company/truevds/blog/262819/
+
 SMTP https://code.tutsplus.com/ru/tutorials/sending-emails-in-python-with-smtp--cms-29975
      https://habr.com/ru/post/495256/
 IMAP http://python-3.ru/page/imap-email-python
