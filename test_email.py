@@ -18,7 +18,6 @@ POP3 https://www.code-learner.com/python-use-pop3-to-read-email-example/
 
 
 import smtplib  # Импортируем библиотеку по работе с SMTP
-import time
 from email import encoders  # Импортируем энкодер
 from email.mime.base import MIMEBase  # Общий тип файла
 from email.mime.text import MIMEText  # Тип для Текст/HTML
@@ -77,13 +76,24 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
     # server.starttls()  # Начинаем шифрованный обмен по TLS
     server.set_debuglevel(1)  # Системные логи, дебагер
-    server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
+    server.user, server.password = list_from[0], list_from[1]  # Получаем доступ email, пароль
+    server.ehlo()
+    server.auth('plain', server.auth_plain)
+    #server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
     server.send_message(msg)  # Отправляем сообщение
-    print("Отправили от {} на {}\n".format(list_from[0], list_to))
+    print()
+    print(f"FROM: {list_from[0]}")
+    print(f"  TO: {', '.join(list_to)}")
+    print(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
+    print(f" BCC: {', '.join(list_bcc)}") if len(list_bcc) != 0 else None
+    print(f" SUB: {list_msg[0]}")
+    print(f"TEXT: {list_msg[1]}")
+    print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
+    print()
+    print(msg)
     server.quit()  # Выходим
-
     print("--------------------------------------------------\n\n\n")
-    time.sleep(10)
+    input()
 
 
 # Вставь пароль для отправки |
@@ -100,8 +110,9 @@ msg_1 = ["Отправка письма с 3 получателями, влож�
 # Письмо №3
 to_3 = ["rtc-nt-test1@yandex.ru"]
 cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_3 = ["Отправка письма с 2 копиями и иероглифы",  # Тема письма
-         "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
+msg_3 = ["ОТ питона",  # Тема письма
+         "АВТО текст механизм PLAINَ"]  # Текст письма
 
-send_email(sender, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
+#send_email(sender, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
+
 send_email(sender, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
