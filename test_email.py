@@ -75,7 +75,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
     server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
     # server.starttls()  # Начинаем шифрованный обмен по TLS
-    server.set_debuglevel(1)  # Системные логи, дебагер
+    # server.set_debuglevel(1)  # Системные логи, дебагер
     server.user, server.password = list_from[0], list_from[1]  # Получаем доступ email, пароль
     server.ehlo()
     server.auth('plain', server.auth_plain)
