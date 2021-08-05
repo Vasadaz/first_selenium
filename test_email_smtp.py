@@ -25,7 +25,8 @@ import time
 from log_time import cmd_time
 
 
-I_FIRST = True  # True - инициатор, False - автоответчик
+#I_FIRST = True  # True - инициатор, False - автоответчик
+I_FIRST = False  # True - инициатор, False - автоответчик
 
 def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, list_bcc=None):
     # Все данные в списках должны иметь строковый тип
