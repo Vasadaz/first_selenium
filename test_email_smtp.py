@@ -121,4 +121,4 @@ if I_FIRST:
     send_email(sender_1, to_3, msg_3)  # Отправка Письма №3
 else:
     send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
-    send_email(sender_2, to_4, msg_4, list_cc=cc_4)  # Отправка Письма №4
+    #send_email(sender_2, to_4, msg_4, list_cc=cc_4)  # Отправка Письма №4
