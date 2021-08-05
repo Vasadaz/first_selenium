@@ -10,7 +10,6 @@ https://habr.com/ru/company/truevds/blog/262819/
 
 SMTP https://code.tutsplus.com/ru/tutorials/sending-emails-in-python-with-smtp--cms-29975
      https://habr.com/ru/post/495256/
-
 """
 
 import smtplib  # Импортируем библиотеку по работе с SMTP
@@ -18,7 +17,8 @@ from email import encoders  # Импортируем энкодер
 from email.mime.base import MIMEBase  # Общий тип файла
 from email.mime.text import MIMEText  # Тип для Текст/HTML
 from email.mime.multipart import MIMEMultipart  # Многокомпонентный объект
-from email.policy import HTTP
+# Функция возврата времени из файла log_time.py
+from log_time import cmd_time
 
 
 def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, list_bcc=None):
@@ -28,8 +28,6 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     # list_msg список для формирования письма, формат: [тема письма, текст письма, относительный путь к файлу]
     # list_cc (необязательный аргумент) список адресов копии, формат: [email №1, ..., email №n]
     # list_bcc (необязательный аргумент) список адресов скрытой копии, формат: [email №1, ..., email №n]
-
-
 
     if list_cc is None:
         list_cc = []
@@ -76,15 +74,21 @@ Content-Language: ru\r\n""" + list_msg[1]
     server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
     # server.starttls()  # Начинаем шифрованный обмен по TLS
     # server.set_debuglevel(1)  # Системные логи, дебагер
+
+    # Способ аутентификации №1
     server.user, server.password = list_from[0], list_from[1]  # Присваиваем email, пароль
     server.ehlo()  # Отправляем серверу SMTP EHLO запрос
-    server.auth('plain', server.auth_plain)
-    #server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
+    server.auth('plain', server.auth_plain)  # Аутентификация на сервере по механизму PLAIN
 
-    server.sendmail(list_from[0], list_to[0], message.encode('utf8'))
+    # Способ аутентификации №2
+    # server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
 
+    server.sendmail(list_from[0], list_to[0], message.encode('utf8'))  # Отправка письма
+
+    # Логирование
     print("\n\nSMTP start")
     print("----------------------------------------------------------------------------")
+    print(cmd_time())
     print(f"FROM: {list_from[0]}")
     print(f"  TO: {', '.join(list_to)}")
     print(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
@@ -92,11 +96,9 @@ Content-Language: ru\r\n""" + list_msg[1]
     print(f" SUB: {list_msg[0]}")
     print(f"TEXT: {list_msg[1]}")
     print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
-    print()
-    print(message)
     server.quit()  # Выходим
-    print("--------------------------------------------------\n\n\n")
-    input()
+    print("\n----------------------------------------------------------------------------")
+    return print("SMTP end")
 
 
 # Вставь пароль для отправки |
@@ -116,6 +118,5 @@ cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_3 = ["ОТ питона",  # Тема письма
          "АВТО текст механизм PLAINَ"]  # Текст письма
 
-#send_email(sender, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
-
+send_email(sender, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
 send_email(sender, to_3, msg_3)  # Отправка Письма №3

@@ -37,7 +37,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
     # Формирование тела письма
     msg = MIMEMultipart(boundary="/")  # Создаем сообщение
-    msg["From"] = ", ".join(list_from)  # Добавление отправителя
+    msg["From"] = list_from[0]  # Добавление отправителя
     msg["To"] = ", ".join(list_to)  # Добавление получателей
     msg["Cc"] = ", ".join(list_cc)  # Добавление копии
     msg["Bcc"] = ", ".join(list_bcc)  # Добавление скрытой копии
@@ -80,23 +80,21 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     return print("SMTP end")
 
 
-
-
 # Отравитель
 sender = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "smtp.yandex.ru", "587"]
 
 # Письмо №2
-to_1 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_1 = ["АВТО Получение письма с 3 получателями,вложением\r\n",  # Тема письма
+to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
+msg_2 = ["АВТО Получение письма с 3 получателями,вложением\r\n",  # Тема письма
          "Текст письма",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 
 # Письмо №4
-to_3 = ["test@rtc-nt.ru"]
-cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_3 = ["АВТО Получение письма с 2 копиями и иероглифы\r\n",  # Тема письма
+to_4 = ["test@rtc-nt.ru"]
+cc_4 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
+msg_4 = ["АВТО Получение письма с 2 копиями и иероглифы\r\n",  # Тема письма
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
-send_email(sender, to_1, msg_1)  # Отправка Письма №2
+send_email(sender, to_2, msg_2)  # Отправка Письма №2
 
-send_email(sender, to_3, msg_3)  # Отправка Письма №4
+send_email(sender, to_4, msg_4, list_cc=cc_4)  # Отправка Письма №4
