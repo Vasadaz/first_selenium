@@ -13,6 +13,7 @@ POP3 https://www.code-learner.com/python-use-pop3-to-read-email-example/
 
 import poplib
 import time
+import base64
 from email.parser import Parser
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time
@@ -53,12 +54,20 @@ def pop3_email(email="test@rtc-nt.ru",
     msg_content = b'\r\n'.join(lines).decode('utf-8')
 
     msg = Parser().parsestr(msg_content)
+
+    subject_decode = ""
+    for el in (msg.get('Subject')).split():
+        message_bytes = base64.b64decode(el[10:-2])
+        subject_decode += message_bytes.decode('utf-8')
+
+    print(subject_decode)
+
     print(cmd_time())
     print(f"FROM: {msg.get('From')}")
     print(f"  TO: {msg.get('To')}")
     print(f"  CC: {msg.get('Cc')}") if msg.get('Cc') != (None or "") else None
     print(f" BCC: {msg.get('Bcc')}") if msg.get('Bcc') != None else None
-    print(f" SUB: {(msg.get('Subject')).encode('utf-8')}")
+    print(f" SUB: {(msg.get('Subject'))}")
     print(f"TEXT: ")
     print(f"FILE: {msg.get('Content-Disposition')}")
     print()
