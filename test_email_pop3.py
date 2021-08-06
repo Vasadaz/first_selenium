@@ -19,36 +19,29 @@ import email
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time
 
-# input email address, password and pop3 server domain or ip address
+I_FIRST = True  # True - инициатор, False - автоответчик
+#I_FIRST = False  # True - инициатор, False - автоответчик
+NEW_MILES = 0  # Маркер определения новых писем
 
-NEW_MILES = 0
 
-
-def pop3_email(email_addr="test@rtc-nt.ru",
-               password="Elcom101120",
-               pop3_server="mail.nic.ru"):
+def pop3_email(host: list):
     global NEW_MILES
 
-    server = poplib.POP3(pop3_server)
+    server = poplib.POP3(host[2])
     # server.set_debuglevel(1)  # Системный лог, дебагер
-    # pop3_server_welcome_msg = server.getwelcome().decode('utf-8')
-    # user account authentication
-    server.user(email_addr)
-    server.pass_(password)
-    # stat() function return email count and occupied disk size
-    # print('Messages: %s. Size: %s' % server.stat())
-    # list() function return all email list
+    server.user(host[0])
+    server.pass_(host[1])
     mails = server.list()[1]
-    """
+
     if NEW_MILES == 0:
         NEW_MILES = len(mails)
-    """
+
     if NEW_MILES != len(mails):
         NEW_MILES = len(mails)
     else:
         print("No new mails!\n")
         time.sleep(5)
-        pop3_email()
+        pop3_email(host)
 
     lines = server.retr(NEW_MILES)[1]
     msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
@@ -60,9 +53,6 @@ def pop3_email(email_addr="test@rtc-nt.ru",
     for el in (msg_head.get('Subject')).split():
         msg_subject_decode += base64.b64decode(el[10:-2]).decode('utf-8')
 
-
-
-
     print(cmd_time())
     print(f"FROM: {msg_head.get('From')}")
     print(f"  TO: {msg_head.get('To')}")
@@ -73,15 +63,20 @@ def pop3_email(email_addr="test@rtc-nt.ru",
     print(f"FILE: {msg_file}") if msg_file != None else None
     print()
 
-    # print(msg)
     server.quit()
     time.sleep(10)
+    pop3_email(host)
 
-    pop3_email()
-
+# Отравитель №1
+sender_1 = ["test@rtc-nt.ru", "Elcom101120", "mail.nic.ru", "587"]
+# Отравитель №2
+sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "pop3.yandex.ru"]
 
 print("\n\nPOP3 start")
 print("----------------------------------------------------------------------------")
-pop3_email()
+if I_FIRST:
+    pop3_email(sender_1)
+else:
+    pop3_email(sender_2)
 print("\n----------------------------------------------------------------------------")
 print("POP3 end")
