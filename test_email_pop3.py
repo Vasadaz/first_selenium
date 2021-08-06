@@ -22,32 +22,41 @@ from log_time import cmd_time
 I_FIRST = True  # True - инициатор, False - автоответчик
 #I_FIRST = False  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
-
+STOP_POP3 = 0  # Маркер завершения функции pop3_email
 
 def pop3_email(host: list):
-    global NEW_MILES
+    # Передаётся список el: str in [email, pass, server]
+    global I_FIRST, NEW_MILES, STOP_POP3
 
+    # Условие для завершения функции
+    if STOP_POP3 == 5 and I_FIRST:
+        return
 
-
-    server = poplib.POP3(host[2])
+    # Подключаемся к серверу, для Яндекса нужен SSL
+    server = poplib.POP3(host[2]) if I_FIRST else poplib.POP3_SSL(host[2])
     # server.set_debuglevel(1)  # Системный лог, дебагер
-    server.user(host[0])
-    server.pass_(host[1])
+    server.user(host[0])  # Email
+    server.pass_(host[1])  # Пароль
+    # Список доступных писем и их размер, при появлении нового список растёт.
     mails = server.list()[1]
 
+    # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
     if NEW_MILES == 0:
         NEW_MILES = len(mails)
 
-    if NEW_MILES > len(mails):
-        NEW_MILES = len(mails)
+    # Условие для определения новых писем
+    if NEW_MILES < len(mails):
+        NEW_MILES = len(mails) if I_FIRST else 0
     else:
+        # Действие при отсутствии писем до 5 проходов
+        STOP_POP3 += 1
         print("No new mails!\n")
         time.sleep(5)
         pop3_email(host)
+        return
 
-    print("CONNECTION")
     lines = server.retr(NEW_MILES)[1]
-    msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
+    msg_content = b'\r\n'.join(lines).decode('utf-8')
     msg_head = email.message_from_string(msg_content[0])
     msg_text = base64.b64decode(msg_content[1].split()[-1]).decode('utf-8')
     msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
@@ -70,10 +79,11 @@ def pop3_email(host: list):
     time.sleep(10)
     pop3_email(host)
 
+
 # Отравитель №1
 sender_1 = ["test@rtc-nt.ru", "Elcom101120", "mail.nic.ru", "587"]
 # Отравитель №2
-sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "pop3.yandex.ru"]
+sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "pop.yandex.ru"]
 
 print("\n\nPOP3 start")
 print("----------------------------------------------------------------------------")

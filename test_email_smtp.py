@@ -25,8 +25,8 @@ import time
 from log_time import cmd_time
 
 
-#I_FIRST = True  # True - инициатор, False - автоответчик
-I_FIRST = False  # True - инициатор, False - автоответчик
+I_FIRST = True  # True - инициатор, False - автоответчик
+#I_FIRST = False  # True - инициатор, False - автоответчик
 
 def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, list_bcc=None):
     # Все данные в списках должны иметь строковый тип
@@ -79,6 +79,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     print(f" SUB: {list_msg[0]}")
     print(f"TEXT: {list_msg[1]}")
     print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
+    print()
 
     server.quit()  # Выходим
     time.sleep(10)
@@ -93,7 +94,7 @@ msg_1 = ["АВТО Отправка письма с 3 получателями, 
          "Текст письма Python",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №3
-to_3 = ["rtc-nt-test4@yandex.ru"]
+to_3 = ["rtc-nt-test1@yandex.ru"]
 cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_3 = ["АВТО Отправка письма с 2 копиями и иероглифами",  # Тема письма
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
@@ -116,7 +117,7 @@ print("-------------------------------------------------------------------------
 # Условие для инициирования переписки
 if I_FIRST:
     # Отравитель №1
-    send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
+    #send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
     send_email(sender_1, to_3, msg_3)  # Отправка Письма №3
 else:
     # Отравитель №12
