@@ -27,6 +27,8 @@ NEW_MILES = 0  # Маркер определения новых писем
 def pop3_email(host: list):
     global NEW_MILES
 
+
+
     server = poplib.POP3(host[2])
     # server.set_debuglevel(1)  # Системный лог, дебагер
     server.user(host[0])
@@ -36,13 +38,14 @@ def pop3_email(host: list):
     if NEW_MILES == 0:
         NEW_MILES = len(mails)
 
-    if NEW_MILES != len(mails):
+    if NEW_MILES > len(mails):
         NEW_MILES = len(mails)
     else:
         print("No new mails!\n")
         time.sleep(5)
         pop3_email(host)
 
+    print("CONNECTION")
     lines = server.retr(NEW_MILES)[1]
     msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
     msg_head = email.message_from_string(msg_content[0])
@@ -78,5 +81,5 @@ if I_FIRST:
     pop3_email(sender_1)
 else:
     pop3_email(sender_2)
-print("\n----------------------------------------------------------------------------")
+print("----------------------------------------------------------------------------")
 print("POP3 end")

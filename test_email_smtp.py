@@ -71,8 +71,6 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server.send_message(msg)  # Отправляем сообщение
 
     # Логирование
-    print("\n\nSMTP start")
-    print("----------------------------------------------------------------------------")
     print(cmd_time())
     print(f"FROM: {list_from[0]}")
     print(f"  TO: {', '.join(list_to)}")
@@ -81,9 +79,8 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     print(f" SUB: {list_msg[0]}")
     print(f"TEXT: {list_msg[1]}")
     print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
+
     server.quit()  # Выходим
-    print("\n----------------------------------------------------------------------------")
-    print("SMTP end")
     time.sleep(10)
 
 
@@ -105,15 +102,17 @@ msg_3 = ["АВТО Отправка письма с 2 копиями и иеро
 sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "smtp.yandex.ru", "587"]
 # Письмо №2
 to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_2 = ["АВТО Получение письма с 3 получателями и вложением\r\n",  # Тема письма
+msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
          "Текст письма",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
 to_4 = ["test@rtc-nt.ru"]
 cc_4 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_4 = ["АВТО Получение письма с 2 копиями и иероглифами\r\n",  # Тема письма
+msg_4 = ["АВТО Получение письма с 2 копиями и иероглифами",  # Тема письма
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
+print("\n\nSMTP start")
+print("----------------------------------------------------------------------------")
 # Условие для инициирования переписки
 if I_FIRST:
     # Отравитель №1
@@ -123,3 +122,6 @@ else:
     # Отравитель №12
     send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
     send_email(sender_2, to_4, msg_4, list_cc=cc_4)  # Отправка Письма №4
+
+print("\n----------------------------------------------------------------------------")
+print("SMTP end")
