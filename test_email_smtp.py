@@ -7,6 +7,7 @@
 Источник:
 https://habr.com/ru/post/51772/
 https://habr.com/ru/company/truevds/blog/262819/
+https://www.dmosk.ru/instruktions.php?object=python-mail
 
 SMTP https://code.tutsplus.com/ru/tutorials/sending-emails-in-python-with-smtp--cms-29975
      https://habr.com/ru/post/495256/
@@ -117,7 +118,7 @@ print("-------------------------------------------------------------------------
 # Условие для инициирования переписки
 if I_FIRST:
     # Отравитель №1
-    #send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
+    send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
     send_email(sender_1, to_3, msg_3)  # Отправка Письма №3
 else:
     # Отравитель №12

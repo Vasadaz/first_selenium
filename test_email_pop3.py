@@ -7,6 +7,7 @@
 Источник:
 https://habr.com/ru/post/51772/
 https://habr.com/ru/company/truevds/blog/262819/
+https://www.dmosk.ru/instruktions.php?object=python-mail
 
 POP3 https://www.code-learner.com/python-use-pop3-to-read-email-example/
 """
@@ -20,9 +21,10 @@ import email
 from log_time import cmd_time
 
 I_FIRST = True  # True - инициатор, False - автоответчик
-#I_FIRST = False  # True - инициатор, False - автоответчик
+# I_FIRST = False  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
 STOP_POP3 = 0  # Маркер завершения функции pop3_email
+
 
 def pop3_email(host: list):
     # Передаётся список el: str in [email, pass, server]
@@ -50,13 +52,13 @@ def pop3_email(host: list):
     else:
         # Действие при отсутствии писем до 5 проходов
         STOP_POP3 += 1
-        print("No new mails!\n")
-        time.sleep(5)
+        print("No new mails! ", end="*" * (6 - STOP_POP3) + "\n")
+        time.sleep(6)
         pop3_email(host)
         return
 
     lines = server.retr(NEW_MILES)[1]
-    msg_content = b'\r\n'.join(lines).decode('utf-8')
+    msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
     msg_head = email.message_from_string(msg_content[0])
     msg_text = base64.b64decode(msg_content[1].split()[-1]).decode('utf-8')
     msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
