@@ -21,10 +21,10 @@ from log_time import cmd_time
 
 
 NEW_MILES = 0  # Маркер определения новых писем
-STOP_IMAP = 0  # Маркер завершения функции pop3_email
+STOP_READ_EMAIL = 0  # Маркер завершения функции pop3_email
 
 def imap_email(host: list):
-    global NEW_MILES, STOP_IMAP
+    global NEW_MILES, STOP_READ_EMAIL
 
     time.sleep(10)
 

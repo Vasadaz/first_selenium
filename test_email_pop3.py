@@ -23,12 +23,12 @@ from log_time import cmd_time
 I_FIRST = True  # True - инициатор, False - автоответчик
 # I_FIRST = False  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
-STOP_POP3 = 0  # Маркер завершения функции pop3_email
+STOP_READ_EMAIL = 0  # Маркер завершения функции pop3_email
 
 
 def pop3_email(host: list):
     # Передаётся список el: str in [email, pass, server]
-    global I_FIRST, NEW_MILES, STOP_POP3
+    global I_FIRST, NEW_MILES, STOP_READ_EMAIL
     time.sleep(10)
     # Условие для завершения функции
     if STOP_POP3 == 5 and I_FIRST:
