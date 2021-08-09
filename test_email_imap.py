@@ -91,6 +91,15 @@ def imap_email(host: list):
     imap_email(host)
 
 
+
+
+
+
+
+
+
+
+
 # Отравитель
 sender = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "imap.yandex.ru"]
 
