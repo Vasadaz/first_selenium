@@ -13,6 +13,9 @@ from selenium import webdriver, common
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time
 
+# Функции для тестирования EMAIL из файла test_email.py
+import test_email
+
 # Функция для тестирования IM из файла test_im.py
 from test_im import start_im_test
 
@@ -153,6 +156,10 @@ https_list = ["https://yandex.ru",
               "https://sis.gov.uk",
               "https://bnd.bund.de"]
 
+
+
+
+
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоле без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
@@ -160,7 +167,7 @@ while True:
     print(f"""Тестирование по 573 {VERSION}
     
 1 - http        5 - ftp
-2 - email(None) 6 - telnet  
+2 - email       6 - telnet  
 3 - im          7 - ssh 
 4 - voip(None)  8 - https 
 """)
@@ -185,7 +192,8 @@ while True:
             marker_test_list.remove("1")
 
         if "2" in marker_test_list:
-            print("\nТест EMAIL не готов!")  # Место для тестов email
+
+            test_email.i_sender()
             marker_test_list.remove("2")
 
         if "3" in marker_test_list:
