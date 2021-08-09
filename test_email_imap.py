@@ -26,6 +26,8 @@ STOP_IMAP = 0  # Маркер завершения функции pop3_email
 def imap_email(host: list):
     global NEW_MILES, STOP_IMAP
 
+    time.sleep(10)
+
     # Условие для завершения функции
     if STOP_IMAP == 5:
         return
@@ -56,31 +58,36 @@ def imap_email(host: list):
         imap_email(host)
         return
 
-
+    # *server.fetch(latest_email_id, "(RFC822)")[1][0]][1] Подготавливаем сообщение к декодированию путём распаковки tuple
+    # decode('utf-8') Декодируем сообщение по UTF-8 -> str
+    # split("--/") создаём список на основе декодированного сообщения, элементы списка делятся по маркеру "--/"
     # Тело письма в необработанном виде включает в себя заголовки и альтернативные полезные нагрузки
     msg_content = [*server.fetch(latest_email_id, "(RFC822)")[1][0]][1].decode("utf-8").split("--/")  # Получаем тело письма
 
-    msg_head = email.message_from_string(msg_content[0])
+    msg_head = email.message_from_string(msg_content[0])  # Преобразуем str -> dict
+    # Декодируем сообщение base64 -> UTF-8 -> str
     msg_text = base64.b64decode(msg_content[1].split()[-1]).decode('utf-8')
+    # Условие для определения вложенного файла и присвоение его имени
     msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
 
     msg_subject_decode = str()
     for el in (msg_head.get('Subject')).split():
+        # Декодируем тему сообщения base64 -> UTF-8 -> str
         msg_subject_decode += base64.b64decode(el[10:-2]).decode('utf-8')
 
-    print()
     print(cmd_time())
-    print(f"FROM: {msg_head.get('From')}")
-    print(f"  TO: {msg_head.get('To')}")
+    print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
+    print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
+    # Вытаскиваем значение по ключу если оно есть
     print(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
+    # Вытаскиваем значение по ключу если оно есть
     print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') != None else None
     print(f" SUB: {msg_subject_decode}")
     print(f"TEXT: {msg_text}")
-    print(f"FILE: {msg_file}") if msg_file != None else None
+    print(f"FILE: {msg_file}") if msg_file != None else None  # Имя вложенного файла если оно есть
     print()
 
-    server.close()
-    time.sleep(10)
+    server.close()  # Закрываем соединение
     imap_email(host)
 
 

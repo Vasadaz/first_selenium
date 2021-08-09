@@ -30,6 +30,7 @@ def pop3_email(host: list):
     # Передаётся список el: str in [email, pass, server]
     global I_FIRST, NEW_MILES, STOP_POP3
 
+    time.sleep(10)
     # Условие для завершения функции
     if STOP_POP3 == 5 and I_FIRST:
         return
@@ -57,28 +58,36 @@ def pop3_email(host: list):
         pop3_email(host)
         return
 
-    lines = server.retr(NEW_MILES)[1]
+
+    lines = server.retr(NEW_MILES)[1]  # Получаем тело сообщения
+    # b'\r\n'.join(lines) Подготавливаем сообщение к декодированию.
+    # decode('utf-8') Декодируем сообщение по UTF-8 -> str
+    # split("--/") создаём список на основе декодированного сообщения, элементы списка делятся по маркеру "--/"
     msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
-    msg_head = email.message_from_string(msg_content[0])
+    msg_head = email.message_from_string(msg_content[0])  # Преобразуем str -> dict
+    # Декодируем сообщение base64 -> UTF-8 -> str
     msg_text = base64.b64decode(msg_content[1].split()[-1]).decode('utf-8')
+    # Условие для определения вложенного файла и присвоение его имени
     msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
 
     msg_subject_decode = str()
     for el in (msg_head.get('Subject')).split():
+        # Декодируем тему сообщения base64 -> UTF-8 -> str
         msg_subject_decode += base64.b64decode(el[10:-2]).decode('utf-8')
 
     print(cmd_time())
-    print(f"FROM: {msg_head.get('From')}")
-    print(f"  TO: {msg_head.get('To')}")
+    print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
+    print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
+    # Вытаскиваем значение по ключу если оно есть
     print(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
+    # Вытаскиваем значение по ключу если оно есть
     print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') != None else None
     print(f" SUB: {msg_subject_decode}")
     print(f"TEXT: {msg_text}")
-    print(f"FILE: {msg_file}") if msg_file != None else None
+    print(f"FILE: {msg_file}") if msg_file != None else None  # Имя вложенного файла если оно есть
     print()
 
-    server.quit()
-    time.sleep(10)
+    server.quit()  # Закрываем соединение
     pop3_email(host)
 
 
