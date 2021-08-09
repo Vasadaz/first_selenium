@@ -33,6 +33,7 @@ from log_time import cmd_time
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
 STOP_READ_EMAIL = 0  # Маркер завершения функции
+COUNT_SUBJECTS = True  # Маркер для логирования
 
 
 def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, list_bcc=None):
@@ -89,21 +90,25 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     print()
 
     server.quit()  # Выходим
-    time.sleep(5)
     return
 
 
 def read_email(info_email: list, protocol: str):
     # info_email список el: str in [email, pass, server]
     # protocol либо "POP3", либо "IMAP"
-    global I_FIRST, NEW_MILES, STOP_READ_EMAIL
+    global I_FIRST, NEW_MILES, STOP_READ_EMAIL, COUNT_SUBJECTS
 
-    time.sleep(10)
+    time.sleep(2)
+    mails = 0  # Надо - без этого почему-то не получить письма
+
+    """
     # Условие для завершения функции
-    if STOP_READ_EMAIL == 5 and I_FIRST:
-        return print("*** THE COLONEL's NO ONE WRITES! ***\n")
+    if STOP_READ_EMAIL == 5 and wait_time > 5:
+        print("*** THE COLONEL's NO ONE WRITES! ***\n")
+        return False
+    """
 
-    mails = 0  # Маркер новых писем
+
 
     if protocol == "POP3":
         # Подключаемся к серверу, для Яндекса нужен SSL
@@ -125,7 +130,8 @@ def read_email(info_email: list, protocol: str):
         mails = id_list[-1] if len(id_list) != 0 else 0  # Берем последний ID
 
     else:
-        return "***** PROTOCOL: POP3 or IMAP *****"
+        print("***** PROTOCOL: POP3 or IMAP *****")
+        return False
 
     # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
     if NEW_MILES == 0:
@@ -136,12 +142,8 @@ def read_email(info_email: list, protocol: str):
         NEW_MILES = mails if I_FIRST else 0
     else:
         # Действие при отсутствии писем до 5 проходов
-        STOP_READ_EMAIL += 1
-        print("No new mails! ", end="*" * (6 - STOP_READ_EMAIL) + "\n") if I_FIRST else None
-        time.sleep(5)
-        read_email(info_email, protocol)
-        NEW_MILES, STOP_READ_EMAIL = 0, 0
-        return
+        print("No new mails!") if I_FIRST else None
+        return read_email(info_email, protocol)
 
     # Обработка сообщения
     if protocol == "POP3":
@@ -151,11 +153,6 @@ def read_email(info_email: list, protocol: str):
         # split("--/") создаём список на основе декодированного сообщения, элементы списка делятся по маркеру "--/"
         msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
 
-        # Обработка письма от Яндекса:
-        if len(msg_content) == 1:
-            msg_content = b'\r\n'.join(lines).decode('utf-8').split("X-Mailer: Yamail [ http://yandex.ru ] 5.0")
-            print(msg_content[0])
-            print(msg_content[1])
     else:
         # для IMAP: *server.fetch(latest_email_id, "(RFC822)")[1][0]][1] Подготавливаем сообщение к декодированию
         # путём распаковки tuple decode('utf-8') Декодируем сообщение по UTF-8 -> str split("--/") создаём список на
@@ -165,7 +162,6 @@ def read_email(info_email: list, protocol: str):
 
     msg_head = message_from_string(msg_content[0])  # Преобразуем str -> dict
     # Декодируем сообщение base64 -> UTF-8 -> str
-    print(len(msg_content))
     msg_text = base64.b64decode(msg_content[1].split()[-1]).decode('utf-8')
     # Условие для определения вложенного файла и присвоение его имени
     msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
@@ -174,6 +170,11 @@ def read_email(info_email: list, protocol: str):
     for el in (msg_head.get('Subject')).split():
         # Декодируем тему сообщения base64 -> UTF-8 -> str
         msg_subject_decode += base64.b64decode(el[10:-2]).decode('utf-8')
+
+    if not I_FIRST and COUNT_SUBJECTS:
+        COUNT_SUBJECTS = False
+        print("\n\nEMAIL start")
+        print("--------------------------------------------------------------------------")
 
     print("\nREAD", protocol, cmd_time())
     print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
@@ -187,10 +188,10 @@ def read_email(info_email: list, protocol: str):
     print(f"FILE: {msg_file}") if msg_file != None else None  # Имя вложенного файла если оно есть
     print()
 
-    server.quit()  # Закрываем соединение
-    read_email(info_email, protocol) if not I_FIRST else None
-    NEW_MILES, STOP_READ_EMAIL = 0, 0
-    return msg_subject_decode
+    server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
+    STOP_READ_EMAIL = 0
+    return True
+
 
 # Отравитель №1
 sender_1 = ["test@rtc-nt.ru", "Elcom101120", "mail.nic.ru", "587", ]
@@ -207,7 +208,7 @@ cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_3 = ["АВТО Отправка письма с 2 копиями и иероглифами",  # Тема письма
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
-#Отравитель №2
+# Отравитель №2
 sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "smtp.yandex.ru", "587"]
 # Письмо №2
 to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
@@ -219,7 +220,6 @@ to_4 = ["test@rtc-nt.ru"]
 cc_4 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_4 = ["АВТО Получение письма с 2 копиями и иероглифами",  # Тема письма
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
-
 
 # Получатель №1 POP3
 reader_1_pop3 = ["test@rtc-nt.ru", "Elcom101120", "mail.nic.ru"]
@@ -238,24 +238,23 @@ def i_sender():  # Отравитель №1
     send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
     read_email(reader_1_pop3, "POP3")  # Получение письма № 2
     send_email(sender_1, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
-    read_email(reader_1_pop3, "POP3") # Получение письма № 4
+    read_email(reader_1_pop3, "POP3")  # Получение письма № 4
     print("\n--------------------------------------------------------------------------")
-    return print("EMAIL end")
-
+    return print("EMAIL end\n")
 
 
 def i_answer():  # Отравитель №1
 
     global I_FIRST
     I_FIRST = False
+
     print("""Это ответная часть для теста №3 IM (test_email.py).
-    Скрипт работает до принудительного завершения, логирование происходит в только в консоле.
-            """)
-    print("\n\nEMAIL start")
-    print("----------------------------------------------------------------------------")
-    send_email(sender_2, to_2, msg_2)  # Отправка Письма №1
-    read_email(reader_2_imap, "IMAP")  # Получение письма № 2
-    send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №3
-    read_email(reader_2_imap, "IMAP")  # Получение письма № 4
-    print("--------------------------------------------------------------------------")
-    return print("EMAIL end")
+Скрипт работает до принудительного завершения, логирование происходит в только в консоле.""")
+
+    while True:
+        read_email(reader_2_imap, "IMAP")  # Получение письма № 1
+        send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
+        read_email(reader_2_imap, "IMAP")  # Получение письма № 3
+        send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
+        print("--------------------------------------------------------------------------")
+        print("EMAIL end\n")
