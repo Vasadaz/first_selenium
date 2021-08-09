@@ -29,7 +29,6 @@ STOP_POP3 = 0  # Маркер завершения функции pop3_email
 def pop3_email(host: list):
     # Передаётся список el: str in [email, pass, server]
     global I_FIRST, NEW_MILES, STOP_POP3
-
     time.sleep(10)
     # Условие для завершения функции
     if STOP_POP3 == 5 and I_FIRST:
