@@ -164,12 +164,13 @@ https_list = ["https://yandex.ru",
 # так как лог идёт в консоли без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
 
-    print(f"""Тестирование 573 {VERSION}
+    print(f"""
+Тестирование 573 {VERSION}
     
-1 - http        5 - ftp
-2 - email       6 - telnet  
-3 - im          7 - ssh 
-4 - voip(None)  8 - https 
+1 - http         5 - ftp
+2 - email*       6 - telnet  
+3 - im*          7 - ssh 
+4 - voip(None)*  8 - https 
 """)
 
     # Создание списка из введённой строки
@@ -226,4 +227,4 @@ while True:
     # Логирование
     print()
     print(cmd_time(time_or_date="date"))  # Логирование - дата
-    print("END___" * 8, "\n\n\n\n")
+    print("END___" * 8, "\n\n\n")
