@@ -33,7 +33,7 @@ from log_time import cmd_time, time
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
 STOP_READ_EMAIL = 0  # Маркер завершения функции
-COUNT_SUBJECTS = True  # Маркер для логирования
+__COUNT_SUBJECTS = True  # Маркер для логирования
 
 
 def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, list_bcc=None):
@@ -96,15 +96,16 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 def read_email(info_email: list, protocol: str):
     # info_email список el: str in [email, pass, server]
     # protocol либо "POP3", либо "IMAP"
-    global I_FIRST, NEW_MILES, STOP_READ_EMAIL, COUNT_SUBJECTS
+    global I_FIRST, NEW_MILES, STOP_READ_EMAIL, __COUNT_SUBJECTS
 
     time.sleep(1)
     mails = 0  # Надо - без этого почему-то не получить письма
 
 
     # Условие для завершения функции
-    if STOP_READ_EMAIL == 500 and I_FIRST:
-        print("*** THE COLONEL's NO ONE WRITES! ***\n")
+    if STOP_READ_EMAIL == 600 and I_FIRST:
+        print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***\n")
+        STOP_READ_EMAIL = 0
         return False
 
 
@@ -128,7 +129,7 @@ def read_email(info_email: list, protocol: str):
         mails = id_list[-1] if len(id_list) != 0 else 0  # Берем последний ID
 
     else:
-        print("***** PROTOCOL: POP3 or IMAP *****")
+        print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
         return False
 
     # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
@@ -137,10 +138,12 @@ def read_email(info_email: list, protocol: str):
 
     # Условие для определения новых писем
     if NEW_MILES < mails:
-        NEW_MILES = mails if I_FIRST else 0
+        NEW_MILES = mails
     else:
-        # Действие при отсутствии писем до 5 проходов
-        print("No new mails!") if I_FIRST else None
+        # Действие при отсутствии писем до STOP_READ_EMAIL проходов
+        STOP_READ_EMAIL += 1
+        print(f"No new mails! {cmd_time()}") if I_FIRST else None
+        server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
         return read_email(info_email, protocol)
 
     # Обработка сообщения
@@ -169,8 +172,8 @@ def read_email(info_email: list, protocol: str):
         # Декодируем тему сообщения base64 -> UTF-8 -> str
         msg_subject_decode += base64.b64decode(el[10:-2]).decode('utf-8')
 
-    if not I_FIRST and COUNT_SUBJECTS:
-        COUNT_SUBJECTS = False
+    if not I_FIRST and __COUNT_SUBJECTS:
+        __COUNT_SUBJECTS = False
         print("\n\nEMAIL start")
         print("--------------------------------------------------------------------------")
 
@@ -245,13 +248,16 @@ def i_sender():  # Отравитель №1
 
 def i_answer():  # Отравитель №1
 
-    global I_FIRST
+    global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
+
+
 
     print("""Это ответная часть для теста №2 EMAIL (test_email.py).
 Скрипт работает до принудительного завершения, логирование происходит в только в консоли.""")
 
     while True:
+        __COUNT_SUBJECTS = True
         read_email(reader_2_imap, "IMAP")  # Получение письма № 1
         send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
         read_email(reader_2_imap, "IMAP")  # Получение письма № 3
