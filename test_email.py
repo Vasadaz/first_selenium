@@ -98,7 +98,7 @@ def read_email(info_email: list, protocol: str):
     # protocol либо "POP3", либо "IMAP"
     global I_FIRST, NEW_MILES, STOP_READ_EMAIL, COUNT_SUBJECTS
 
-    time.sleep(2)
+    time.sleep(1)
     mails = 0  # Надо - без этого почему-то не получить письма
 
 
@@ -238,7 +238,9 @@ def i_sender():  # Отравитель №1
     send_email(sender_1, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
     read_email(reader_1_pop3, "POP3")  # Получение письма № 4
     print("\n--------------------------------------------------------------------------")
-    return print("EMAIL end\n")
+    print("EMAIL end\n")
+    time.sleep(10)
+    return
 
 
 def i_answer():  # Отравитель №1
@@ -256,3 +258,4 @@ def i_answer():  # Отравитель №1
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
         print("--------------------------------------------------------------------------")
         print("EMAIL end\n")
+
