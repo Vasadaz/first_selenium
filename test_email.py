@@ -23,12 +23,12 @@ from email import encoders  # Импортируем энкодер
 from email.mime.base import MIMEBase  # Общий тип файла
 from email.mime.text import MIMEText  # Тип для Текст/HTML
 from email.mime.multipart import MIMEMultipart  # Многокомпонентный объект
-import poplib
-import imaplib
-import base64
-import time
+import poplib  # Библиотека для POP3
+import imaplib  # Библиотека для IMAP
+import base64  # Библиотека кодировки Base64
+
 # Функция возврата времени из файла log_time.py
-from log_time import cmd_time
+from log_time import cmd_time, time
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
@@ -101,12 +101,12 @@ def read_email(info_email: list, protocol: str):
     time.sleep(2)
     mails = 0  # Надо - без этого почему-то не получить письма
 
-    """
+
     # Условие для завершения функции
-    if STOP_READ_EMAIL == 5 and wait_time > 5:
+    if STOP_READ_EMAIL == 500 and I_FIRST:
         print("*** THE COLONEL's NO ONE WRITES! ***\n")
         return False
-    """
+
 
     if protocol == "POP3":
         # Подключаемся к серверу, для Яндекса нужен SSL
@@ -198,7 +198,7 @@ sender_1 = ["test@rtc-nt.ru", "Elcom101120", "mail.nic.ru", "587", ]
 to_1 = ["rtc-nt-test1@yandex.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 bcc_1 = ["rtc-nt-test4@yandex.ru"]
 msg_1 = ["АВТО Отправка письма с 3 получателями, вложением и скрытой копией",  # Тема письма
-         "Текст письма Python",  # Текст письма
+         "Текст письма Отправка",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №3
 to_3 = ["rtc-nt-test1@yandex.ru"]
@@ -211,7 +211,7 @@ sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "smtp.yandex.ru", "587"]
 # Письмо №2
 to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
-         "Текст письма",  # Текст письма
+         "Текст письма Получение",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
 to_4 = ["test@rtc-nt.ru"]
