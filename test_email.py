@@ -98,7 +98,7 @@ def read_email(info_email: list, protocol: str):
     # protocol либо "POP3", либо "IMAP"
     global I_FIRST, NEW_MILES, STOP_READ_EMAIL, __COUNT_SUBJECTS
 
-    time.sleep(1)
+    time.sleep(1) if I_FIRST else time.sleep(10)
     mails = 0  # Надо - без этого почему-то не получить письма
 
 
