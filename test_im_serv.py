@@ -8,7 +8,7 @@
 2. Установка slixmpp для теста 3 >>> pip3 install slixmpp
 
 Скрипт для автоматического тестирования im тестов 573.
-Логирование команд просисходит в консоле.
+Логирование команд происходит в консоли.
 Работа с XMPP
 
 Источник:
@@ -101,7 +101,7 @@ xmpp = EchoBot("rtc-nt-test1@jabber.ru", "zaq123edcxsw2")
 # https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
 xmpp.connect(disable_starttls=True)
 
-# Процесс мониторинга сообщенией, атрибуты:
+# Процесс мониторинга сообщений, атрибуты:
 # timeout = время его работы в секундах;
 # forever = True/False атрибут вечной работы;
 xmpp.process()
