@@ -257,11 +257,14 @@ def i_answer():  # Отравитель №1
 Скрипт работает до принудительного завершения, логирование происходит в только в консоли.""")
 
     while True:
-        __COUNT_SUBJECTS = True
-        read_email(reader_2_imap, "IMAP")  # Получение письма № 1
-        send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
-        read_email(reader_2_imap, "IMAP")  # Получение письма № 3
-        send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
-        print("--------------------------------------------------------------------------")
-        print("EMAIL end\n")
+        try:
+            __COUNT_SUBJECTS = True
+            read_email(reader_2_imap, "IMAP")  # Получение письма № 1
+            send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
+            read_email(reader_2_imap, "IMAP")  # Получение письма № 3
+            send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
+            print("--------------------------------------------------------------------------")
+            print("EMAIL end\n")
+        except ConnectionResetError:
+            print("***** EMAIL: CONTROL ERROR - BLOCKED CONNECT *****")
 
