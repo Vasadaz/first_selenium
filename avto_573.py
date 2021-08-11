@@ -20,7 +20,7 @@ import test_email
 from test_im import start_im_test
 
 
-VERSION = "v1.4.6"
+VERSION = "v1.4.7"
 
 def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
