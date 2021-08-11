@@ -98,16 +98,13 @@ def read_email(info_email: list, protocol: str):
     # protocol либо "POP3", либо "IMAP"
     global I_FIRST, NEW_MILES, STOP_READ_EMAIL, __COUNT_SUBJECTS
 
-    time.sleep(1) if I_FIRST else time.sleep(10)
     mails = 0  # Надо - без этого почему-то не получить письма
-
 
     # Условие для завершения функции
     if STOP_READ_EMAIL == 600 and I_FIRST:
         print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***\n")
         STOP_READ_EMAIL = 0
         return False
-
 
     if protocol == "POP3":
         # Подключаемся к серверу, для Яндекса нужен SSL
@@ -132,6 +129,8 @@ def read_email(info_email: list, protocol: str):
         print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
         return False
 
+    time.sleep(1) if I_FIRST else time.sleep(10)
+
     # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
     if NEW_MILES == 0:
         NEW_MILES = mails
@@ -142,7 +141,7 @@ def read_email(info_email: list, protocol: str):
     else:
         # Действие при отсутствии писем до STOP_READ_EMAIL проходов
         STOP_READ_EMAIL += 1
-        print(f"No new mails! {cmd_time()}") if I_FIRST else None
+        print(f"No new mails! {cmd_time()}")
         server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
         return read_email(info_email, protocol)
 
