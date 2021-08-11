@@ -129,7 +129,7 @@ def read_email(info_email: list, protocol: str):
         print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
         return False
 
-    time.sleep(1) if I_FIRST else time.sleep(10)
+    time.sleep(1)
 
     # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
     if NEW_MILES == 0:
