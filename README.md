@@ -34,7 +34,7 @@ ___
 Chromedriver официальный драйвер для управления Chrome.
 Скрипт использует библиотеку selenium для управления браузером.
 ### Windows:
-1. Скопировать директорию /soft_for_script/win/chromedriver в корень C:\
+1. Скопировать директорию chromedriver из test_573_vХ.х.х/soft_for_script/win/ в корень C:\
 2. Добавить в PATH путь C:\chromedriver с помощью одного из способов:
    - Команда >>> setx /m MYWEBPC "C:\chromedriver"
    - Графический интерфейс:
