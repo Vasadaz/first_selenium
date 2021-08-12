@@ -41,10 +41,10 @@ Chromedriver официальный драйвер для управления C
    ![img.png](img/img3.png)
    ![img.png](img/img4.png)
    ![img.png](img/img5.png)
-   Проверка установки chromedriver в cmd командой >>> chromedriver
-   Проверка установки wget командой >>> wget
-4. Установка selenium для тестов 1 и 8 >>> pip3 install selenium
-5. Установка slixmpp для теста 3 >>> pip3 install slixmpp
+   - Проверка установки chromedriver в cmd командой >>> chromedriver
+   - Проверка установки wget в cmd командой = >>> wget
+4. Установка selenium в cmd командой >>> pip3 install selenium
+5. Установка slixmpp в cmd командой >>> pip3 install slixmpp
 
 ### Linux:
 1. Переходим в директорию /test_573/soft_for_script/linux
