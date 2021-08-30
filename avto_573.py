@@ -189,37 +189,61 @@ while True:
     while True:
         # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
         if "1" in marker_test_list:
-            web_test("HTTP", http_list)
-            marker_test_list.remove("1")
+            marker_test_list.remove("1")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                web_test("HTTP", http_list)
+            except:
+                print("***** ERROR IN TEST *****")
 
         if "2" in marker_test_list:
-
-            test_email.i_sender()
-            marker_test_list.remove("2")
+            marker_test_list.remove("2")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                test_email.i_sender()
+            except:
+                print("***** ERROR IN TEST *****")
 
         if "3" in marker_test_list:
-            start_im_test()
-            marker_test_list.remove("3")
+            marker_test_list.remove("3")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                start_im_test()
+            except:
+                print("***** ERROR IN TEST *****")
 
         if "4" in marker_test_list:
-            print("\nТест VOIP не готов!")  # Место для тестов voip
-            marker_test_list.remove("4")
+            marker_test_list.remove("3")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                print("\nТест VOIP не готов!")  # Место для тестов voip
+            except:
+                print("***** ERROR IN TEST *****")
 
         if "5" in marker_test_list:
-            ftp_test(ftp_list)
-            marker_test_list.remove("5")
+            marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                ftp_test(ftp_list)
+            except:
+                print("***** ERROR IN TEST *****")
 
         if "6" in marker_test_list:
-            terminal_test("TELNET", telnet_list)
-            marker_test_list.remove("6")
+            marker_test_list.remove("6")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                terminal_test("TELNET", telnet_list)
+            except:
+                print("***** ERROR IN TEST *****")
+
 
         if "7" in marker_test_list:
-            terminal_test("SSH", ssh_list)
-            marker_test_list.remove("7")
+            marker_test_list.remove("7")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                terminal_test("SSH", ssh_list)
+            except:
+                print("***** ERROR IN TEST *****")
 
         if "8" in marker_test_list:
-            web_test("HTTPS", https_list)
-            marker_test_list.remove("8")
+            marker_test_list.remove("8")  # Удаляем маркер теста из marker_test_list
+            try:  # Защита от остановки тестов в случае ошибки
+                web_test("HTTPS", https_list)
+            except:
+                print("***** ERROR IN TEST *****")
 
         if len(marker_test_list) == 0:
             break
