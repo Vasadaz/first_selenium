@@ -129,7 +129,7 @@ def read_email(info_email: list, protocol: str):
         print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
         return False
 
-    time.sleep(1)
+    time.sleep(2)
 
     # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
     if NEW_MILES == 0:
@@ -227,7 +227,7 @@ reader_1_pop3 = ["test1@rtc-nt.ru", "Elcom101120", "mail.nic.ru"]
 reader_2_imap = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "imap.yandex.ru"]
 
 
-def i_sender():  # Отравитель №1
+def i_sender():  # Отравитель
 
     print("\n\nEMAIL start")
     print("----------------------------------------------------------------------------")
@@ -245,7 +245,7 @@ def i_sender():  # Отравитель №1
     return
 
 
-def i_answer():  # Отравитель №1
+def i_answer():  # Автоответчик
 
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
