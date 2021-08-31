@@ -194,7 +194,7 @@ def read_email(info_email: list, protocol: str):
 
 
 # Отравитель №1
-sender_1 = ["test@rtc-nt.ru", "Elcom101120", "mail.nic.ru", "587", ]
+sender_1 = ["test1@rtc-nt.ru", "Elcom101120", "mail.nic.ru", "587", ]
 
 # Письмо №1
 to_1 = ["rtc-nt-test1@yandex.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
@@ -211,18 +211,18 @@ msg_3 = ["АВТО Отправка письма с 2 копиями и иеро
 # Отравитель №2
 sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "smtp.yandex.ru", "587"]
 # Письмо №2
-to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
+to_2 = ["test1@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
          "Текст письма Получение",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
-to_4 = ["test@rtc-nt.ru"]
+to_4 = ["test1@rtc-nt.ru"]
 cc_4 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_4 = ["АВТО Получение письма с 2 копиями и иероглифами",  # Тема письма
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
 # Получатель №1 POP3
-reader_1_pop3 = ["test@rtc-nt.ru", "Elcom101120", "mail.nic.ru"]
+reader_1_pop3 = ["test1@rtc-nt.ru", "Elcom101120", "mail.nic.ru"]
 # Получатель №2 IMAP
 reader_2_imap = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "imap.yandex.ru"]
 

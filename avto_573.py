@@ -210,7 +210,7 @@ while True:
                 print("***** ERROR IN TEST *****")
 
         if "4" in marker_test_list:
-            marker_test_list.remove("3")  # Удаляем маркер теста из marker_test_list
+            marker_test_list.remove("4")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 print("\nТест VOIP не готов!")  # Место для тестов voip
             except:
