@@ -19,8 +19,8 @@ import test_email
 # Функция для тестирования IM из файла test_im.py
 from test_im import start_im_test
 
-
-VERSION = "v1.4.9"
+# Release v1.4.10
+VERSION = "v1.4.10"
 
 def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
