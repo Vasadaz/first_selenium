@@ -22,6 +22,7 @@ from test_im import start_im_test
 # Release v1.4.10
 VERSION = "v1.4.10"
 
+
 def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
     # protocol - нужен для логирования;
@@ -156,10 +157,6 @@ https_list = ["https://yandex.ru",
               "https://sis.gov.uk",
               "https://bnd.bund.de"]
 
-
-
-
-
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоли без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
@@ -229,7 +226,6 @@ while True:
                 terminal_test("TELNET", telnet_list)
             except:
                 print("***** ERROR IN TEST *****")
-
 
         if "7" in marker_test_list:
             marker_test_list.remove("7")  # Удаляем маркер теста из marker_test_list
