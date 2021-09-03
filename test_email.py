@@ -80,7 +80,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server.send_message(msg)  # Отправляем сообщение
 
     # Логирование
-    print("КОСТЯ НЕ ВИДИТ ЭТИ ПАКЕТЫ SEND SMTP", cmd_time())
+    print("SEND SMTP", cmd_time())
     print(f"FROM: {list_from[0]}")
     print(f"  TO: {', '.join(list_to)}")
     print(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
