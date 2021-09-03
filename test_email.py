@@ -26,6 +26,7 @@ from email.mime.multipart import MIMEMultipart  # Многокомпонентн
 import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
+import csv  # Библиотека для работы с CSV файлами
 
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time, time
@@ -74,7 +75,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
     server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
     # server.set_debuglevel(1)  # Системные логи, дебагер
-    # server.starttls()  # Начинаем шифрованный обмен по TLS
+    server.starttls() if list_from[2] != "mail.nic.ru" else None # Начинаем шифрованный обмен по TLS, нужен для яндекса
     server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
     server.send_message(msg)  # Отправляем сообщение
 
@@ -193,8 +194,21 @@ def read_email(info_email: list, protocol: str):
     return True
 
 
+# Защит от отсутствия файла
+try:
+    # Открываем файл email_data.csv c данными для подключения
+    with open("email_data.csv", "r") as email_data:
+        email_data_list = csv.reader(email_data)  # Преобразуем строку из файла в список
+        email_data_dict = {}  # Словарь для записи данных
+        for line in email_data_list:
+            email_data_dict[line[0]] = line[2:-1]  # Отправитель
+            email_data_dict[line[1]] = [line[2], line[3], line[-1]]  # Получатель
+        email_data.close()
+except FileNotFoundError:
+    print("***** EMAIL: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
+
 # Отравитель №1
-sender_1 = ["test1@rtc-nt.ru", "Elcom101120", "mail.nic.ru", "587", ]
+sender_1 = email_data_dict["sender_1"]
 
 # Письмо №1
 to_1 = ["rtc-nt-test1@yandex.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
@@ -209,22 +223,23 @@ msg_3 = ["АВТО Отправка письма с 2 копиями и иеро
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
 # Отравитель №2
-sender_2 = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "smtp.yandex.ru", "587"]
+sender_2 = email_data_dict["sender_2"]
+
 # Письмо №2
-to_2 = ["test1@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
+to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
          "Текст письма Получение",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
-to_4 = ["test1@rtc-nt.ru"]
+to_4 = ["test@rtc-nt.ru"]
 cc_4 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_4 = ["АВТО Получение письма с 2 копиями и иероглифами",  # Тема письма
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
 # Получатель №1 POP3
-reader_1_pop3 = ["test1@rtc-nt.ru", "Elcom101120", "mail.nic.ru"]
+reader_1_pop3 = email_data_dict["reader_1_pop3"]
 # Получатель №2 IMAP
-reader_2_imap = ["rtc-nt-test1@yandex.ru", "zaq123edcxsw2", "imap.yandex.ru"]
+reader_2_imap = email_data_dict["reader_2_imap"]
 
 
 def i_sender():  # Отравитель
@@ -250,8 +265,6 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-
-
     print("""Это ответная часть для теста №2 EMAIL (test_email.py).
 Скрипт работает до принудительного завершения, логирование происходит в только в консоли.""")
 
@@ -266,4 +279,3 @@ def i_answer():  # Автоответчик
             print("EMAIL end\n")
         except ConnectionResetError:
             print("***** EMAIL: CONTROL ERROR - BLOCKED CONNECT *****")
-
