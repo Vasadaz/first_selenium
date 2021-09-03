@@ -20,7 +20,7 @@ import test_email
 from test_im import start_im_test
 
 # Release v1.4.10
-VERSION = "v1.4.10"
+VERSION = "v1.4.11"
 
 
 def web_test(protocol: str, websait_list: list):
