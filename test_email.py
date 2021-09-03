@@ -102,7 +102,7 @@ def read_email(info_email: list, protocol: str):
     mails = 0  # Надо - без этого почему-то не получить письма
 
     # Условие для завершения функции
-    if STOP_READ_EMAIL == 600 and I_FIRST:
+    if STOP_READ_EMAIL == 1000 and I_FIRST:
         print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***\n")
         STOP_READ_EMAIL = 0
         return False
@@ -130,7 +130,7 @@ def read_email(info_email: list, protocol: str):
         print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
         return False
 
-    time.sleep(2)
+    #time.sleep(5) if protocol == "IMAP" else None
 
     # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
     if NEW_MILES == 0:
@@ -142,7 +142,7 @@ def read_email(info_email: list, protocol: str):
     else:
         # Действие при отсутствии писем до STOP_READ_EMAIL проходов
         STOP_READ_EMAIL += 1
-        print(f"No new mails! {cmd_time()}")
+        # print(f"No new mails! {cmd_time()}")
         server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
         return read_email(info_email, protocol)
 
@@ -228,7 +228,7 @@ sender_2 = email_data_dict["sender_2"]
 # Письмо №2
 to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
-         "Текст письма Получение",  # Текст письма
+         "Текст",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
 to_4 = ["test@rtc-nt.ru"]
@@ -254,7 +254,7 @@ def i_sender():  # Отравитель
     read_email(reader_1_pop3, "POP3")  # Получение письма № 2
     send_email(sender_1, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
     read_email(reader_1_pop3, "POP3")  # Получение письма № 4
-    print("\n--------------------------------------------------------------------------")
+    print("--------------------------------------------------------------------------")
     print("EMAIL end\n")
     time.sleep(10)
     return
@@ -276,6 +276,8 @@ def i_answer():  # Автоответчик
             read_email(reader_2_imap, "IMAP")  # Получение письма № 3
             send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
             print("--------------------------------------------------------------------------")
-            print("EMAIL end\n")
+            print(f"EMAIL end {cmd_time('date')}\n")
         except ConnectionResetError:
-            print("***** EMAIL: CONTROL ERROR - BLOCKED CONNECT *****")
+            print("***** EMAIL: CONTROL ERROR - BLOCKED CONNECT *****")  # Логирование.
+        except RecursionError:
+            print("***** EMAIL: CONTROL ERROR - Recursion Error *****")  # Логирование.
