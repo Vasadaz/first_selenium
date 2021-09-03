@@ -133,4 +133,4 @@ dmypy.json
 FTP_573/
 
 # Файлы с данными для подключения
-*.csv
+email_data.csv
