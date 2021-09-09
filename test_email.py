@@ -80,6 +80,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server.send_message(msg)  # Отправляем сообщение
 
     # Логирование
+    print()
     print("SEND SMTP", cmd_time())
     print(f"FROM: {list_from[0]}")
     print(f"  TO: {', '.join(list_to)}")
@@ -99,7 +100,12 @@ def read_email(info_email: list, protocol: str):
     # protocol либо "POP3", либо "IMAP"
     global I_FIRST, NEW_MILES, STOP_READ_EMAIL, __COUNT_SUBJECTS
 
-    mails = 0  # Надо - без этого почему-то не получить письма
+    # mails = 0  # Надо - без этого почему-то не получить письма
+
+    # Указывается максимальное количество писем в ящике.
+    # Если больше, то более поздние письма удаляются до тех пор
+    # пока не останется указанное количество писем.
+    max_mails_in_box = 10
 
     # Вечный цикл мониторинга новых писем
     while True:
@@ -136,7 +142,7 @@ def read_email(info_email: list, protocol: str):
         time.sleep(5)
 
         # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
-        if NEW_MILES == None or NEW_MILES > mails:
+        if NEW_MILES is None or NEW_MILES > mails:
             NEW_MILES = mails
 
         # Условие для определения новых писем
@@ -165,7 +171,8 @@ def read_email(info_email: list, protocol: str):
             # путём распаковки tuple decode('utf-8') Декодируем сообщение по UTF-8 -> str split("--/") создаём список на
             # основе декодированного сообщения, элементы списка делятся по маркеру "--/" Тело письма в необработанном
             # виде включает в себя заголовки и альтернативные полезные нагрузки
-            msg_content = [*server.fetch(str(mails), "(RFC822)")[1][0]][1].decode("utf-8").split("--/")  # Получаем тело письма
+            msg_content = [*server.fetch(str(mails), "(RFC822)")[1][0]][1].decode("utf-8").split(
+                "--/")  # Получаем тело письма
 
             # Защита от ошибок при получении письма не от функции send_email
             if len(msg_content) < 3:
@@ -188,17 +195,33 @@ def read_email(info_email: list, protocol: str):
             print("\n\nEMAIL start")
             print("--------------------------------------------------------------------------")
 
-        print("\nREAD", protocol, cmd_time())
+        print("READ", protocol, cmd_time())
         print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
         print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
         # Вытаскиваем значение по ключу если оно есть
         print(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
         # Вытаскиваем значение по ключу если оно есть
-        print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') != None else None
+        print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') is not None else None
         print(f" SUB: {msg_subject_decode}")
         print(f"TEXT: {msg_text}")
-        print(f"FILE: {msg_file}") if msg_file != None else None  # Имя вложенного файла если оно есть
-        print()
+        print(f"FILE: {msg_file}") if msg_file is not None else None  # Имя вложенного файла если оно есть
+
+        # pop3 Удаление старых писем
+        if mails > max_mails_in_box and protocol == "POP3":
+            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+            for i in range(mails - max_mails_in_box):
+                server.dele(i + 1)
+                # print(f"Delete mail №{i + 1}")
+            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+
+        # imap Удаление старых писем
+        elif mails > max_mails_in_box and protocol == "IMAP":
+            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+            for i in range(mails - max_mails_in_box):
+                server.store(str(i + 1), '+FLAGS', '\\Deleted')
+                # print(f"Delete mail №{i+1}")
+            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+
 
         server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
         STOP_READ_EMAIL = 0
@@ -226,13 +249,13 @@ sender_1 = email_data_dict["sender_1"]
 to_1 = ["rtc-nt-test1@yandex.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 bcc_1 = ["rtc-nt-test4@yandex.ru"]
 msg_1 = ["АВТО Отправка письма с 3 получателями, вложением и скрытой копией",  # Тема письма
-         "Текст письма Отправка",  # Текст письма
+         f"Текст письма Отправка -> {cmd_time()}",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №3
 to_3 = ["rtc-nt-test1@yandex.ru"]
 cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_3 = ["АВТО Отправка письма с 2 копиями и иероглифами",  # Тема письма
-         "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
+msg_3 = ["АВТО Отправка письма с 2 копиями и иероглифами",
+         "لِيَتَقَدَّسِ اسْمُكَ"] # Текст письма
 
 # Отравитель №2
 sender_2 = email_data_dict["sender_2"]
@@ -240,7 +263,7 @@ sender_2 = email_data_dict["sender_2"]
 # Письмо №2
 to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
-         "Текст",  # Текст письма
+         "Песня про коня",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
 to_4 = ["test@rtc-nt.ru"]
@@ -288,4 +311,3 @@ def i_answer():  # Автоответчик
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
         print("--------------------------------------------------------------------------")
         print(f"EMAIL end {cmd_time('date')}\n")
-
