@@ -32,7 +32,7 @@ import csv  # Библиотека для работы с CSV файлами
 from log_time import cmd_time, time
 
 I_FIRST = True  # True - инициатор, False - автоответчик
-NEW_MILES = 0  # Маркер определения новых писем
+NEW_MILES = None  # Маркер определения новых писем
 STOP_READ_EMAIL = 0  # Маркер завершения функции
 __COUNT_SUBJECTS = True  # Маркер для логирования
 
@@ -75,7 +75,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
     server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
     # server.set_debuglevel(1)  # Системные логи, дебагер
-    server.starttls() if list_from[2] != "mail.nic.ru" else None # Начинаем шифрованный обмен по TLS, нужен для яндекса
+    server.starttls() if list_from[2] != "mail.nic.ru" else None  # Начинаем шифрованный обмен по TLS, нужен для яндекса
     server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
     server.send_message(msg)  # Отправляем сообщение
 
@@ -101,97 +101,109 @@ def read_email(info_email: list, protocol: str):
 
     mails = 0  # Надо - без этого почему-то не получить письма
 
-    # Условие для завершения функции
-    if STOP_READ_EMAIL == 1000 and I_FIRST:
-        print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***\n")
-        STOP_READ_EMAIL = 0
-        return False
+    # Вечный цикл мониторинга новых писем
+    while True:
 
-    if protocol == "POP3":
-        # Подключаемся к серверу, для Яндекса нужен SSL
-        server = poplib.POP3(info_email[2]) if I_FIRST else poplib.POP3_SSL(info_email[2])
-        # server.set_debuglevel(1)  # Системный лог, дебагер
-        server.user(info_email[0])  # Email
-        server.pass_(info_email[1])  # Пароль
-        # Список доступных писем и их размер, при появлении нового список растёт.
-        mails = len(server.list()[1])
+        # Условие для завершения функции
+        if STOP_READ_EMAIL == 100 and I_FIRST:
+            print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***\n")
+            STOP_READ_EMAIL = 0
+            return
 
-    elif protocol == "IMAP":
-        server = imaplib.IMAP4_SSL(info_email[2])
-        server.debug = True
-        server.login(info_email[0], info_email[1])
-        # Выводит список папок в почтовом ящике.
-        server.select("inbox")  # Подключаемся к папке "входящие"
-        dir_inbox = server.search(None, "ALL")[1]
-        id_list = dir_inbox[0].split()  # Получаем сроку номеров писем
-        mails = id_list[-1] if len(id_list) != 0 else 0  # Берем последний ID
+        if protocol == "POP3":
+            # Подключаемся к серверу, для Яндекса нужен SSL
+            server = poplib.POP3(info_email[2]) if I_FIRST else poplib.POP3_SSL(info_email[2])
+            # server.set_debuglevel(1)  # Системный лог, дебагер
+            server.user(info_email[0])  # Email
+            server.pass_(info_email[1])  # Пароль
+            # Количество писем в ящике
+            mails = int(server.stat()[0])
 
-    else:
-        print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
-        return False
+        elif protocol == "IMAP":
+            server = imaplib.IMAP4_SSL(info_email[2])
+            server.debug = True
+            server.login(info_email[0], info_email[1])
+            # Выводит список папок в почтовом ящике.
+            server.select("inbox")  # Подключаемся к папке "входящие"
+            dir_inbox = server.search(None, "ALL")[1]
+            id_list = dir_inbox[0].split()  # Получаем сроку номеров писем
+            mails = int(id_list[-1]) if len(id_list) != 0 else 0  # Берем последний ID
 
-    #time.sleep(5) if protocol == "IMAP" else None
+        else:
+            print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
+            return
 
-    # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
-    if NEW_MILES == 0:
-        NEW_MILES = mails
+        time.sleep(5)
 
-    # Условие для определения новых писем
-    if NEW_MILES < mails:
-        NEW_MILES = mails
-    else:
-        # Действие при отсутствии писем до STOP_READ_EMAIL проходов
-        STOP_READ_EMAIL += 1
-        # print(f"No new mails! {cmd_time()}")
+        # Условие для начального поиска новых писем, т.е. присваивается количество писем на данный момент.
+        if NEW_MILES == None or NEW_MILES > mails:
+            NEW_MILES = mails
+
+        # Условие для определения новых писем
+        if NEW_MILES < mails:
+            NEW_MILES = mails
+        else:
+            # Действие при отсутствии писем до STOP_READ_EMAIL проходов
+            STOP_READ_EMAIL += 1
+            server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
+            continue
+
+        # Обработка сообщения
+        if protocol == "POP3":
+            lines = server.retr(NEW_MILES)[1]  # Получаем тело сообщения
+            # b'\r\n'.join(lines) Подготавливаем сообщение к декодированию.
+            # decode('utf-8') Декодируем сообщение по UTF-8 -> str
+            # split("--/") создаём список на основе декодированного сообщения, элементы списка делятся по маркеру "--/"
+            msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
+
+            # Защита от ошибок при получении письма не от функции send_email
+            if len(msg_content) < 3:
+                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                continue
+        else:
+            # для IMAP: *server.fetch(latest_email_id, "(RFC822)")[1][0]][1] Подготавливаем сообщение к декодированию
+            # путём распаковки tuple decode('utf-8') Декодируем сообщение по UTF-8 -> str split("--/") создаём список на
+            # основе декодированного сообщения, элементы списка делятся по маркеру "--/" Тело письма в необработанном
+            # виде включает в себя заголовки и альтернативные полезные нагрузки
+            msg_content = [*server.fetch(str(mails), "(RFC822)")[1][0]][1].decode("utf-8").split("--/")  # Получаем тело письма
+
+            # Защита от ошибок при получении письма не от функции send_email
+            if len(msg_content) < 3:
+                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                continue
+
+        msg_head = message_from_string(msg_content[0])  # Преобразуем str -> dict
+        # Декодируем сообщение base64 -> UTF-8 -> str
+        msg_text = base64.b64decode(msg_content[1].split()[-1]).decode('utf-8')
+        # Условие для определения вложенного файла и присвоение его имени
+        msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
+
+        msg_subject_decode = str()
+        for el in (msg_head.get('Subject')).split():
+            # Декодируем тему сообщения base64 -> UTF-8 -> str
+            msg_subject_decode += base64.b64decode(el[10:-2]).decode('utf-8')
+
+        if not I_FIRST and __COUNT_SUBJECTS:
+            __COUNT_SUBJECTS = False
+            print("\n\nEMAIL start")
+            print("--------------------------------------------------------------------------")
+
+        print("\nREAD", protocol, cmd_time())
+        print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
+        print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
+        # Вытаскиваем значение по ключу если оно есть
+        print(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
+        # Вытаскиваем значение по ключу если оно есть
+        print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') != None else None
+        print(f" SUB: {msg_subject_decode}")
+        print(f"TEXT: {msg_text}")
+        print(f"FILE: {msg_file}") if msg_file != None else None  # Имя вложенного файла если оно есть
+        print()
+
         server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
-        return read_email(info_email, protocol)
-
-    # Обработка сообщения
-    if protocol == "POP3":
-        lines = server.retr(NEW_MILES)[1]  # Получаем тело сообщения
-        # b'\r\n'.join(lines) Подготавливаем сообщение к декодированию.
-        # decode('utf-8') Декодируем сообщение по UTF-8 -> str
-        # split("--/") создаём список на основе декодированного сообщения, элементы списка делятся по маркеру "--/"
-        msg_content = b'\r\n'.join(lines).decode('utf-8').split("--/")
-
-    else:
-        # для IMAP: *server.fetch(latest_email_id, "(RFC822)")[1][0]][1] Подготавливаем сообщение к декодированию
-        # путём распаковки tuple decode('utf-8') Декодируем сообщение по UTF-8 -> str split("--/") создаём список на
-        # основе декодированного сообщения, элементы списка делятся по маркеру "--/" Тело письма в необработанном
-        # виде включает в себя заголовки и альтернативные полезные нагрузки
-        msg_content = [*server.fetch(mails, "(RFC822)")[1][0]][1].decode("utf-8").split("--/")  # Получаем тело письма
-
-    msg_head = message_from_string(msg_content[0])  # Преобразуем str -> dict
-    # Декодируем сообщение base64 -> UTF-8 -> str
-    msg_text = base64.b64decode(msg_content[1].split()[-1]).decode('utf-8')
-    # Условие для определения вложенного файла и присвоение его имени
-    msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
-
-    msg_subject_decode = str()
-    for el in (msg_head.get('Subject')).split():
-        # Декодируем тему сообщения base64 -> UTF-8 -> str
-        msg_subject_decode += base64.b64decode(el[10:-2]).decode('utf-8')
-
-    if not I_FIRST and __COUNT_SUBJECTS:
-        __COUNT_SUBJECTS = False
-        print("\n\nEMAIL start")
-        print("--------------------------------------------------------------------------")
-
-    print("\nREAD", protocol, cmd_time())
-    print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
-    print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
-    # Вытаскиваем значение по ключу если оно есть
-    print(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
-    # Вытаскиваем значение по ключу если оно есть
-    print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') != None else None
-    print(f" SUB: {msg_subject_decode}")
-    print(f"TEXT: {msg_text}")
-    print(f"FILE: {msg_file}") if msg_file != None else None  # Имя вложенного файла если оно есть
-    print()
-
-    server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
-    STOP_READ_EMAIL = 0
-    return True
+        STOP_READ_EMAIL = 0
+        NEW_MILES = None
+        return
 
 
 # Защит от отсутствия файла
@@ -269,15 +281,11 @@ def i_answer():  # Автоответчик
 Скрипт работает до принудительного завершения, логирование происходит в только в консоли.""")
 
     while True:
-        try:
-            __COUNT_SUBJECTS = True
-            read_email(reader_2_imap, "IMAP")  # Получение письма № 1
-            send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
-            read_email(reader_2_imap, "IMAP")  # Получение письма № 3
-            send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
-            print("--------------------------------------------------------------------------")
-            print(f"EMAIL end {cmd_time('date')}\n")
-        except ConnectionResetError:
-            print("***** EMAIL: CONTROL ERROR - BLOCKED CONNECT *****")  # Логирование.
-        except RecursionError:
-            print("***** EMAIL: CONTROL ERROR - Recursion Error *****")  # Логирование.
+        __COUNT_SUBJECTS = True
+        read_email(reader_2_imap, "IMAP")  # Получение письма № 1
+        send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
+        read_email(reader_2_imap, "IMAP")  # Получение письма № 3
+        send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
+        print("--------------------------------------------------------------------------")
+        print(f"EMAIL end {cmd_time('date')}\n")
+
