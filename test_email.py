@@ -80,7 +80,6 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server.send_message(msg)  # Отправляем сообщение
 
     # Логирование
-    print()
     print("SEND SMTP", cmd_time())
     print(f"FROM: {list_from[0]}")
     print(f"  TO: {', '.join(list_to)}")
@@ -89,7 +88,6 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     print(f" SUB: {list_msg[0]}")
     print(f"TEXT: {list_msg[1]}")
     print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
-    print()
 
     server.quit()  # Выходим
     return
@@ -112,7 +110,7 @@ def read_email(info_email: list, protocol: str):
 
         # Условие для завершения функции
         if STOP_READ_EMAIL == 100 and I_FIRST:
-            print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***\n")
+            print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***")
             STOP_READ_EMAIL = 0
             return
 
@@ -151,6 +149,7 @@ def read_email(info_email: list, protocol: str):
         else:
             # Действие при отсутствии писем до STOP_READ_EMAIL проходов
             STOP_READ_EMAIL += 1
+            print(f"Loop {STOP_READ_EMAIL} {cmd_time()}")
             server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
             continue
 
@@ -222,12 +221,10 @@ def read_email(info_email: list, protocol: str):
                 # print(f"Delete mail №{i+1}")
             # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
 
-
         server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
         STOP_READ_EMAIL = 0
         NEW_MILES = None
         return
-
 
 # Защит от отсутствия файла
 try:
@@ -262,8 +259,8 @@ sender_2 = email_data_dict["sender_2"]
 
 # Письмо №2
 to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
-         "Песня про коня",  # Текст письма
+msg_2 = [f"АВТО Получение письма с 3 получателями и вложением {cmd_time()}",  # Тема письма
+         f"Текст Получение <- {cmd_time()}",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
 to_4 = ["test@rtc-nt.ru"]
@@ -281,13 +278,12 @@ def i_sender():  # Отравитель
 
     print("\n\nEMAIL start")
     print("----------------------------------------------------------------------------")
-    print("""Для работы этого теста необходимо запустить ответную часть test_email_server.py на другом ПК.
-Для его работы необходимо ПО:
-1. Установить Python не ниже v3.8. При установки обязательно
-   указать добавление в PATH.\n""")
     send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
+    print()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 2
+    print()  # Логирование
     send_email(sender_1, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
+    print()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 4
     print("--------------------------------------------------------------------------")
     print("EMAIL end\n")
@@ -301,13 +297,16 @@ def i_answer():  # Автоответчик
     I_FIRST = False
 
     print("""Это ответная часть для теста №2 EMAIL (test_email.py).
-Скрипт работает до принудительного завершения, логирование происходит в только в консоли.""")
+Скрипт работает до принудительного завершения, логирование происходит только в консоли.""")
 
     while True:
         __COUNT_SUBJECTS = True
         read_email(reader_2_imap, "IMAP")  # Получение письма № 1
+        print()  #Логирование
         send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
+        print()  # Логирование
         read_email(reader_2_imap, "IMAP")  # Получение письма № 3
+        print()  # Логирование
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
         print("--------------------------------------------------------------------------")
         print(f"EMAIL end {cmd_time('date')}\n")
