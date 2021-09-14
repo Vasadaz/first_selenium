@@ -7,8 +7,8 @@
 Источник:
 https://slixmpp.readthedocs.io/en/latest/index.html
 """
-
-import time
+"""
+# import time
 from slixmpp import ClientXMPP
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time
@@ -28,88 +28,130 @@ except AttributeError:
 
 class EchoBot(ClientXMPP):
     # Атрибуты:
-    # jid = аккаунт test@jabber.ru
-    # password = пароль от jid
-    # how_first_send = None/1 условие для самостоятельной инициации диалога, кто первый начинает?
-    def __init__(self, jid, password, jid_to):
-        ClientXMPP.__init__(self, jid, password)
-        print("""Для работы этого теста необходимо запустить ответную часть test_im_serv.py на другом ПК.
-Для его работы необходимо ПО:
-1. Установить Python не ниже v3.8. При установки обязательно
-   указать добавление в PATH.
-2. Установка slixmpp для теста 3 >>> pip3 install slixmpp\n""")
-        print(f"CONNECT as {jid}")
-        self.jid_to = jid_to
+    # jid - аккаунт
+    # password - пароль от jid
+    # jid_to - кому отправляем сообщение
+    # text_msg - текст сообщения
+    def __init__(self, jid_from, password, jid_to=None, text_msg=None):
+        ClientXMPP.__init__(self, jid_from, password)  # Создаём объект для соединения с сервером
+        self.jid_from, self.jid_to, self.text_msg = jid_from, jid_to, text_msg
+        #self.add_event_handler("session_start", self.session_start)
+        #self.add_event_handler("message", self.message)
+
+
+    def log_msg(self, msg):
+        # Функция логирования
+        msg_list = str(msg).split()  # Преобразование сообщения в список для логирования
+        log_jid_from = self.jid_from if self.jid_to is not None else msg_list[1][6:-22]  # Определение отправителя
+        log_jid_to = self.jid_from if self.jid_to is None else self.jid_to  # Определение получателя
+        log_msg = self.text_msg if self.jid_to is not None else (msg_list[-2] + " " + msg_list[-1])[8:-17]  # Определение сообщения
+        # Логирование
+        print(f"FROM: {log_jid_from}")
+        print(f"  TO: {log_jid_to}")
+        print(f" MSG: {log_msg}")
+
+
+    def session_start(self, event):
+        self.send_presence()
+        self.get_roster()
+        self.sender_msg()
+
+
+    def sender_msg(self):
+        # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
+        send_msg = self.make_message(mto=self.jid_to, mbody="test out", mtype='chat')
+        send_msg.send()
+        print(f"SEND {cmd_time()}")
+        self.log_msg(send_msg)
+
+
+    def message(self, msg):
+        self.jid_to = None
+        # Условие для контрольного ответа
+        print(f"READ {cmd_time()}")
+        self.log_msg(msg)
+
+
+def i_sender():
+    # Системное логирование
+    # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(read_message)s')
+
+    print("\n\nIM sender_msg")
+    print("----------------------------------------------------------------------------")
+
+    # Логин и пароля от кого будет идти ответ и кому
+    sender = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru', 'test out')
+    sender.connect(disable_starttls=True)
+    sender.process(timeout=60)
+
+    # Процесс мониторинга сообщений, атрибуты:
+    # timeout = время его работы в секундах;
+    # forever = True/False атрибут вечной работы;
+
+    print("\n----------------------------------------------------------------------------")
+    print("IM end")
+
+
+i_sender()
+"""
+
+import slixmpp
+from log_time import cmd_time
+
+
+class SendMsgBot(slixmpp.ClientXMPP):
+
+    def __init__(self, jid, password, recipient, message):
+        slixmpp.ClientXMPP.__init__(self, jid, password)
+        self.recipient = recipient
+        self.msg = message
+        self.add_event_handler("session_start", self.sender_msg)
+
+    def sender_msg(self, event):
+        self.send_presence()
+        self.get_roster()
+        self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')
+        print(f"SEND {cmd_time()}")
+        print(f"FROM: {self.jid}")
+        print(f"  TO: {self.recipient}")
+        print(f" MSG: {self.msg}")
+        self.disconnect()
+
+
+class ReadMsgBot(slixmpp.ClientXMPP):
+
+    def __init__(self, jid, password):
+        slixmpp.ClientXMPP.__init__(self, jid, password)
+        self.jid = jid
         self.add_event_handler("session_start", self.session_start)
-        self.add_event_handler("message", self.message)
+        self.add_event_handler("message", self.reader_msg)
 
     def session_start(self, event):
         self.send_presence()
         self.get_roster()
 
-        # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
-        print("I'm first sender!")
-        first_msg = self.make_message(mto=self.jid_to, mbody="test out", mtype='chat')
-        first_msg.send()
-        first_msg_log = str(first_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-        print(f'SEND №1 {cmd_time()}:{first_msg_log}\n\n')
-
-    def message(self, msg):
-        # print(msg)
-        # Вид msg:
-        #   <message from="rtc-nt-test1@jabber.ru/6908052297956221828"
-        # to="test-rtc-nt@jabber.ru/6162992849949770130" type="chat" xml:lang="en"
-        # id="2e23b4aa49a8429e8b5a1a9f95ae5de3">
-        # 	<origin-id xmlns="urn:xmpp:sid:0" id="2e23b4aa49a8429e8b5a1a9f95ae5de3" />
-        # 	<body>
-        # 			Получение сообщения
-        # 	</body>
-        # 	</message>
-
-        # Условие для контрольного ответа
-        if msg['body'] == "test in":
-            msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-            print(f'INPUT №2 {cmd_time()}:{msg_log}\n\n')
-            time.sleep(10)
-            answer_msg = msg.reply("Отправка сообщения")  # Создание обратного сообщения
-            answer_msg.send()  # Отправляем на тотже адрес откуда пришло сообщение
-            answer_msg_log = str(answer_msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-            print(f'SEND №3 {cmd_time()}:{answer_msg_log}\n\n')
-
-        # условие окончания переписуки
-        elif msg['body'] == "Получение сообщения":
-            msg_log = str(msg).replace("<body>", "<body>\n\t\t\t").replace("<", "\n\t<")
-            print(f'INPUT №4 {cmd_time()}:{msg_log}\n\n')
+    def reader_msg(self, msg):
+        msg_list = str(msg).split()  # Преобразование сообщения в список для логирования
+        print(f"READ {cmd_time()}")
+        print(f"FROM: {msg_list[1][6:-22]}")  # Определение отправителя
+        print(f"  TO: {self.jid}")  # Определение получателя
+        print(f" MSG: {(msg_list[-2] + ' ' + msg_list[-1])[8:-17]}")  # Определение сообщения
+        self.disconnect()
 
 
-def start_im_test():
-    # Системное логирование
-    # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(message)s')
-
-    print("\n\nIM start")
-    print("----------------------------------------------------------------------------")
-
-    # Логин и пароля от кого будет идти ответ
-    xmpp = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru')
-
-    # Подключение к серверу XMPP jabber
-    xmpp.connect()
-
-    # Процесс мониторинга сообщений, атрибуты:
-    # timeout = время его работы в секундах;
-    # forever = True/False атрибут вечной работы;
-    xmpp.process(timeout=60)
-
-    # Подключение к серверу XMPP jabber
-    # disable_starttls=True отключаем шифрование, т.е TLS и поддержку STARTTLS.
-    # Параметр должен стоять и у клиента и у сервера.
-    # Источники:
-    # https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
-    # https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
-    xmpp.connect(disable_starttls=True)
-
-    print(f"DISCONNECT")
-    print("\n----------------------------------------------------------------------------")
-    return print("IM end")
-
-# start_im_test()
+sender = SendMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru', 'test out')
+sender.connect(disable_starttls=True)
+sender.process(forever=False)
+print()
+reader = ReadMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2')
+reader.connect(disable_starttls=True)
+reader.process(forever=False)
+print()
+sender = SendMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru', 'Отправка сообщения')
+sender.connect(disable_starttls=True)
+sender.process(forever=False)
+print()
+reader = ReadMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2')
+reader.connect(disable_starttls=True)
+reader.process(forever=False)
+print()
