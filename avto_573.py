@@ -29,7 +29,7 @@ def web_test(protocol: str, websait_list: list):
     # websait_list - список сайтов для теста.
 
     # Логирование.
-    print("\n\n{} sender_msg".format(protocol))
+    print("\n\n{}".format(protocol))
     print("----------------------------------------------------------------------------")
     print("Open browser")
 
@@ -64,7 +64,7 @@ def ftp_test(download_list: list):
     # download_list - список ресурсрв для скачивания по ftp.
 
     # Логирование.
-    print("\n\nFTP sender_msg")
+    print("\n\nFTP")
     print("----------------------------------------------------------------------------")
 
     # Итерация по элементам списка download_list.
@@ -89,7 +89,7 @@ def terminal_test(protocol: str, servers_list: list, ):
     # servers_list - список серверных адресов для теста.
 
     # Логирование.
-    print("\n\n{} sender_msg".format(protocol))
+    print("\n\n{}".format(protocol))
     print("----------------------------------------------------------------------------")
 
     # Определение протокола путём длинны аргумента protocol

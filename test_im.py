@@ -7,109 +7,30 @@
 Источник:
 https://slixmpp.readthedocs.io/en/latest/index.html
 """
-"""
-# import time
+
 from slixmpp import ClientXMPP
-# Функция возврата времени из файла log_time.py
 from log_time import cmd_time
-
-# import logging  # Для системного логирования
-
-
-try:
-    # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
-    # Источник: https://github.com/saghul/aiodns/issues/78
-    import asyncio
-
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-except AttributeError:
-    print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
+import csv
+import time
 
 
-class EchoBot(ClientXMPP):
-    # Атрибуты:
-    # jid - аккаунт
-    # password - пароль от jid
-    # jid_to - кому отправляем сообщение
-    # text_msg - текст сообщения
-    def __init__(self, jid_from, password, jid_to=None, text_msg=None):
-        ClientXMPP.__init__(self, jid_from, password)  # Создаём объект для соединения с сервером
-        self.jid_from, self.jid_to, self.text_msg = jid_from, jid_to, text_msg
-        #self.add_event_handler("session_start", self.session_start)
-        #self.add_event_handler("message", self.message)
+class SendMsgBot(ClientXMPP):
+    # Класс для отправки сообщения. аргументы:
+    # jid аккаунт jabber и его пароль password
+    # recipient получатель сообщения
+    # message текст сообщения
 
-
-    def log_msg(self, msg):
-        # Функция логирования
-        msg_list = str(msg).split()  # Преобразование сообщения в список для логирования
-        log_jid_from = self.jid_from if self.jid_to is not None else msg_list[1][6:-22]  # Определение отправителя
-        log_jid_to = self.jid_from if self.jid_to is None else self.jid_to  # Определение получателя
-        log_msg = self.text_msg if self.jid_to is not None else (msg_list[-2] + " " + msg_list[-1])[8:-17]  # Определение сообщения
-        # Логирование
-        print(f"FROM: {log_jid_from}")
-        print(f"  TO: {log_jid_to}")
-        print(f" MSG: {log_msg}")
-
+    def __init__(self, jid: str, password: str, recipient: str, message: str):
+        ClientXMPP.__init__(self, jid, password)  # Создание клиента для подключения
+        self.recipient, self.msg = recipient, message  # Перенаправление  аргументов в среду self
+        self.add_event_handler("session_start", self.session_start)  # Запуск функции sender_msg
 
     def session_start(self, event):
         self.send_presence()
         self.get_roster()
         self.sender_msg()
 
-
     def sender_msg(self):
-        # Начало теста, отправка тестового сообщение, на которое должен придти ответ.
-        send_msg = self.make_message(mto=self.jid_to, mbody="test out", mtype='chat')
-        send_msg.send()
-        print(f"SEND {cmd_time()}")
-        self.log_msg(send_msg)
-
-
-    def message(self, msg):
-        self.jid_to = None
-        # Условие для контрольного ответа
-        print(f"READ {cmd_time()}")
-        self.log_msg(msg)
-
-
-def i_sender():
-    # Системное логирование
-    # logging.basicConfig(level=logging.DEBUG, format='%(levelname)-8s %(read_message)s')
-
-    print("\n\nIM sender_msg")
-    print("----------------------------------------------------------------------------")
-
-    # Логин и пароля от кого будет идти ответ и кому
-    sender = EchoBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru', 'test out')
-    sender.connect(disable_starttls=True)
-    sender.process(timeout=60)
-
-    # Процесс мониторинга сообщений, атрибуты:
-    # timeout = время его работы в секундах;
-    # forever = True/False атрибут вечной работы;
-
-    print("\n----------------------------------------------------------------------------")
-    print("IM end")
-
-
-i_sender()
-"""
-
-import slixmpp
-from log_time import cmd_time
-
-
-class SendMsgBot(slixmpp.ClientXMPP):
-
-    def __init__(self, jid, password, recipient, message):
-        slixmpp.ClientXMPP.__init__(self, jid, password)
-        self.recipient = recipient
-        self.msg = message
-        self.add_event_handler("session_start", self.sender_msg)
-
-    def sender_msg(self, event):
-        self.send_presence()
-        self.get_roster()
         self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')
         print(f"SEND {cmd_time()}")
         print(f"FROM: {self.jid}")
@@ -118,19 +39,21 @@ class SendMsgBot(slixmpp.ClientXMPP):
         self.disconnect()
 
 
-class ReadMsgBot(slixmpp.ClientXMPP):
+class ReadMsgBot(ClientXMPP):
+    # Класс для чтения сообщения. аргументы:
+    # jid аккаунт jabber и его пароль password
 
-    def __init__(self, jid, password):
-        slixmpp.ClientXMPP.__init__(self, jid, password)
+    def __init__(self, jid: str, password: str):
+        ClientXMPP.__init__(self, jid, password)
         self.jid = jid
         self.add_event_handler("session_start", self.session_start)
-        self.add_event_handler("message", self.reader_msg)
+        self.add_event_handler("message", self.message)
 
     def session_start(self, event):
         self.send_presence()
         self.get_roster()
 
-    def reader_msg(self, msg):
+    def message(self, msg):
         msg_list = str(msg).split()  # Преобразование сообщения в список для логирования
         print(f"READ {cmd_time()}")
         print(f"FROM: {msg_list[1][6:-22]}")  # Определение отправителя
@@ -139,19 +62,52 @@ class ReadMsgBot(slixmpp.ClientXMPP):
         self.disconnect()
 
 
-sender = SendMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru', 'test out')
-sender.connect(disable_starttls=True)
-sender.process(forever=False)
-print()
-reader = ReadMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2')
-reader.connect(disable_starttls=True)
-reader.process(forever=False)
-print()
-sender = SendMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2', 'rtc-nt-test1@jabber.ru', 'Отправка сообщения')
-sender.connect(disable_starttls=True)
-sender.process(forever=False)
-print()
-reader = ReadMsgBot('test-rtc-nt@jabber.ru', 'zaq123edcxsw2')
-reader.connect(disable_starttls=True)
-reader.process(forever=False)
-print()
+# Защит от отсутствия файла
+try:
+    # Открываем файл im_data.csv c данными для подключения
+    with open("im_data.csv", "r") as im_data:
+        im_data_list = csv.reader(im_data)  # Преобразуем строку из файла в список
+        im_data_dict = {}  # Словарь для записи данных
+        for line in im_data_list:
+            im_data_dict[line[0]] = line[1:]  # Аккаунт jabber
+        im_data.close()
+except FileNotFoundError:
+    print("***** IM: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
+
+jid_1 = im_data_dict["jid_1"]
+jid_2 = im_data_dict["jid_2"]
+
+
+def fun_sender(jid: str, password: str, recipient: str, message: str):
+    sender = SendMsgBot(jid, password, recipient, message)
+    sender.connect(disable_starttls=True)
+    sender.process(forever=False)
+
+
+def fun_reader(jid: str, password: str, time=None):
+    if time is None:
+        print("\n\nIM")
+        print("----------------------------------------------------------------------------")
+    reader = ReadMsgBot(jid, password)
+    reader.connect(disable_starttls=True)
+    reader.process(forever=True if time is None else time)
+
+
+def i_sender():
+    print("\n\nIM")
+    print("----------------------------------------------------------------------------")
+    fun_sender(jid_1[0], jid_1[1], jid_2[0], "test out")
+    fun_reader(jid_1[0], jid_1[1], time=60)
+    fun_sender(jid_1[0], jid_1[1], jid_2[0], "Отправка сообщения")
+    fun_reader(jid_1[0], jid_1[1], time=60)
+    print("\n----------------------------------------------------------------------------")
+    print("IM end")
+
+def i_answer():
+    while True:
+        fun_reader(jid_2[0], jid_2[1])
+        fun_sender(jid_2[0], jid_2[1], jid_1[0], "test in")
+        fun_reader(jid_2[0], jid_2[1])
+        fun_sender(jid_2[0], jid_2[1], jid_1[0], "Получение сообщения")
+        print("\n----------------------------------------------------------------------------")
+        print("IM end")
