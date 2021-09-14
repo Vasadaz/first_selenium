@@ -17,7 +17,7 @@ from log_time import cmd_time
 import test_email
 
 # Функция для тестирования IM из файла test_im.py
-from test_im import start_im_test
+import test_im
 
 # Release v1.4.10
 VERSION = "v1.4.11"
@@ -29,7 +29,7 @@ def web_test(protocol: str, websait_list: list):
     # websait_list - список сайтов для теста.
 
     # Логирование.
-    print("\n\n{} start".format(protocol))
+    print("\n\n{} sender_msg".format(protocol))
     print("----------------------------------------------------------------------------")
     print("Open browser")
 
@@ -64,7 +64,7 @@ def ftp_test(download_list: list):
     # download_list - список ресурсрв для скачивания по ftp.
 
     # Логирование.
-    print("\n\nFTP start")
+    print("\n\nFTP sender_msg")
     print("----------------------------------------------------------------------------")
 
     # Итерация по элементам списка download_list.
@@ -89,7 +89,7 @@ def terminal_test(protocol: str, servers_list: list, ):
     # servers_list - список серверных адресов для теста.
 
     # Логирование.
-    print("\n\n{} start".format(protocol))
+    print("\n\n{} sender_msg".format(protocol))
     print("----------------------------------------------------------------------------")
 
     # Определение протокола путём длинны аргумента protocol
@@ -202,7 +202,7 @@ while True:
         if "3" in marker_test_list:
             marker_test_list.remove("3")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
-                start_im_test()
+                test_im.i_sender()
             except:
                 print("***** ERROR IN TEST *****")
 
