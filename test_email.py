@@ -191,7 +191,7 @@ def read_email(info_email: list, protocol: str):
 
         if not I_FIRST and __COUNT_SUBJECTS:
             __COUNT_SUBJECTS = False
-            print("\n\nEMAIL start")
+            print("\n\nEMAIL sender_msg")
             print("--------------------------------------------------------------------------")
 
         print("READ", protocol, cmd_time())
@@ -276,7 +276,7 @@ reader_2_imap = email_data_dict["reader_2_imap"]
 
 def i_sender():  # Отравитель
 
-    print("\n\nEMAIL start")
+    print("\n\nEMAIL sender_msg")
     print("----------------------------------------------------------------------------")
     send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
     print()  # Логирование
