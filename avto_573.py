@@ -6,18 +6,15 @@
 
 import time  # библиотека для работы со временем
 import subprocess  # библиотека для работы с командами и процессами ОС
+import test_email  # Функции для тестирования EMAIL из файла test_email.py
+import test_im  # Функция для тестирования IM из файла test_im.py
+import shutil
 
-from selenium import webdriver, common
 # webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
+from selenium import webdriver, common
 
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time
-
-# Функции для тестирования EMAIL из файла test_email.py
-import test_email
-
-# Функция для тестирования IM из файла test_im.py
-import test_im
 
 # Release v1.4.10
 VERSION = "v1.4.11"
@@ -66,6 +63,11 @@ def ftp_test(download_list: list):
     # Логирование.
     print("\n\nFTP")
     print("----------------------------------------------------------------------------")
+
+    try:
+        shutil.rmtree("./FTP_573")  # Удаление папки для экономии места
+    except FileNotFoundError:
+        pass
 
     # Итерация по элементам списка download_list.
     for el in download_list:
@@ -215,10 +217,11 @@ while True:
 
         if "5" in marker_test_list:
             marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
-            try:  # Защита от остановки тестов в случае ошибки
-                ftp_test(ftp_list)
-            except:
-                print("***** ERROR IN TEST *****")
+            #try:  # Защита от остановки тестов в случае ошибки
+            ftp_test(ftp_list)
+
+            #except:
+                #print("***** ERROR IN TEST *****")
 
         if "6" in marker_test_list:
             marker_test_list.remove("6")  # Удаляем маркер теста из marker_test_list
