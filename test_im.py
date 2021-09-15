@@ -7,11 +7,14 @@
 Источник:
 https://slixmpp.readthedocs.io/en/latest/index.html
 """
+import csv
+import time
 
 from slixmpp import ClientXMPP
 from log_time import cmd_time
-import csv
-import time
+
+READ_WAIT_MSG = None  # Для записи содержимого из прочитанного сообщений, используется для условий
+ANSWER_WAIT_MSG = None  # Для записи ожидаемого ответа
 
 
 class SendMsgBot(ClientXMPP):
@@ -22,44 +25,86 @@ class SendMsgBot(ClientXMPP):
 
     def __init__(self, jid: str, password: str, recipient: str, message: str):
         ClientXMPP.__init__(self, jid, password)  # Создание клиента для подключения
+        self.connect(disable_starttls=True)  # Подключение к серверу без шифрования disable_starttls
         self.recipient, self.msg = recipient, message  # Перенаправление  аргументов в среду self
-        self.add_event_handler("session_start", self.session_start)  # Запуск функции sender_msg
+        self.add_event_handler("session_start", self.session_start)  # Метод запуска сессии
 
     def session_start(self, event):
-        self.send_presence()
-        self.get_roster()
-        self.sender_msg()
+        self.send_presence()  # Должно работать, хз зачем, но иначе никак
+        self.get_roster()  # Должно работать, хз зачем, но иначе никак
+        self.sender_msg()  # Запуск функции sender_msg
 
     def sender_msg(self):
-        self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')
+        self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')  # Отправка сообщения
+
+        # Логирование
         print(f"SEND {cmd_time()}")
         print(f"FROM: {self.jid}")
         print(f"  TO: {self.recipient}")
         print(f" MSG: {self.msg}")
-        self.disconnect()
+
+        self.disconnect()  # Отключение от сервера
 
 
 class ReadMsgBot(ClientXMPP):
     # Класс для чтения сообщения. аргументы:
     # jid аккаунт jabber и его пароль password
 
-    def __init__(self, jid: str, password: str):
-        ClientXMPP.__init__(self, jid, password)
-        self.jid = jid
-        self.add_event_handler("session_start", self.session_start)
-        self.add_event_handler("message", self.message)
+    def __init__(self, jid: str, password: str, i_answer_obj=False):
+        ClientXMPP.__init__(self, jid, password)  # Создание клиента для подключения
+        self.connect(disable_starttls=True)  # Подключение к серверу без шифрования disable_starttls
+        self.jid, self.i_answer_obj = jid, i_answer_obj  # Переопределяем аргументы в локальные переменные
+        self.add_event_handler("session_start", self.session_start)  # Метод запуска сессии
+        self.add_event_handler("message", self.message)  # Метод для обработки сообщений
 
     def session_start(self, event):
-        self.send_presence()
-        self.get_roster()
+        self.send_presence()  # Должно работать, хз зачем, но иначе никак
+        self.get_roster()  # Должно работать, хз зачем, но иначе никак
 
     def message(self, msg):
-        msg_list = str(msg).split()  # Преобразование сообщения в список для логирования
-        print(f"READ {cmd_time()}")
-        print(f"FROM: {msg_list[1][6:-22]}")  # Определение отправителя
-        print(f"  TO: {self.jid}")  # Определение получателя
-        print(f" MSG: {(msg_list[-2] + ' ' + msg_list[-1])[8:-17]}")  # Определение сообщения
-        self.disconnect()
+        global ANSWER_WAIT_MSG, READ_WAIT_MSG
+
+        if self.i_answer_obj:  # Условие логирование для answer
+            print("\n\nIM")
+            print("----------------------------------------------------------------------------")
+
+        msg_list = str(msg).split('"')  # Преобразование сообщения в список для логирования
+
+        for el in msg_list:
+            if "<body>" in el:
+                READ_WAIT_MSG = el.split("body")[1][1:-2]  # Определение текста в сообщении
+
+        if READ_WAIT_MSG == ANSWER_WAIT_MSG:
+            # Логирование
+            print(f"READ {cmd_time()}")
+            print(f"FROM: {msg_list[1]}")  # Определение отправителя
+            print(f"  TO: {msg_list[3]}")  # Определение получателя
+            print(f" MSG: {READ_WAIT_MSG}")
+            self.disconnect()
+
+
+def fun_sender(jid: str, password: str, recipient: str, message: str):
+    # Функция для отправки сообщения
+    sender = SendMsgBot(jid, password, recipient, message)
+    # Запуск процесса с отключением при первом же событии (forever=False) - здесь это отправка сообщения
+    sender.process(forever=False)
+
+
+def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
+    # Функция для чтения сообщения
+    global ANSWER_WAIT_MSG, READ_WAIT_MSG
+
+    ANSWER_WAIT_MSG = waiting_msg
+
+    reader = ReadMsgBot(jid, password, i_answer_fun)
+
+    if i_answer_fun:
+        while READ_WAIT_MSG != ANSWER_WAIT_MSG:
+            # Запуск процесса с отключением при первом же событии (forever=False) - здесь это чтение сообщения
+            reader.process(forever=False)
+    else:
+        # Запуск процесса на 30 секунд м последующим отключением
+        reader.process(timeout=30)
 
 
 # Защит от отсутствия файла
@@ -69,45 +114,47 @@ try:
         im_data_list = csv.reader(im_data)  # Преобразуем строку из файла в список
         im_data_dict = {}  # Словарь для записи данных
         for line in im_data_list:
-            im_data_dict[line[0]] = line[1:]  # Аккаунт jabber
+            im_data_dict[line[0]] = line[1:]  # Имя переменной:аккаунт
         im_data.close()
 except FileNotFoundError:
     print("***** IM: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
 
+# sender и его сообщения
 jid_1 = im_data_dict["jid_1"]
+jid_1_msg_1 = "test out"
+jid_1_msg_2 = "Отправка сообщения"
+
+# answer и его сообщения
 jid_2 = im_data_dict["jid_2"]
-
-
-def fun_sender(jid: str, password: str, recipient: str, message: str):
-    sender = SendMsgBot(jid, password, recipient, message)
-    sender.connect(disable_starttls=True)
-    sender.process(forever=False)
-
-
-def fun_reader(jid: str, password: str, time=None):
-    if time is None:
-        print("\n\nIM")
-        print("----------------------------------------------------------------------------")
-    reader = ReadMsgBot(jid, password)
-    reader.connect(disable_starttls=True)
-    reader.process(forever=True if time is None else time)
+jid_2_msg_1 = "test in"
+jid_2_msg_2 = "Получение сообщения"
 
 
 def i_sender():
     print("\n\nIM")
     print("----------------------------------------------------------------------------")
-    fun_sender(jid_1[0], jid_1[1], jid_2[0], "test out")
-    fun_reader(jid_1[0], jid_1[1], time=60)
-    fun_sender(jid_1[0], jid_1[1], jid_2[0], "Отправка сообщения")
-    fun_reader(jid_1[0], jid_1[1], time=60)
-    print("\n----------------------------------------------------------------------------")
+    fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_1)
+    print()
+    fun_reader(jid_1[0], jid_1[1], jid_2_msg_1)
+    print()
+    fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_2)
+    print()
+    fun_reader(jid_1[0], jid_1[1], jid_2_msg_2)
+    print("----------------------------------------------------------------------------")
     print("IM end")
 
+
 def i_answer():
+    print("Автоответчик для тестов IM запущен\n")
     while True:
-        fun_reader(jid_2[0], jid_2[1])
-        fun_sender(jid_2[0], jid_2[1], jid_1[0], "test in")
-        fun_reader(jid_2[0], jid_2[1])
-        fun_sender(jid_2[0], jid_2[1], jid_1[0], "Получение сообщения")
-        print("\n----------------------------------------------------------------------------")
+        fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
+        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
+        print()
+        fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_1)
+        print()
+        fun_reader(jid_2[0], jid_2[1], jid_1_msg_2)
+        print()
+        print()
+        fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
+        print("----------------------------------------------------------------------------")
         print("IM end")
