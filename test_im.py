@@ -77,7 +77,7 @@ class ReadMsgBot(ClientXMPP):
         if READ_WAIT_MSG == ANSWER_WAIT_MSG:
             # Логирование
             print(f"READ {cmd_time()}")
-            print(f"FROM: {msg_list[1]}")  # Определение отправителя
+            print(f"FROM: {msg_list[1].split('/')[0]}")  # Определение отправителя
             print(f"  TO: {msg_list[3]}")  # Определение получателя
             print(f" MSG: {READ_WAIT_MSG}")
             self.disconnect()
@@ -85,6 +85,9 @@ class ReadMsgBot(ClientXMPP):
 
 def fun_sender(jid: str, password: str, recipient: str, message: str):
     # Функция для отправки сообщения
+    # jid аккаунт jabber и его пароль password
+    # recipient получатель сообщения
+    # message текст сообщения
     sender = SendMsgBot(jid, password, recipient, message)
     # Запуск процесса с отключением при первом же событии (forever=False) - здесь это отправка сообщения
     sender.process(forever=False)
@@ -92,6 +95,9 @@ def fun_sender(jid: str, password: str, recipient: str, message: str):
 
 def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
     # Функция для чтения сообщения
+    # jid аккаунт jabber и его пароль password
+    # waiting_msg какое сообщение мы должны прочитать, т.е. на что потом отвечать
+    # i_answer_fun для определения будет находиться в режиме ожидания сообщения
     global ANSWER_WAIT_MSG, READ_WAIT_MSG
 
     ANSWER_WAIT_MSG = waiting_msg
@@ -100,6 +106,7 @@ def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
 
     if i_answer_fun:
         while READ_WAIT_MSG != ANSWER_WAIT_MSG:
+            # Цикл работает до тех пор пока не будет получено сообщение с текстом = waiting_msg
             # Запуск процесса с отключением при первом же событии (forever=False) - здесь это чтение сообщения
             reader.process(forever=False)
     else:
@@ -131,6 +138,7 @@ jid_2_msg_2 = "Получение сообщения"
 
 
 def i_sender():
+    # Сценарная функция для инициализатора переписки, т.е. он отправляет сообщение первым, а потом ждёт входящего
     print("\n\nIM")
     print("----------------------------------------------------------------------------")
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_1)

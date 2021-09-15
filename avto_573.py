@@ -61,7 +61,7 @@ def web_test(protocol: str, websait_list: list):
 
 def ftp_test(download_list: list):
     # Функция для теста ftp загрузки. Аргументы:
-    # download_list - список ресурсрв для скачивания по ftp.
+    # download_list - список ресурсов для скачивания по ftp.
 
     # Логирование.
     print("\n\nFTP")
