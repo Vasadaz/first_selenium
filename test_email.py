@@ -149,7 +149,7 @@ def read_email(info_email: list, protocol: str):
         else:
             # Действие при отсутствии писем до STOP_READ_EMAIL проходов
             STOP_READ_EMAIL += 1
-            print(f"Loop {STOP_READ_EMAIL} {cmd_time()}")
+            # print(f"Loop EMAIL №{STOP_READ_EMAIL} {cmd_time()}")
             server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
             continue
 
@@ -297,8 +297,7 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-    print("""Это ответная часть для теста №2 EMAIL (test_email.py).
-Скрипт работает до принудительного завершения, логирование происходит только в консоли.""")
+    print("Автоответчик для тестов EMAIL запущен\n")
 
     while True:
         __COUNT_SUBJECTS = True
