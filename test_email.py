@@ -183,8 +183,6 @@ def read_email(info_email: list, protocol: str):
         # Условие для определения вложенного файла и присвоение его имени
         msg_file = msg_content[2].split()[8][10:-1] if len(msg_content) > 3 else None
 
-        print(msg_content[1].split()[7:])
-
         msg_subject_decode = str()
         for el in (msg_head.get('Subject')).split():
             # Декодируем тему сообщения base64 -> UTF-8 -> str
