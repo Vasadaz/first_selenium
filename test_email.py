@@ -129,7 +129,7 @@ def read_email(info_email: list, protocol: str):
             server.login(info_email[0], info_email[1])
             # Выводит список папок в почтовом ящике.
             server.select("inbox")  # Подключаемся к папке "входящие"
-            dir_inbox = server.search(None, "ALL")[1]
+            dir_inbox = server.search(None, "ALL")[1]  # Запрос о наполненности ящика
             id_list = dir_inbox[0].split()  # Получаем сроку номеров писем
             mails = int(id_list[-1]) if len(id_list) != 0 else 0  # Берем последний ID
 
@@ -274,7 +274,6 @@ reader_2_imap = email_data_dict["reader_2_imap"]
 
 
 def i_sender():  # Отравитель
-
     print("\n\nEMAIL")
     print("----------------------------------------------------------------------------")
     send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
