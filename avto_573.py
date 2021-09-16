@@ -217,11 +217,11 @@ while True:
 
         if "5" in marker_test_list:
             marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
-            #try:  # Защита от остановки тестов в случае ошибки
-            ftp_test(ftp_list)
+            try:  # Защита от остановки тестов в случае ошибки
+                ftp_test(ftp_list)
 
-            #except:
-                #print("***** ERROR IN TEST *****")
+            except:
+                print("***** ERROR IN TEST *****")
 
         if "6" in marker_test_list:
             marker_test_list.remove("6")  # Удаляем маркер теста из marker_test_list

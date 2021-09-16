@@ -6,12 +6,24 @@
 
 Источник:
 https://slixmpp.readthedocs.io/en/latest/index.html
+https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
+https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
 """
 import csv
 import time
 
 from slixmpp import ClientXMPP
 from log_time import cmd_time
+
+
+try:
+    # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
+    # Источник: https://github.com/saghul/aiodns/issues/78
+    import asyncio
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+except AttributeError:
+    print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
+
 
 READ_WAIT_MSG = None  # Для записи содержимого из прочитанного сообщений, используется для условий
 ANSWER_WAIT_MSG = None  # Для записи ожидаемого ответа
