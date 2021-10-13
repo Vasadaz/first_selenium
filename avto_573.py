@@ -16,8 +16,8 @@ from selenium import webdriver, common
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time
 
-# Release v1.5.2
-VERSION = "v1.5.2"
+# Release v1.5.3
+VERSION = "v1.5.3"
 
 
 def web_test(protocol: str, websait_list: list):
