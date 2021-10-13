@@ -227,7 +227,12 @@ def read_email(info_email: list, protocol: str):
 
 # Защит от отсутствия файла
 try:
-    # Открываем файл email_data.csv c данными для подключения
+    # Для защиты данных используется файл email_data.csv, пример заполнения:
+    #   var_sender, var_reader, email, password, server_smtp, port_smtp, server_imap/pop3
+    #   sender_1,reader_1_pop3,test_1@ya.ru,pa$$word,smtp.ya.ru,587,pop3.yandex.ru
+    #   sender_2,reader_2_imap,test_2@ya.ru,pa$$word,smtp.ya.ru,587,imap.yandex.ru
+
+    # Открываем файл email_data.csv c данными для подключения:
     with open("email_data.csv", "r") as email_data:
         email_data_list = csv.reader(email_data)  # Преобразуем строку из файла в список
         email_data_dict = {}  # Словарь для записи данных

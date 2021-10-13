@@ -128,6 +128,11 @@ def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
 
 # Защит от отсутствия файла
 try:
+    # Для защиты данных используется файл im_data.csv, пример заполнения:
+    #   var_name,jid,password
+    #   jid_1,test_1@ya.ru,pa$$word
+    #   jid_2,test_1@ya.ru,pa$$word
+
     # Открываем файл im_data.csv c данными для подключения
     with open("im_data.csv", "r") as im_data:
         im_data_list = csv.reader(im_data)  # Преобразуем строку из файла в список
