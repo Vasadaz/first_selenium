@@ -15,17 +15,16 @@ from slixmpp import ClientXMPP
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time, time
 # Импорт версии для удобства отслеживания актуальности server скриптов.
-from version import Release # Контроль релиза
-
+from version import Release  # Контроль релиза
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
     # Источник: https://github.com/saghul/aiodns/issues/78
     import asyncio
+
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 except AttributeError:
     print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
-
 
 READ_WAIT_MSG = None  # Для записи содержимого из прочитанного сообщений, используется для условий
 ANSWER_WAIT_MSG = None  # Для записи ожидаемого ответа

@@ -3,6 +3,7 @@
 """
 import time
 
+
 def cmd_time(time_or_date="time") -> str:
     # Функция для возврата местного и GMT времени.
     # time_or_date - маркер для возврата времени(time_or_date="time") или даты(time_or_date="date").
