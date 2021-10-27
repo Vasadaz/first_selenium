@@ -10,10 +10,12 @@ https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
 https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
 """
 import csv
-import time
-
 from slixmpp import ClientXMPP
-from log_time import cmd_time
+
+# Функция возврата времени из файла log_time.py
+from log_time import cmd_time, time
+# Импорт версии для удобства отслеживания актуальности server скриптов.
+from version import Release # Контроль релиза
 
 
 try:
@@ -50,7 +52,7 @@ class SendMsgBot(ClientXMPP):
         self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')  # Отправка сообщения
 
         # Логирование
-        print(f"SEND {cmd_time()}")
+        print(f"SEND  {cmd_time()}")
         print(f"FROM: {self.jid}")
         print(f"  TO: {self.recipient}")
         print(f" MSG: {self.msg}")
@@ -77,7 +79,7 @@ class ReadMsgBot(ClientXMPP):
         global ANSWER_WAIT_MSG, READ_WAIT_MSG
 
         if self.i_answer_obj:  # Условие логирование для answer
-            print("\n\nIM")
+            print(f"\n\nIM {cmd_time('date')}")
             print("----------------------------------------------------------------------------")
 
         msg_list = str(msg).split('"')  # Преобразование сообщения в список для логирования
@@ -88,7 +90,7 @@ class ReadMsgBot(ClientXMPP):
 
         if READ_WAIT_MSG == ANSWER_WAIT_MSG:
             # Логирование
-            print(f"READ {cmd_time()}")
+            print(f"READ  {cmd_time()}")
             print(f"FROM: {msg_list[1].split('/')[0]}")  # Определение отправителя
             print(f"  TO: {msg_list[3]}")  # Определение получателя
             print(f" MSG: {READ_WAIT_MSG}")
@@ -122,8 +124,8 @@ def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
             # Запуск процесса с отключением при первом же событии (forever=False) - здесь это чтение сообщения
             reader.process(forever=False)
     else:
-        # Запуск процесса на 30 секунд м последующим отключением
-        reader.process(timeout=30)
+        # Запуск процесса на 60 секунд м последующим отключением
+        reader.process(timeout=60)
 
 
 # Защит от отсутствия файла
@@ -161,6 +163,7 @@ def i_sender():
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_1)
     print()
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_1)
+    time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
     print()
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_2)
     print()
@@ -170,7 +173,7 @@ def i_sender():
 
 
 def i_answer():
-    print("Автоответчик для тестов IM запущен\n")
+    print(f"{Release.v} Автоответчик для тестов IM запущен\n")
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
         time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
@@ -178,8 +181,8 @@ def i_answer():
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_1)
         print()
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_2)
-        print()
+        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
         print()
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
         print("----------------------------------------------------------------------------")
-        print("IM end")
+        print(f"\n\nIM end {cmd_time('date')}")

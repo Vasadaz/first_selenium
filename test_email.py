@@ -27,9 +27,10 @@ import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
 import csv  # Библиотека для работы с CSV файлами
-
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time, time
+# Импорт версии для удобства отслеживания актуальности server скриптов.
+from version import Release  # Контроль релиза
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = None  # Маркер определения новых писем
@@ -80,7 +81,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server.send_message(msg)  # Отправляем сообщение
 
     # Логирование
-    print("SEND SMTP", cmd_time())
+    print(f"SEND  {cmd_time()}")
     print(f"FROM: {list_from[0]}")
     print(f"  TO: {', '.join(list_to)}")
     print(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
@@ -190,10 +191,10 @@ def read_email(info_email: list, protocol: str):
 
         if not I_FIRST and __COUNT_SUBJECTS:
             __COUNT_SUBJECTS = False
-            print("\n\nEMAIL sender_msg")
+            print(f"EMAIL {cmd_time('date')}\n")
             print("--------------------------------------------------------------------------")
 
-        print("READ", protocol, cmd_time())
+        print(f"READ  {cmd_time()} {protocol}")
         print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
         print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
         # Вытаскиваем значение по ключу если оно есть
@@ -224,6 +225,7 @@ def read_email(info_email: list, protocol: str):
         STOP_READ_EMAIL = 0
         NEW_MILES = None
         return
+
 
 # Защит от отсутствия файла
 try:
@@ -256,7 +258,7 @@ msg_1 = [f"АВТО Отправка письма с 3 получателями,
 to_3 = ["rtc-nt-test1@yandex.ru"]
 cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 msg_3 = [f"АВТО Отправка письма с 2 копиями и иероглифами {cmd_time()}",
-         "لِيَتَقَدَّسِ اسْمُكَ"] # Текст письма
+         "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
 # Отравитель №2
 sender_2 = email_data_dict["sender_2"]
@@ -284,6 +286,7 @@ def i_sender():  # Отравитель
     send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
     print()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 2
+    time.sleep(10)
     print()  # Логирование
     send_email(sender_1, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
     print()  # Логирование
@@ -299,15 +302,17 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-    print("Автоответчик для тестов EMAIL запущен\n")
+    print(f"{Release.v} Автоответчик для тестов EMAIL запущен\n")
 
     while True:
         __COUNT_SUBJECTS = True
         read_email(reader_2_imap, "IMAP")  # Получение письма № 1
-        print()  #Логирование
+        time.sleep(10)
+        print()  # Логирование
         send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
         print()  # Логирование
         read_email(reader_2_imap, "IMAP")  # Получение письма № 3
+        time.sleep(10)
         print()  # Логирование
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
         print("--------------------------------------------------------------------------")

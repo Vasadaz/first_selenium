@@ -4,20 +4,14 @@
 Логирование команд происходит в консоли.
 """
 
-import time  # библиотека для работы со временем
 import subprocess  # библиотека для работы с командами и процессами ОС
-import test_email  # Функции для тестирования EMAIL из файла test_email.py
-import test_im  # Функция для тестирования IM из файла test_im.py
-import shutil
-
+import shutil  # Для удаления папки FTP
 # webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
 from selenium import webdriver, common
-
-# Функция возврата времени из файла log_time.py
-from log_time import cmd_time
-
-# Release v1.5.3
-VERSION = "v1.5.3"
+from log_time import cmd_time, time  # Функция возврата времени из файла log_time.py
+import test_email  # Функции для тестирования EMAIL из файла test_email.py
+import test_im  # Функция для тестирования IM из файла test_im.py
+from version import Release  # Контроль релиза
 
 
 def web_test(protocol: str, websait_list: list):
@@ -164,7 +158,7 @@ https_list = ["https://yandex.ru",
 while True:
 
     print(f"""
-Тестирование 573 {VERSION}
+Тестирование 573 {Release.v}
     
 1 - http         5 - ftp
 2 - email*       6 - telnet  
@@ -219,7 +213,6 @@ while True:
             marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 ftp_test(ftp_list)
-
             except:
                 print("***** ERROR IN TEST *****")
 
