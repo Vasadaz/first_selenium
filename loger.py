@@ -1,11 +1,21 @@
-
 import logging
 from log_time import cmd_time # Функция возврата времени из файла log_time.py
+import os
 
-# add filemode="w" to overwrite
-print(cmd_time)
+try:
+    os.mkdir("logs")
+    os.chdir("./logs")
+except:
+    os.chdir("./logs")
+
 logging.basicConfig(filename=cmd_time("for_log")+".log", level=logging.INFO)
 
-logging.debug("This is a debug message")
+os.getcwd()
+
+
 logging.info("Informational message")
 logging.error("An error has happened!")
+
+
+
+logging.basicConfig(filename=cmd_time("for_log")+".log", level=logging.INFO)
