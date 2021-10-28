@@ -4,7 +4,7 @@ from log_time import cmd_time # Функция возврата времени �
 
 # add filemode="w" to overwrite
 print(cmd_time)
-logging.basicConfig(filename=cmd_time()+".log", level=logging.INFO)
+logging.basicConfig(filename=cmd_time("for_log")+".log", level=logging.INFO)
 
 logging.debug("This is a debug message")
 logging.info("Informational message")

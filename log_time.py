@@ -39,9 +39,9 @@ def cmd_time(time_or_date="time") -> str:
         # GMT время
         gmt_time_log = "{:0>2d}{:0>2d}{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
         # GMT дата
-        gmt_date_log = "{:0>2d}{:0>2d}{:0>2d}".format(gmt_time.tm_year, gmt_time.tm_mon, gmt_time.tm_mday)
-        # Возврат даты в формате "ГГММДДччммсс_GMT)"
-        return gmt_time_log + gmt_date_log + "_GMT"
+        gmt_date_log = "{}{:0>2d}{:0>2d}".format(gmt_time.tm_year - 2000, gmt_time.tm_mon, gmt_time.tm_mday)
+        # Возврат даты в формате "ГГММДД_ччммсс_GMT)"
+        return  gmt_date_log + "_" + gmt_time_log + "_GMT"
 
     else:
         print('НЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"')
