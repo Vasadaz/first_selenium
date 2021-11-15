@@ -8,11 +8,10 @@ import subprocess  # библиотека для работы с команда�
 import shutil  # Для удаления папки FTP
 # webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
 from selenium import webdriver, common
-from log_time import cmd_time, time  # Функция возврата времени из файла log_time.py
 import test_email  # Функции для тестирования EMAIL из файла test_email.py
 import test_im  # Функция для тестирования IM из файла test_im.py
 # Импорт логирования
-from loger import cmd_time, RELEASE, print_in_log, __LOGS_NAME
+from loger import cmd_time, RELEASE, print_in_log, LOGS_NAME_OUT
 
 
 def web_test(protocol: str, websait_list: list):
@@ -21,9 +20,9 @@ def web_test(protocol: str, websait_list: list):
     # websait_list - список сайтов для теста.
 
     # Логирование.
-    print(f"\n\n{protocol}")
-    print("----------------------------------------------------------------------------")
-    print("Open browser")
+    print_in_log(f"\n\n{protocol}")
+    print_in_log("----------------------------------------------------------------------------")
+    print_in_log("Open browser")
 
     # Инициализируем драйвер браузера. После этой команды будет открыто новое окно браузера.
     driver = webdriver.Chrome()
@@ -32,13 +31,13 @@ def web_test(protocol: str, websait_list: list):
     # Итерации по элементам списка websait_list.
     for el in websait_list:
 
-        print(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
+        print_in_log(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
         # Исключение для перенаправление ошибки заблокированных ресурсов.
         try:
             # Метод get сообщает браузеру, что нужно открыть сайт по указанной ссылке.
             driver.get(el)
         except common.exceptions.WebDriverException:
-            print("***** WEB: CONTROL ERROR - NOT ANSWER *****")  # Логирование.
+            print_in_log("***** WEB: CONTROL ERROR - NOT ANSWER *****")  # Логирование.
         time.sleep(10)  # Пауза 10 секунд.
 
     # Метод для закрытия окна браузера.
@@ -46,9 +45,9 @@ def web_test(protocol: str, websait_list: list):
     driver.quit()  # Дублирование метода для надёжности, не всегда выполняется с первого раза.
 
     # Логирование.
-    print("\nClose browser")
-    print("----------------------------------------------------------------------------")
-    return print(f"{protocol} end")
+    print_in_log("\nClose browser")
+    print_in_log("----------------------------------------------------------------------------")
+    return print_in_log(f"{protocol} end")
 
 
 def ftp_test(download_list: list):
@@ -56,8 +55,8 @@ def ftp_test(download_list: list):
     # download_list - список ресурсов для скачивания по ftp.
 
     # Логирование.
-    print("\n\nFTP")
-    print("----------------------------------------------------------------------------")
+    print_in_log("\n\nFTP")
+    print_in_log("----------------------------------------------------------------------------")
 
     try:
         shutil.rmtree("./FTP_573")  # Удаление папки для экономии места
@@ -67,8 +66,8 @@ def ftp_test(download_list: list):
     # Итерация по элементам списка download_list.
     for el in download_list:
         # Логирование.
-        print(f"\n{cmd_time()}\nFTP {el}")
-        print(f"Download {el[28:]}\n")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
+        print_in_log(f"\n{cmd_time()}\nFTP {el}")
+        print_in_log(f"Download {el[28:]}\n")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
 
         # Метод для выполнения команды в консоли, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
@@ -76,8 +75,8 @@ def ftp_test(download_list: list):
         time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
-    print("\n----------------------------------------------------------------------------")
-    return print("FTP end")
+    print_in_log("\n----------------------------------------------------------------------------")
+    return print_in_log("FTP end")
 
 
 def terminal_test(protocol: str, servers_list: list, ):
@@ -86,15 +85,15 @@ def terminal_test(protocol: str, servers_list: list, ):
     # servers_list - список серверных адресов для теста.
 
     # Логирование.
-    print(f"\n\n{protocol}")
-    print("----------------------------------------------------------------------------")
+    print_in_log(f"\n\n{protocol}")
+    print_in_log("----------------------------------------------------------------------------")
 
     # Определение протокола путём длинны аргумента protocol
     flag = "-telnet" if len(protocol) > 3 else "-ssh"
 
     # Итерация по элементам списка servers_list
     for el in servers_list:
-        print(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
+        print_in_log(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
 
         # Метод для выполнения команды в консоли, который НЕ ожидает завершения команды и переходит к следующей строке.
         # Команда для соединения по указанному протоколу через putty >>> putty -ssh 195.144.107.198
@@ -110,11 +109,11 @@ def terminal_test(protocol: str, servers_list: list, ):
             # Linux
             # Метод для выполнения команды в консоли, который ожидает завершения команды.
             subprocess.run(["pkill", "putty"])
-            print("***** TERM: CONTROL ERROR - NOT WINDOWS *****")
+            print_in_log("***** TERM: CONTROL ERROR - NOT WINDOWS *****")
 
     # Логирование.
-    print("\n----------------------------------------------------------------------------")
-    return print("{protocol} end")
+    print_in_log("\n----------------------------------------------------------------------------")
+    return print_in_log("{protocol} end")
 
 
 # Список сайтов для теста http
@@ -171,10 +170,10 @@ while True:
     marker_test_list = [el for el in input("Какие тесты выполнять? (12345678)\n").strip()]
 
     # Логирование
-    print("\n\n")
-    print("START_" * 8)
-    print(cmd_time(time_or_date="date"), end="")  # Логирование - дата
-    __LOGS_NAME = cmd_time("for_log") + '.log'
+    print_in_log("\n\n")
+    print_in_log("START_" * 8)
+    print_in_log(cmd_time(time_or_date="date"))  # Логирование - дата
+    LOGS_NAME_OUT = cmd_time("for_log") + '.log'
 
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:
@@ -185,64 +184,65 @@ while True:
         # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
         if "1" in marker_test_list:
             marker_test_list.remove("1")  # Удаляем маркер теста из marker_test_list
-            try:  # Защита от остановки тестов в случае ошибки
-                web_test("HTTP", http_list)
-            except:
-                print("***** ERROR IN TEST *****")
+            #try:  # Защита от остановки тестов в случае ошибки
+            web_test("HTTP", http_list)
+            #except:
+            #    print_in_log("***** ERROR IN TEST *****")
 
         if "2" in marker_test_list:
             marker_test_list.remove("2")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 test_email.i_sender()
             except:
-                print("***** ERROR IN TEST *****")
+                print_in_log("***** ERROR IN TEST *****")
 
         if "3" in marker_test_list:
             marker_test_list.remove("3")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 test_im.i_sender()
             except:
-                print("***** ERROR IN TEST *****")
+                print_in_log("***** ERROR IN TEST *****")
 
         if "4" in marker_test_list:
             marker_test_list.remove("4")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
-                print("\nТест VOIP не готов!")  # Место для тестов voip
+                print_in_log("\nТест VOIP не готов!")  # Место для тестов voip
             except:
-                print("***** ERROR IN TEST *****")
+                print_in_log("***** ERROR IN TEST *****")
 
         if "5" in marker_test_list:
             marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 ftp_test(ftp_list)
             except:
-                print("***** ERROR IN TEST *****")
+                print_in_log("***** ERROR IN TEST *****")
 
         if "6" in marker_test_list:
             marker_test_list.remove("6")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 terminal_test("TELNET", telnet_list)
             except:
-                print("***** ERROR IN TEST *****")
+                print_in_log("***** ERROR IN TEST *****")
 
         if "7" in marker_test_list:
             marker_test_list.remove("7")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 terminal_test("SSH", ssh_list)
             except:
-                print("***** ERROR IN TEST *****")
+                print_in_log("***** ERROR IN TEST *****")
 
         if "8" in marker_test_list:
             marker_test_list.remove("8")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 web_test("HTTPS", https_list)
             except:
-                print("***** ERROR IN TEST *****")
+                print_in_log("***** ERROR IN TEST *****")
 
         if len(marker_test_list) == 0:
             break
 
     # Логирование
-    print()
-    print(cmd_time(time_or_date="date"))  # Логирование - дата
-    print("END___" * 8, "\n\n\n")
+    print_in_log()
+    print_in_log(cmd_time(time_or_date="date"))  # Логирование - дата
+    print_in_log("END___" * 8)
+    print_in_log("\n\n\n")

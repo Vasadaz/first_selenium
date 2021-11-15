@@ -78,14 +78,14 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server.send_message(msg)  # Отправляем сообщение
 
     # Логирование
-    print(f"SEND  {cmd_time()}")
-    print(f"FROM: {list_from[0]}")
-    print(f"  TO: {', '.join(list_to)}")
-    print(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
-    print(f" BCC: {', '.join(list_bcc)}") if len(list_bcc) != 0 else None
-    print(f" SUB: {list_msg[0]}")
-    print(f"TEXT: {list_msg[1]}")
-    print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
+    print_in_log(f"SEND  {cmd_time()}")
+    print_in_log(f"FROM: {list_from[0]}")
+    print_in_log(f"  TO: {', '.join(list_to)}")
+    print_in_log(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
+    print_in_log(f" BCC: {', '.join(list_bcc)}") if len(list_bcc) != 0 else None
+    print_in_log(f" SUB: {list_msg[0]}")
+    print_in_log(f"TEXT: {list_msg[1]}")
+    print_in_log(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
 
     server.quit()  # Выходим
     return
@@ -108,7 +108,7 @@ def read_email(info_email: list, protocol: str):
 
         # Условие для завершения функции
         if STOP_READ_EMAIL == 55 and I_FIRST:
-            print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***")
+            print_in_log(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***")
             STOP_READ_EMAIL = 0
             return
 
@@ -132,7 +132,7 @@ def read_email(info_email: list, protocol: str):
             mails = int(id_list[-1]) if len(id_list) != 0 else 0  # Берем последний ID
 
         else:
-            print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
+            print_in_log(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
             return
 
         time.sleep(5)
@@ -147,7 +147,7 @@ def read_email(info_email: list, protocol: str):
         else:
             # Действие при отсутствии писем до STOP_READ_EMAIL проходов
             STOP_READ_EMAIL += 1
-            # print(f"Loop EMAIL №{STOP_READ_EMAIL} {cmd_time()}")
+            # print_in_log(f"Loop EMAIL №{STOP_READ_EMAIL} {cmd_time()}")
             server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
             continue
 
@@ -161,7 +161,7 @@ def read_email(info_email: list, protocol: str):
 
             # Защита от ошибок при получении письма не от функции send_email
             if len(msg_content) < 3:
-                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                print_in_log("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
                 continue
         else:
             # для IMAP: *server.fetch(latest_email_id, "(RFC822)")[1][0]][1] Подготавливаем сообщение к декодированию
@@ -172,7 +172,7 @@ def read_email(info_email: list, protocol: str):
 
             # Защита от ошибок при получении письма не от функции send_email
             if len(msg_content) < 3:
-                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                print_in_log("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
                 continue
 
         msg_head = message_from_string(msg_content[0])  # Преобразуем str -> dict
@@ -188,35 +188,35 @@ def read_email(info_email: list, protocol: str):
 
         if not I_FIRST and __COUNT_SUBJECTS:
             __COUNT_SUBJECTS = False
-            print(f"EMAIL {cmd_time('date')}\n")
-            print("--------------------------------------------------------------------------")
+            print_in_log(f"EMAIL {cmd_time('date')}\n")
+            print_in_log("--------------------------------------------------------------------------")
 
-        print(f"READ  {cmd_time()} {protocol}")
-        print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
-        print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
+        print_in_log(f"READ  {cmd_time()} {protocol}")
+        print_in_log(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
+        print_in_log(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
         # Вытаскиваем значение по ключу если оно есть
-        print(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
+        print_in_log(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
         # Вытаскиваем значение по ключу если оно есть
-        print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') is not None else None
-        print(f" SUB: {msg_subject_decode}")
-        print(f"TEXT: {msg_text}")
-        print(f"FILE: {msg_file}") if msg_file is not None else None  # Имя вложенного файла если оно есть
+        print_in_log(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') is not None else None
+        print_in_log(f" SUB: {msg_subject_decode}")
+        print_in_log(f"TEXT: {msg_text}")
+        print_in_log(f"FILE: {msg_file}") if msg_file is not None else None  # Имя вложенного файла если оно есть
 
         # pop3 Удаление старых писем
         if mails > max_mails_in_box and protocol == "POP3":
-            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+            # print_in_log(":::::::::::::::::::::::::::::::::::::::::::::::::")
             for i in range(mails - max_mails_in_box):
                 server.dele(i + 1)
-                # print(f"Delete mail №{i + 1}")
-            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+                # print_in_log(f"Delete mail №{i + 1}")
+            # print_in_log(":::::::::::::::::::::::::::::::::::::::::::::::::")
 
         # imap Удаление старых писем
         elif mails > max_mails_in_box and protocol == "IMAP":
-            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+            # print_in_log(":::::::::::::::::::::::::::::::::::::::::::::::::")
             for i in range(mails - max_mails_in_box):
                 server.store(str(i + 1), '+FLAGS', '\\Deleted')
-                # print(f"Delete mail №{i+1}")
-            # print(":::::::::::::::::::::::::::::::::::::::::::::::::")
+                # print_in_log(f"Delete mail №{i+1}")
+            # print_in_log(":::::::::::::::::::::::::::::::::::::::::::::::::")
 
         server.quit() if protocol == "POP3" else server.close()  # Закрываем соединение
         STOP_READ_EMAIL = 0
@@ -240,7 +240,7 @@ try:
             email_data_dict[line[1]] = [line[2], line[3], line[-1]]  # Получатель
         email_data.close()
 except FileNotFoundError:
-    print("***** EMAIL: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
+    print_in_log("***** EMAIL: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
 
 # Отравитель №1
 sender_1 = email_data_dict["sender_1"]
@@ -278,18 +278,18 @@ reader_2_imap = email_data_dict["reader_2_imap"]
 
 
 def i_sender():  # Отравитель
-    print("\n\nEMAIL")
-    print("----------------------------------------------------------------------------")
+    print_in_log("\n\nEMAIL")
+    print_in_log("----------------------------------------------------------------------------")
     send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
-    print()  # Логирование
+    print_in_log()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 2
     time.sleep(10)
-    print()  # Логирование
+    print_in_log()  # Логирование
     send_email(sender_1, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
-    print()  # Логирование
+    print_in_log()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 4
-    print("--------------------------------------------------------------------------")
-    print("EMAIL end\n")
+    print_in_log("--------------------------------------------------------------------------")
+    print_in_log("EMAIL end\n")
     time.sleep(10)
     return
 
@@ -299,18 +299,18 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-    print(f"{RELEASE} Автоответчик для тестов EMAIL запущен\n")
+    print_in_log(f"{RELEASE} Автоответчик для тестов EMAIL запущен\n")
 
     while True:
         __COUNT_SUBJECTS = True
         read_email(reader_2_imap, "IMAP")  # Получение письма № 1
         time.sleep(10)
-        print()  # Логирование
+        print_in_log()  # Логирование
         send_email(sender_2, to_2, msg_2)  # Отправка Письма №2
-        print()  # Логирование
+        print_in_log()  # Логирование
         read_email(reader_2_imap, "IMAP")  # Получение письма № 3
         time.sleep(10)
-        print()  # Логирование
+        print_in_log()  # Логирование
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
-        print("--------------------------------------------------------------------------")
-        print(f"EMAIL end {cmd_time('date')}\n")
+        print_in_log("--------------------------------------------------------------------------")
+        print_in_log(f"EMAIL end {cmd_time('date')}\n")

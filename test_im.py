@@ -21,7 +21,7 @@ try:
 
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 except AttributeError:
-    print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
+    print_in_log("***** IM: CONTROL ERROR - NOT WINDOWS *****")
 
 READ_WAIT_MSG = None  # Для записи содержимого из прочитанного сообщений, используется для условий
 ANSWER_WAIT_MSG = None  # Для записи ожидаемого ответа
@@ -48,10 +48,10 @@ class SendMsgBot(ClientXMPP):
         self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')  # Отправка сообщения
 
         # Логирование
-        print(f"SEND  {cmd_time()}")
-        print(f"FROM: {self.jid}")
-        print(f"  TO: {self.recipient}")
-        print(f" MSG: {self.msg}")
+        print_in_log(f"SEND  {cmd_time()}")
+        print_in_log(f"FROM: {self.jid}")
+        print_in_log(f"  TO: {self.recipient}")
+        print_in_log(f" MSG: {self.msg}")
 
         self.disconnect()  # Отключение от сервера
 
@@ -75,8 +75,8 @@ class ReadMsgBot(ClientXMPP):
         global ANSWER_WAIT_MSG, READ_WAIT_MSG
 
         if self.i_answer_obj:  # Условие логирование для answer
-            print(f"\n\nIM {cmd_time('date')}")
-            print("----------------------------------------------------------------------------")
+            print_in_log(f"\n\nIM {cmd_time('date')}")
+            print_in_log("----------------------------------------------------------------------------")
 
         msg_list = str(msg).split('"')  # Преобразование сообщения в список для логирования
 
@@ -86,10 +86,10 @@ class ReadMsgBot(ClientXMPP):
 
         if READ_WAIT_MSG == ANSWER_WAIT_MSG:
             # Логирование
-            print(f"READ  {cmd_time()}")
-            print(f"FROM: {msg_list[1].split('/')[0]}")  # Определение отправителя
-            print(f"  TO: {msg_list[3]}")  # Определение получателя
-            print(f" MSG: {READ_WAIT_MSG}")
+            print_in_log(f"READ  {cmd_time()}")
+            print_in_log(f"FROM: {msg_list[1].split('/')[0]}")  # Определение отправителя
+            print_in_log(f"  TO: {msg_list[3]}")  # Определение получателя
+            print_in_log(f" MSG: {READ_WAIT_MSG}")
             self.disconnect()
 
 
@@ -139,7 +139,7 @@ try:
             im_data_dict[line[0]] = line[1:]  # Имя переменной:аккаунт
         im_data.close()
 except FileNotFoundError:
-    print("***** IM: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
+    print_in_log("***** IM: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
 
 # sender и его сообщения
 jid_1 = im_data_dict["jid_1"]
@@ -154,31 +154,31 @@ jid_2_msg_2 = "Получение сообщения"
 
 def i_sender():
     # Сценарная функция для инициализатора переписки, т.е. он отправляет сообщение первым, а потом ждёт входящего
-    print("\n\nIM")
-    print("----------------------------------------------------------------------------")
+    print_in_log("\n\nIM")
+    print_in_log("----------------------------------------------------------------------------")
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_1)
-    print()
+    print_in_log()
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_1)
     time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
-    print()
+    print_in_log()
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_2)
-    print()
+    print_in_log()
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_2)
-    print("----------------------------------------------------------------------------")
-    print("IM end")
+    print_in_log("----------------------------------------------------------------------------")
+    print_in_log("IM end")
 
 
 def i_answer():
-    print(f"{RELEASE} Автоответчик для тестов IM запущен\n")
+    print_in_log(f"{RELEASE} Автоответчик для тестов IM запущен\n")
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
         time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
-        print()
+        print_in_log()
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_1)
-        print()
+        print_in_log()
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_2)
         time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
-        print()
+        print_in_log()
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
-        print("----------------------------------------------------------------------------")
-        print(f"\n\nIM end {cmd_time('date')}")
+        print_in_log("----------------------------------------------------------------------------")
+        print_in_log(f"\n\nIM end {cmd_time('date')}")

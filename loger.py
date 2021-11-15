@@ -9,7 +9,8 @@ import time
 RELEASE = "v1.5.3"
 
 # Имя файла для лога
-__LOGS_NAME = "nameless"
+LOGS_NAME_OUT = "NOT"
+LOGS_NAME = "nameless"
 
 
 def cmd_time(time_or_date="time") -> str:
@@ -54,7 +55,8 @@ def cmd_time(time_or_date="time") -> str:
         return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
 
 
-def print_in_log(text: str):
+def print_in_log(text="\n"):
+    global LOGS_NAME, LOGS_NAME_OUT
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
     try:
         os.mkdir("logs")
@@ -64,14 +66,14 @@ def print_in_log(text: str):
     os.chdir("./logs")  # Меняем рабочую директорию
 
     # Проверяем создан ли файл для записи в списке файлов внутри директории logs
-    if __LOGS_NAME in tuple(os.walk(os.getcwd()))[0][-1]:
-        print("yes")
-        logs_file = open(__LOGS_NAME, mode="a")
-        logs_file.write(text + '\n')
+    if LOGS_NAME in tuple(os.walk(os.getcwd()))[0][-1]:
+        logs_file = open(LOGS_NAME, mode="a")  # Открываем файл в режиме дозаписи
+        logs_file.write(text + '\n')  # Дозаписываем в файл
+        logs_file.close()  # Закрываем файл
     else:
-        print("no")
-        logs_file = open(__LOGS_NAME, mode="x")
-        logs_file.write(text + '\n')
+        logs_file = open(LOGS_NAME, mode="x")  # Создаём и открываем файл в режиме записи
+        logs_file.write(text + '\n')  # Записываем в файл
+        logs_file.close()  # Закрываем файл
 
     print(text)
     os.chdir("../")  # Меняем рабочую директорию
