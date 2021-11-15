@@ -16,7 +16,7 @@ POP3 https://www.code-learner.com/python-use-pop3-to-read-email-example/
 
 IMAP http://python-3.ru/page/imap-email-python
 """
-
+import time
 import smtplib  # Импортируем библиотеку по работе с SMTP
 from email import message_from_string
 from email import encoders  # Импортируем энкодер
@@ -27,10 +27,7 @@ import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
 import csv  # Библиотека для работы с CSV файлами
-# Функция возврата времени из файла log_time.py
-from log_time import cmd_time, time
-# Импорт версии для удобства отслеживания актуальности server скриптов.
-import loger # Логирование
+from loger import cmd_time, RELEASE, print_in_log # Импорт логирования
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = None  # Маркер определения новых писем
@@ -302,7 +299,7 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-    print(f"{loger.RELEASE} Автоответчик для тестов EMAIL запущен\n")
+    print(f"{RELEASE} Автоответчик для тестов EMAIL запущен\n")
 
     while True:
         __COUNT_SUBJECTS = True

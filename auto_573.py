@@ -3,7 +3,7 @@
 Скрипт для автоматического тестирования 573.
 Логирование команд происходит в консоли.
 """
-
+import time
 import subprocess  # библиотека для работы с командами и процессами ОС
 import shutil  # Для удаления папки FTP
 # webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
@@ -11,9 +11,8 @@ from selenium import webdriver, common
 from log_time import cmd_time, time  # Функция возврата времени из файла log_time.py
 import test_email  # Функции для тестирования EMAIL из файла test_email.py
 import test_im  # Функция для тестирования IM из файла test_im.py
-from version import Release  # Контроль релиза
-import loger
-
+# Импорт логирования
+from loger import cmd_time, RELEASE, print_in_log, __LOGS_NAME
 
 
 def web_test(protocol: str, websait_list: list):
@@ -160,7 +159,7 @@ https_list = ["https://yandex.ru",
 while True:
 
     print(f"""
-Тестирование 573 {loger.RELEASE}
+Тестирование 573 {RELEASE}
     
 1 - http         5 - ftp
 2 - email*       6 - telnet  
@@ -175,7 +174,7 @@ while True:
     print("\n\n")
     print("START_" * 8)
     print(cmd_time(time_or_date="date"), end="")  # Логирование - дата
-    loger.__LOGS_NAME = cmd_time("for_log") + '.log'
+    __LOGS_NAME = cmd_time("for_log") + '.log'
 
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:

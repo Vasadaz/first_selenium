@@ -10,12 +10,9 @@ https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
 https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
 """
 import csv
+import time
 from slixmpp import ClientXMPP
-
-# Функция возврата времени из файла log_time.py
-from log_time import cmd_time, time
-# Импорт версии для удобства отслеживания актуальности server скриптов.
-import loger
+from loger import cmd_time, RELEASE, print_in_log # Импорт логирования
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
@@ -172,7 +169,7 @@ def i_sender():
 
 
 def i_answer():
-    print(f"{loger.RELEASE} Автоответчик для тестов IM запущен\n")
+    print(f"{RELEASE} Автоответчик для тестов IM запущен\n")
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
         time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
