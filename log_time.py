@@ -41,6 +41,6 @@ def cmd_time(time_or_date="time") -> str:
         # GMT дата
         gmt_date_log = "{}{:0>2d}{:0>2d}".format(gmt_time.tm_year - 2000, gmt_time.tm_mon, gmt_time.tm_mday)
         # Возврат даты в формате "ГГММДД_ччммсс_GMT)"
-        return  gmt_date_log + "_" + gmt_time_log + "_GMT"
+        return gmt_date_log + "_" + gmt_time_log + "_GMT"
     else:
-        return ('\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n')
+        return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
