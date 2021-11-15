@@ -30,7 +30,7 @@ import csv  # Библиотека для работы с CSV файлами
 # Функция возврата времени из файла log_time.py
 from log_time import cmd_time, time
 # Импорт версии для удобства отслеживания актуальности server скриптов.
-from version import Release  # Контроль релиза
+import loger # Логирование
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = None  # Маркер определения новых писем
@@ -302,7 +302,7 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-    print(f"{Release.v} Автоответчик для тестов EMAIL запущен\n")
+    print(f"{loger.RELEASE} Автоответчик для тестов EMAIL запущен\n")
 
     while True:
         __COUNT_SUBJECTS = True

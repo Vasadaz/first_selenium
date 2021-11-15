@@ -12,6 +12,8 @@ from log_time import cmd_time, time  # Функция возврата врем�
 import test_email  # Функции для тестирования EMAIL из файла test_email.py
 import test_im  # Функция для тестирования IM из файла test_im.py
 from version import Release  # Контроль релиза
+import loger
+
 
 
 def web_test(protocol: str, websait_list: list):
@@ -20,7 +22,7 @@ def web_test(protocol: str, websait_list: list):
     # websait_list - список сайтов для теста.
 
     # Логирование.
-    print("\n\n{}".format(protocol))
+    print(f"\n\n{protocol}")
     print("----------------------------------------------------------------------------")
     print("Open browser")
 
@@ -31,7 +33,7 @@ def web_test(protocol: str, websait_list: list):
     # Итерации по элементам списка websait_list.
     for el in websait_list:
 
-        print("\n{}\n{} {}".format(cmd_time(), protocol, el))  # Логирование.
+        print(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
         # Исключение для перенаправление ошибки заблокированных ресурсов.
         try:
             # Метод get сообщает браузеру, что нужно открыть сайт по указанной ссылке.
@@ -47,7 +49,7 @@ def web_test(protocol: str, websait_list: list):
     # Логирование.
     print("\nClose browser")
     print("----------------------------------------------------------------------------")
-    return print("{} end".format(protocol))
+    return print(f"{protocol} end")
 
 
 def ftp_test(download_list: list):
@@ -66,8 +68,8 @@ def ftp_test(download_list: list):
     # Итерация по элементам списка download_list.
     for el in download_list:
         # Логирование.
-        print("\n{}\nFTP {}".format(cmd_time(), el))
-        print("Download {}\n".format(el[28:]))  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
+        print(f"\n{cmd_time()}\nFTP {el}")
+        print(f"Download {el[28:]}\n")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
 
         # Метод для выполнения команды в консоли, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
@@ -85,7 +87,7 @@ def terminal_test(protocol: str, servers_list: list, ):
     # servers_list - список серверных адресов для теста.
 
     # Логирование.
-    print("\n\n{}".format(protocol))
+    print(f"\n\n{protocol}")
     print("----------------------------------------------------------------------------")
 
     # Определение протокола путём длинны аргумента protocol
@@ -93,7 +95,7 @@ def terminal_test(protocol: str, servers_list: list, ):
 
     # Итерация по элементам списка servers_list
     for el in servers_list:
-        print("\n{}\n{} {}".format(cmd_time(), protocol, el))  # Логирование.
+        print(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
 
         # Метод для выполнения команды в консоли, который НЕ ожидает завершения команды и переходит к следующей строке.
         # Команда для соединения по указанному протоколу через putty >>> putty -ssh 195.144.107.198
@@ -113,7 +115,7 @@ def terminal_test(protocol: str, servers_list: list, ):
 
     # Логирование.
     print("\n----------------------------------------------------------------------------")
-    return print("{} end".format(protocol))
+    return print("{protocol} end")
 
 
 # Список сайтов для теста http
@@ -158,7 +160,7 @@ https_list = ["https://yandex.ru",
 while True:
 
     print(f"""
-Тестирование 573 {Release.v}
+Тестирование 573 {loger.RELEASE}
     
 1 - http         5 - ftp
 2 - email*       6 - telnet  
@@ -173,6 +175,7 @@ while True:
     print("\n\n")
     print("START_" * 8)
     print(cmd_time(time_or_date="date"), end="")  # Логирование - дата
+    loger.__LOGS_NAME = cmd_time("for_log") + '.log'
 
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:
