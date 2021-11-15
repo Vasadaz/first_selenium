@@ -43,4 +43,4 @@ def cmd_time(time_or_date="time") -> str:
         # Возврат даты в формате "ГГММДД_ччммсс_GMT)"
         return  gmt_date_log + "_" + gmt_time_log + "_GMT"
     else:
-        print('НЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"')
+        return ('\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n')

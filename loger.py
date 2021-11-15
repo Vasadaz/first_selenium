@@ -3,7 +3,7 @@ import os
 #
 RELEASE = "v1.5.3"
 
-__LOGS_NAME = None
+__LOGS_NAME = "nameless"
 
 
 def print_in_log(text: str):
