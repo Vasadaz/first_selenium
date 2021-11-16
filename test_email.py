@@ -27,7 +27,7 @@ import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
 import csv  # Библиотека для работы с CSV файлами
-from loger import cmd_time, RELEASE, print_in_log # Импорт логирования
+from loger import cmd_time, RELEASE, print_in_log  # Импорт логирования
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = None  # Маркер определения новых писем

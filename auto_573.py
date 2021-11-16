@@ -5,13 +5,14 @@
 """
 import time
 import subprocess  # библиотека для работы с командами и процессами ОС
+import os
 import shutil  # Для удаления папки FTP
 # webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
 from selenium import webdriver, common
 import test_email  # Функции для тестирования EMAIL из файла test_email.py
 import test_im  # Функция для тестирования IM из файла test_im.py
 # Импорт логирования
-from loger import cmd_time, RELEASE, print_in_log, LOGS_NAME_OUT
+from loger import cmd_time, RELEASE, print_in_log, file_for_log
 
 
 def web_test(protocol: str, websait_list: list):
@@ -67,16 +68,17 @@ def ftp_test(download_list: list):
     for el in download_list:
         # Логирование.
         print_in_log(f"\n{cmd_time()}\nFTP {el}")
-        print_in_log(f"Download {el[28:]}\n")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
+        print_in_log(f"Download {el[28:]}")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
 
         # Метод для выполнения команды в консоли, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
         subprocess.run(["wget", "-P", "FTP_573", el])
+        print_in_log(f"End {cmd_time()} {el[28:]} {os.path.getsize(f'./FTP_573/{el[28:]}')} Byte")
         time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
     print_in_log("\n----------------------------------------------------------------------------")
-    return print_in_log("FTP end")
+    print_in_log("FTP end")
 
 
 def terminal_test(protocol: str, servers_list: list, ):
@@ -113,7 +115,7 @@ def terminal_test(protocol: str, servers_list: list, ):
 
     # Логирование.
     print_in_log("\n----------------------------------------------------------------------------")
-    return print_in_log("{protocol} end")
+    print_in_log(f"{protocol} end")
 
 
 # Список сайтов для теста http
@@ -169,11 +171,13 @@ while True:
     # Создание списка из введённой строки
     marker_test_list = [el for el in input("Какие тесты выполнять? (12345678)\n").strip()]
 
+    # Создаём файл для записи лога
+    file_for_log()
+
     # Логирование
-    print_in_log("\n\n")
+    print("\n\n")
     print_in_log("START_" * 8)
     print_in_log(cmd_time(time_or_date="date"))  # Логирование - дата
-    LOGS_NAME_OUT = cmd_time("for_log") + '.log'
 
     # Условие для выполнения всех тестов.
     if len(marker_test_list) == 0:
@@ -245,4 +249,4 @@ while True:
     print_in_log()
     print_in_log(cmd_time(time_or_date="date"))  # Логирование - дата
     print_in_log("END___" * 8)
-    print_in_log("\n\n\n")
+    print("\n\n\n")

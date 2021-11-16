@@ -8,10 +8,6 @@ import time
 # Release v1.5.3
 RELEASE = "v1.5.3"
 
-# Имя файла для лога
-LOGS_NAME_OUT = "NOT"
-LOGS_NAME = "nameless"
-
 
 def cmd_time(time_or_date="time") -> str:
     # Функция для возврата местного и GMT времени.
@@ -55,27 +51,37 @@ def cmd_time(time_or_date="time") -> str:
         return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
 
 
-def print_in_log(text="\n"):
-    global LOGS_NAME, LOGS_NAME_OUT
-    # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
+def file_for_log():
     try:
         os.mkdir("logs")
     except FileExistsError:
         pass
 
     os.chdir("./logs")  # Меняем рабочую директорию
+    logs_file = open(cmd_time("for_log"), mode="x")  # Создаём и открываем файл в режиме записи
+    logs_file.write("")
+    logs_file.close()  # Закрываем файл
+    os.chdir("../")  # Меняем рабочую директорию
+    time.sleep(2)
 
-    # Проверяем создан ли файл для записи в списке файлов внутри директории logs
-    if LOGS_NAME in tuple(os.walk(os.getcwd()))[0][-1]:
-        logs_file = open(LOGS_NAME, mode="a")  # Открываем файл в режиме дозаписи
-        logs_file.write(text + '\n')  # Дозаписываем в файл
-        logs_file.close()  # Закрываем файл
-    else:
-        logs_file = open(LOGS_NAME, mode="x")  # Создаём и открываем файл в режиме записи
-        logs_file.write(text + '\n')  # Записываем в файл
-        logs_file.close()  # Закрываем файл
 
+def print_in_log(text="\n"):
+    try:
+        os.mkdir("logs")
+    except FileExistsError:
+        pass
+    # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
+    os.chdir("./logs")  # Меняем рабочую директорию
+
+    try:
+        name_file = tuple(os.walk(os.getcwd()))[0][-1]
+        name_file.sort()
+    except IndexError:
+        os.chdir("../")  # Меняем рабочую директорию
+        return
+
+    logs_file = open(name_file[-1], mode="a")  # Открываем файл в режиме дозаписи
+    logs_file.write(text + '\n')  # Дозаписываем в файл
+    logs_file.close()  # Закрываем файл
     print(text)
     os.chdir("../")  # Меняем рабочую директорию
-
-# print_in_log("DSF")
