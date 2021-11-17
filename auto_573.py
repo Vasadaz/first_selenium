@@ -73,7 +73,12 @@ def ftp_test(download_list: list):
         # Метод для выполнения команды в консоли, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
         subprocess.run(["wget", "-P", "FTP_573", el])
-        print_in_log(f"End {cmd_time()} {el[28:]} {os.path.getsize(f'./FTP_573/{el[28:]}')} Byte")
+        file_size = os.path.getsize(f"./FTP_573/{el[28:]}")
+        if len(str(file_size)) < 10:
+            file_size_mb_or_gb = str(round(file_size/ (1024**2), 1)) + " MB"
+        else:
+            file_size_mb_or_gb = str(round(file_size / (1024**3), 1)) + " GB"
+        print_in_log(f"End {cmd_time()} {el[28:]} {file_size_mb_or_gb} ({file_size} B)")
         time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
