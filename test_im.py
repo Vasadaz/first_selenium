@@ -12,7 +12,7 @@ https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti
 import csv
 import time
 from slixmpp import ClientXMPP
-from loger import cmd_time, RELEASE, print_in_log # Импорт логирования
+from loger import cmd_time, RELEASE, print_in_log  # Импорт логирования
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
@@ -21,7 +21,7 @@ try:
 
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 except AttributeError:
-    print_in_log("***** IM: CONTROL ERROR - NOT WINDOWS *****")
+    print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
 
 READ_WAIT_MSG = None  # Для записи содержимого из прочитанного сообщений, используется для условий
 ANSWER_WAIT_MSG = None  # Для записи ожидаемого ответа
@@ -169,16 +169,17 @@ def i_sender():
 
 
 def i_answer():
-    print_in_log(f"{RELEASE} Автоответчик для тестов IM запущен\n")
+    print(f"{RELEASE} Автоответчик для тестов IM запущен\n")
+
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
         time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
-        print_in_log()
+        print()
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_1)
-        print_in_log()
+        print()
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_2)
         time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
-        print_in_log()
+        print()
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
-        print_in_log("----------------------------------------------------------------------------")
-        print_in_log(f"\n\nIM end {cmd_time('date')}")
+        print("----------------------------------------------------------------------------")
+        print(f"\n\nIM end {cmd_time('date')}")
