@@ -100,7 +100,7 @@ def terminal_test(protocol: str, servers_list: list, ):
 
     # Итерация по элементам списка servers_list
     for el in servers_list:
-        print_in_log(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
+        print_in_log(f"{cmd_time()}\n{protocol} {el}")  # Логирование.
 
         # Метод для выполнения команды в консоли, который НЕ ожидает завершения команды и переходит к следующей строке.
         # Команда для соединения по указанному протоколу через putty >>> putty -ssh 195.144.107.198
@@ -118,8 +118,10 @@ def terminal_test(protocol: str, servers_list: list, ):
             subprocess.run(["pkill", "putty"])
             print_in_log("***** TERM: CONTROL ERROR - NOT WINDOWS *****")
 
+        print_in_log() if el != servers_list[-1] else None
+
     # Логирование.
-    print_in_log("\n----------------------------------------------------------------------------")
+    print_in_log("----------------------------------------------------------------------------")
     print_in_log(f"{protocol} end")
 
 
@@ -184,16 +186,18 @@ e - email        i - im
         try:  # Защита от остановки тестов в случае ошибки
             test_email.i_answer()
             continue
-        except:
+        except Exception as err:
             print_in_log("***** ERROR IN TEST *****")
+            print_in_log(err)
             continue
     # Режим автоответчика для IM
     if "i" in marker_test_list:
         try:  # Защита от остановки тестов в случае ошибки
             test_im.i_answer()
             continue
-        except:
+        except Exception as err:
             print_in_log("***** ERROR IN TEST *****")
+            print_in_log(err)
             continue
 
     # Создаём файл для записи лога
@@ -222,50 +226,57 @@ e - email        i - im
             marker_test_list.remove("2")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 test_email.i_sender()
-            except:
+            except Exception as err:
                 print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
 
         if "3" in marker_test_list:
             marker_test_list.remove("3")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 test_im.i_sender()
-            except:
+            except Exception as err:
                 print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
 
         if "4" in marker_test_list:
             marker_test_list.remove("4")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 print_in_log("\nТест VOIP не готов!")  # Место для тестов voip
-            except:
+            except Exception as err:
                 print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
 
         if "5" in marker_test_list:
             marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 ftp_test(ftp_list)
-            except:
+            except Exception as err:
                 print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
 
         if "6" in marker_test_list:
             marker_test_list.remove("6")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 terminal_test("TELNET", telnet_list)
-            except:
+            except Exception as err:
                 print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
 
         if "7" in marker_test_list:
             marker_test_list.remove("7")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 terminal_test("SSH", ssh_list)
-            except:
+            except Exception as err:
                 print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
 
         if "8" in marker_test_list:
             marker_test_list.remove("8")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
                 web_test("HTTPS", https_list)
-            except:
+            except Exception as err:
                 print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
 
         if len(marker_test_list) == 0:
             break
