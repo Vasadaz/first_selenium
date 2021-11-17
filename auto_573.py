@@ -190,6 +190,7 @@ e - email        i - im
             print_in_log("***** ERROR IN TEST *****")
             print_in_log(err)
             continue
+
     # Режим автоответчика для IM
     if "i" in marker_test_list:
         try:  # Защита от остановки тестов в случае ошибки

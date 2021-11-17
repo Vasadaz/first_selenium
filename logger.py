@@ -5,8 +5,8 @@
 import os
 import time
 
-# Release v1.5.4
-RELEASE = "v1.5.4"
+# Release v1.5.5
+RELEASE = "v1.5.5"
 
 
 def cmd_time(time_or_date="time") -> str:
