@@ -70,7 +70,7 @@ def file_for_log():
 def print_in_log(text=""):
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
 
-    os.chdir("./logs")  # Меняем рабочую директорию
+    os.chdir("logs")  # Меняем рабочую директорию
 
     try:
         name_file = tuple(os.walk(os.getcwd()))[0][-1]

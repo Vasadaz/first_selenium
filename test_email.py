@@ -298,7 +298,7 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-    print(f"{RELEASE} Автоответчик для тестов EMAIL запущен\n")
+    print(f"\nАвтоответчик EMAIL запущен\n")
 
     while True:
         __COUNT_SUBJECTS = True

@@ -12,7 +12,7 @@ https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti
 import csv
 import time
 from slixmpp import ClientXMPP
-from logger import cmd_time, RELEASE, print_in_log  # Импорт логирования
+from logger import cmd_time, print_in_log  # Импорт логирования
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
@@ -169,7 +169,7 @@ def i_sender():
 
 
 def i_answer():
-    print(f"{RELEASE} Автоответчик для тестов IM запущен\n")
+    print(f"\nАвтоответчик IM запущен\n")
 
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)

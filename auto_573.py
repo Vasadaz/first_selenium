@@ -9,8 +9,8 @@ import os
 import shutil  # Для удаления папки FTP
 # webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
 from selenium import webdriver, common
-import test_email  # Функции для тестирования EMAIL из файла test_email.py
-import test_im  # Функция для тестирования IM из файла test_im.py
+import test_email
+import test_im
 # Импорт логирования
 from logger import cmd_time, RELEASE, print_in_log, file_for_log
 
@@ -75,9 +75,9 @@ def ftp_test(download_list: list):
         subprocess.run(["wget", "-P", "FTP_573", el])
         file_size = os.path.getsize(f"./FTP_573/{el[28:]}")
         if len(str(file_size)) < 10:
-            file_size_mb_or_gb = str(round(file_size/ (1024**2), 1)) + " MB"
+            file_size_mb_or_gb = str(round(file_size / (1024 ** 2), 1)) + " MB"
         else:
-            file_size_mb_or_gb = str(round(file_size / (1024**3), 1)) + " GB"
+            file_size_mb_or_gb = str(round(file_size / (1024 ** 3), 1)) + " GB"
         print_in_log(f"End {cmd_time()} {el[28:]} {file_size_mb_or_gb} ({file_size} B)")
         time.sleep(60)  # Пауза 60 секунд.
 
@@ -171,10 +171,30 @@ while True:
 2 - email*       6 - telnet  
 3 - im*          7 - ssh 
 4 - voip(None)*  8 - https 
+
+Режимы автоответчика:
+e - email        i - im
 """)
 
     # Создание списка из введённой строки
     marker_test_list = [el for el in input("Какие тесты выполнять? (12345678)\n").strip()]
+
+    # Режим автоответчика для EMAIL
+    if "e" in marker_test_list:
+        try:  # Защита от остановки тестов в случае ошибки
+            test_email.i_answer()
+            continue
+        except:
+            print_in_log("***** ERROR IN TEST *****")
+            continue
+    # Режим автоответчика для IM
+    if "i" in marker_test_list:
+        try:  # Защита от остановки тестов в случае ошибки
+            test_im.i_answer()
+            continue
+        except:
+            print_in_log("***** ERROR IN TEST *****")
+            continue
 
     # Создаём файл для записи лога
     file_for_log()
@@ -193,9 +213,9 @@ while True:
         # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
         if "1" in marker_test_list:
             marker_test_list.remove("1")  # Удаляем маркер теста из marker_test_list
-            #try:  # Защита от остановки тестов в случае ошибки
+            # try:  # Защита от остановки тестов в случае ошибки
             web_test("HTTP", http_list)
-            #except:
+            # except:
             #    print_in_log("***** ERROR IN TEST *****")
 
         if "2" in marker_test_list:
