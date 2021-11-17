@@ -52,25 +52,24 @@ def cmd_time(time_or_date="time") -> str:
 
 
 def file_for_log():
+    # Функция создания лог файла ГГММДД_ччммсс_GMT.log
+
+    # Создаём директорию logs
     try:
         os.mkdir("logs")
     except FileExistsError:
         pass
 
-    os.chdir("./logs")  # Меняем рабочую директорию
-    logs_file = open(cmd_time("for_log"), mode="x")  # Создаём и открываем файл в режиме записи
+    os.chdir("logs")  # Меняем рабочую директорию
+    logs_file = open(cmd_time("for_log"), mode="x", encoding="utf-8")  # Создаём и открываем файл в режиме записи
     logs_file.write("")
     logs_file.close()  # Закрываем файл
     os.chdir("../")  # Меняем рабочую директорию
-    time.sleep(2)
 
 
-def print_in_log(text="\n"):
-    try:
-        os.mkdir("logs")
-    except FileExistsError:
-        pass
+def print_in_log(text=""):
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
+
     os.chdir("./logs")  # Меняем рабочую директорию
 
     try:
@@ -80,8 +79,21 @@ def print_in_log(text="\n"):
         os.chdir("../")  # Меняем рабочую директорию
         return
 
-    logs_file = open(name_file[-1], mode="a")  # Открываем файл в режиме дозаписи
-    logs_file.write(text + '\n')  # Дозаписываем в файл
+    if len(name_file) == 0:
+        # Условие для пустой директории logs
+        os.chdir("../")  # Меняем рабочую директорию
+        return
+
+    elif len(name_file) > 20:
+        # Очищаем папку logs оставляя максимум 20 файлов
+        os.remove(name_file[0])
+
+    logs_file = open(name_file[-1], mode="a", encoding="utf-8")  # Открываем файл в режиме дозаписи
+    # Условие обработки print() перехода на другую строку
+    if text == "":
+        logs_file.write("\n")  # Дозаписываем в файл
+    else:
+        logs_file.write(text + "\n")  # Дозаписываем в файл
     logs_file.close()  # Закрываем файл
-    print(text)
     os.chdir("../")  # Меняем рабочую директорию
+    print(text)
