@@ -12,7 +12,7 @@ from selenium import webdriver, common
 import test_email  # Функции для тестирования EMAIL из файла test_email.py
 import test_im  # Функция для тестирования IM из файла test_im.py
 # Импорт логирования
-from loger import cmd_time, RELEASE, print_in_log, file_for_log
+from logger import cmd_time, RELEASE, print_in_log, file_for_log
 
 
 def web_test(protocol: str, websait_list: list):

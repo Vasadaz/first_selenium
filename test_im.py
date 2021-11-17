@@ -12,7 +12,7 @@ https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti
 import csv
 import time
 from slixmpp import ClientXMPP
-from loger import cmd_time, RELEASE, print_in_log  # Импорт логирования
+from logger import cmd_time, RELEASE, print_in_log  # Импорт логирования
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
