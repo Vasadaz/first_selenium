@@ -70,13 +70,15 @@ def file_for_log():
 def print_in_log(text=""):
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
 
-    os.chdir("logs")  # Меняем рабочую директорию
-
     try:
+        os.chdir("logs")  # Меняем рабочую директорию
         name_file = tuple(os.walk(os.getcwd()))[0][-1]
         name_file.sort()
     except IndexError:
         os.chdir("../")  # Меняем рабочую директорию
+        return
+    except FileNotFoundError:
+        print(text)
         return
 
     if len(name_file) == 0:

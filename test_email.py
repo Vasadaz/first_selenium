@@ -27,7 +27,7 @@ import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
 import csv  # Библиотека для работы с CSV файлами
-from logger import cmd_time, RELEASE, print_in_log  # Импорт логирования
+from logger import cmd_time, print_in_log  # Импорт логирования
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = None  # Маркер определения новых писем
@@ -188,7 +188,7 @@ def read_email(info_email: list, protocol: str):
 
         if not I_FIRST and __COUNT_SUBJECTS:
             __COUNT_SUBJECTS = False
-            print_in_log(f"EMAIL {cmd_time('date')}")
+            print_in_log(f"\n\nEMAIL {cmd_time('date')}")
             print_in_log("--------------------------------------------------------------------------")
 
         print_in_log(f"READ  {cmd_time()} {protocol}")
@@ -289,7 +289,7 @@ def i_sender():  # Отравитель
     print_in_log()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 4
     print_in_log("--------------------------------------------------------------------------")
-    print_in_log("EMAIL end\n")
+    print_in_log("EMAIL end")
     time.sleep(10)
 
 
@@ -312,4 +312,4 @@ def i_answer():  # Автоответчик
         print()  # Логирование
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
         print("--------------------------------------------------------------------------")
-        print(f"EMAIL end {cmd_time('date')}\n")
+        print(f"EMAIL end {cmd_time('date')}")

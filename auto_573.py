@@ -82,7 +82,7 @@ def ftp_test(download_list: list):
         time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
-    print_in_log("\n----------------------------------------------------------------------------")
+    print_in_log("----------------------------------------------------------------------------")
     print_in_log("FTP end")
 
 
@@ -183,24 +183,27 @@ e - email        i - im
 
     # Режим автоответчика для EMAIL
     if "e" in marker_test_list:
-        try:  # Защита от остановки тестов в случае ошибки
-            test_email.i_answer()
-            continue
-        except Exception as err:
-            print_in_log("***** ERROR IN TEST *****")
-            print_in_log(err)
-            continue
+        while True:
+            try:  # Защита от остановки тестов в случае ошибки
+                test_email.i_answer()
+                continue
+            except Exception as err:
+                print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
+                continue
+        continue
 
     # Режим автоответчика для IM
     if "i" in marker_test_list:
-        try:  # Защита от остановки тестов в случае ошибки
-            test_im.i_answer()
-            continue
-        except Exception as err:
-            print_in_log("***** ERROR IN TEST *****")
-            print_in_log(err)
-            continue
-
+        while True:
+            try:  # Защита от остановки тестов в случае ошибки
+                test_im.i_answer()
+                continue
+            except Exception as err:
+                print_in_log("***** ERROR IN TEST *****")
+                print_in_log(err)
+                continue
+        continue
     # Создаём файл для записи лога
     file_for_log()
 

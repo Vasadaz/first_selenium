@@ -182,4 +182,4 @@ def i_answer():
         print()
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
         print("----------------------------------------------------------------------------")
-        print(f"\n\nIM end {cmd_time('date')}")
+        print(f"IM end {cmd_time('date')}")
