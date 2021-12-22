@@ -21,13 +21,14 @@ import smtplib  # Импортируем библиотеку по работе 
 from email import message_from_string
 from email import encoders  # Импортируем энкодер
 from email.mime.base import MIMEBase  # Общий тип файла
-from email.mime.text import MIMEText  # Тип для Текст/HTML
+from email.mime.text import MIMEText  # Тип для Текста/HTML
 from email.mime.multipart import MIMEMultipart  # Многокомпонентный объект
 import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
 import csv  # Библиотека для работы с CSV файлами
-from logger import cmd_time, print_in_log  # Импорт логирования
+from logger import cmd_time  # Импорт логирования
+
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = None  # Маркер определения новых писем
@@ -57,7 +58,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     msg["Subject"] = list_msg[0]  # Добавление темы сообщения
     msg.attach(MIMEText(list_msg[1], "plain"))  # Добавляем в сообщение текст
 
-    # Условие для определение вложения у письма
+    # Условие для определения вложения у письма
     if len(list_msg) > 2:
         filepath = f"./email/{list_msg[2]}"  # Путь к файлу. Файлы для отправки должны лежать в ./email/
         filename = f"{list_msg[2]}"  # Только имя файла
@@ -78,14 +79,14 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     server.send_message(msg)  # Отправляем сообщение
 
     # Логирование
-    print_in_log(f"SEND  {cmd_time()}")
-    print_in_log(f"FROM: {list_from[0]}")
-    print_in_log(f"  TO: {', '.join(list_to)}")
-    print_in_log(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
-    print_in_log(f" BCC: {', '.join(list_bcc)}") if len(list_bcc) != 0 else None
-    print_in_log(f" SUB: {list_msg[0]}")
-    print_in_log(f"TEXT: {list_msg[1]}")
-    print_in_log(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
+    print(f"SEND  {cmd_time()}")
+    print(f"FROM: {list_from[0]}")
+    print(f"  TO: {', '.join(list_to)}")
+    print(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
+    print(f" BCC: {', '.join(list_bcc)}") if len(list_bcc) != 0 else None
+    print(f" SUB: {list_msg[0]}")
+    print(f"TEXT: {list_msg[1]}")
+    print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
 
     server.quit()  # Выходим
     return
@@ -96,10 +97,8 @@ def read_email(info_email: list, protocol: str):
     # protocol либо "POP3", либо "IMAP"
     global I_FIRST, NEW_MILES, STOP_READ_EMAIL, __COUNT_SUBJECTS
 
-    # mails = 0  # Надо - без этого почему-то не получить письма
-
     # Указывается максимальное количество писем в ящике.
-    # Если больше, то более поздние письма удаляются до тех пор
+    # Если больше, то более поздние письма удаляются до тех пор,
     # пока не останется указанное количество писем.
     max_mails_in_box = 10
 
@@ -108,7 +107,7 @@ def read_email(info_email: list, protocol: str):
 
         # Условие для завершения функции
         if STOP_READ_EMAIL == 55 and I_FIRST:
-            print_in_log(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***")
+            print(f"*** THE COLONEL's NO ONE WRITES! {cmd_time()} ***")
             STOP_READ_EMAIL = 0
             return
 
@@ -132,7 +131,7 @@ def read_email(info_email: list, protocol: str):
             mails = int(id_list[-1]) if len(id_list) != 0 else 0  # Берем последний ID
 
         else:
-            print_in_log(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
+            print(f"***** PROTOCOL: POP3 or IMAP {cmd_time()} *****")
             return
 
         time.sleep(5)
@@ -161,7 +160,7 @@ def read_email(info_email: list, protocol: str):
 
             # Защита от ошибок при получении письма не от функции send_email
             if len(msg_content) < 3:
-                print_in_log("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
                 continue
         else:
             # для IMAP: *server.fetch(latest_email_id, "(RFC822)")[1][0]][1] Подготавливаем сообщение к декодированию
@@ -172,7 +171,7 @@ def read_email(info_email: list, protocol: str):
 
             # Защита от ошибок при получении письма не от функции send_email
             if len(msg_content) < 3:
-                print_in_log("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
                 continue
 
         msg_head = message_from_string(msg_content[0])  # Преобразуем str -> dict
@@ -188,19 +187,19 @@ def read_email(info_email: list, protocol: str):
 
         if not I_FIRST and __COUNT_SUBJECTS:
             __COUNT_SUBJECTS = False
-            print_in_log(f"\n\nEMAIL {cmd_time('date')}")
-            print_in_log("--------------------------------------------------------------------------")
+            print(f"\n\nEMAIL {cmd_time('date')}")
+            print("--------------------------------------------------------------------------")
 
-        print_in_log(f"READ  {cmd_time()} {protocol}")
-        print_in_log(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
-        print_in_log(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
+        print(f"READ  {cmd_time()} {protocol}")
+        print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
+        print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
         # Вытаскиваем значение по ключу если оно есть
-        print_in_log(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
+        print(f"  CC: {msg_head.get('Cc')}") if msg_head.get('Cc') != (None or "") else None
         # Вытаскиваем значение по ключу если оно есть
-        print_in_log(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') is not None else None
-        print_in_log(f" SUB: {msg_subject_decode}")
-        print_in_log(f"TEXT: {msg_text}")
-        print_in_log(f"FILE: {msg_file}") if msg_file is not None else None  # Имя вложенного файла если оно есть
+        print(f" BCC: {msg_head.get('Bcc')}") if msg_head.get('Bcc') is not None else None
+        print(f" SUB: {msg_subject_decode}")
+        print(f"TEXT: {msg_text}")
+        print(f"FILE: {msg_file}") if msg_file is not None else None  # Имя вложенного файла если оно есть
 
         # pop3 Удаление старых писем
         if mails > max_mails_in_box and protocol == "POP3":
@@ -240,7 +239,7 @@ try:
             email_data_dict[line[1]] = [line[2], line[3], line[-1]]  # Получатель
         email_data.close()
 except FileNotFoundError:
-    print_in_log("***** EMAIL: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
+    print("***** EMAIL: CONTROL ERROR - CSV File Not Found *****")  # Логирование.
 
 # Отравитель №1
 sender_1 = email_data_dict["sender_1"]
@@ -278,18 +277,18 @@ reader_2_imap = email_data_dict["reader_2_imap"]
 
 
 def i_sender():  # Отравитель
-    print_in_log("\n\nEMAIL")
-    print_in_log("----------------------------------------------------------------------------")
+    print("\n\nEMAIL")
+    print("----------------------------------------------------------------------------")
     send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
-    print_in_log()  # Логирование
+    print()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 2
     time.sleep(10)
-    print_in_log()  # Логирование
+    print()  # Логирование
     send_email(sender_1, to_3, msg_3, list_cc=cc_3)  # Отправка Письма №3
-    print_in_log()  # Логирование
+    print()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 4
-    print_in_log("--------------------------------------------------------------------------")
-    print_in_log("EMAIL end")
+    print("--------------------------------------------------------------------------")
+    print("EMAIL end")
     time.sleep(10)
 
 
@@ -298,7 +297,7 @@ def i_answer():  # Автоответчик
     global I_FIRST, __COUNT_SUBJECTS
     I_FIRST = False
 
-    print(f"\nАвтоответчик EMAIL запущен\n")
+    print("\nАвтоответчик EMAIL запущен\n")
 
     while True:
         __COUNT_SUBJECTS = True

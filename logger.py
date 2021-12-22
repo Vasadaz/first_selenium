@@ -46,7 +46,7 @@ def cmd_time(time_or_date="time") -> str:
         # GMT дата
         gmt_date_log = "{}{:0>2d}{:0>2d}".format(gmt_time.tm_year - 2000, gmt_time.tm_mon, gmt_time.tm_mday)
         # Возврат даты в формате "ГГММДД_ччммсс_GMT)"
-        return gmt_date_log + "_" + gmt_time_log + "_GMT.log"
+        return gmt_date_log + "_" + gmt_time_log + "_GMT.csv"
     else:
         return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
 
@@ -67,7 +67,7 @@ def file_for_log():
     os.chdir("../")  # Меняем рабочую директорию
 
 
-def print_in_log(text=""):
+def log_csv(text=""):
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
 
     try:
@@ -99,3 +99,5 @@ def print_in_log(text=""):
     logs_file.close()  # Закрываем файл
     os.chdir("../")  # Меняем рабочую директорию
     print(text)
+
+
