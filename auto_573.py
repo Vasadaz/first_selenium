@@ -3,6 +3,8 @@
 Скрипт для автоматического тестирования 573.
 Логирование команд происходит в консоли.
 """
+import http.client  # Для определения своего WAN адреса
+import socket  # Для определения своего LAN адреса
 import sys
 import time
 import subprocess  # библиотека для работы с командами и процессами ОС
@@ -191,6 +193,9 @@ https_list = ["https://yandex.ru",
               "https://mossad.gov.il",
               "https://sis.gov.uk",
               "https://bnd.bund.de"]
+
+
+
 # Условие определения режима автоответчика
 if len(sys.argv) == 2:
     if sys.argv[1] == "e":
@@ -208,10 +213,18 @@ if len(sys.argv) == 2:
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоли без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
+    # Определение моего WAN адреса
+    my_wan_ip = http.client.HTTPConnection("ifconfig.me")
+    my_wan_ip.request("GET", "/ip")
+
+    # Определение моего LAN адреса
+    my_lan_ip = socket.gethostbyname(socket.gethostname())
 
     print(f"""
 Тестирование 573 {RELEASE}
-    
+WAN: {my_wan_ip.getresponse().read().decode('utf-8')}
+LAN: {my_lan_ip}
+
 1 - http         5 - ftp
 2 - email*       6 - telnet  
 3 - im*          7 - ssh 
