@@ -3,6 +3,7 @@
 Скрипт для автоматического тестирования 573.
 Логирование команд происходит в консоли.
 """
+import sys
 import time
 import subprocess  # библиотека для работы с командами и процессами ОС
 import os
@@ -190,6 +191,19 @@ https_list = ["https://yandex.ru",
               "https://mossad.gov.il",
               "https://sis.gov.uk",
               "https://bnd.bund.de"]
+# Условие определения режима автоответчика
+if len(sys.argv) == 2:
+    if sys.argv[1] == "e":
+        # Режим автоответчика для тестов EMAIL
+        while True:
+            test_email.i_answer()
+            continue
+
+    elif sys.argv[1] == "i":
+        # Режим автоответчика для тестов IM
+        while True:
+            test_im.i_answer()
+            continue
 
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоли без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
@@ -213,26 +227,14 @@ e - email        i - im
     # Режим автоответчика для тестов EMAIL
     if "e" in marker_test_list:
         while True:
-            try:  # Защита от остановки тестов в случае ошибки
-                test_email.i_answer()
-                continue
-            except Exception as err:
-                print("***** ERROR IN TEST *****")
-                print(err)
-                continue
-        continue
+            test_email.i_answer()
+            continue
 
     # Режим автоответчика для тестов IM
     if "i" in marker_test_list:
         while True:
-            try:  # Защита от остановки тестов в случае ошибки
-                test_im.i_answer()
-                continue
-            except Exception as err:
-                print("***** ERROR IN TEST *****")
-                print(err)
-                continue
-        continue
+            test_im.i_answer()
+            continue
 
     # Создаём файл для записи лога
     file_for_log()
