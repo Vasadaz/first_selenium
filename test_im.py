@@ -12,7 +12,7 @@ https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti
 import csv
 import time
 from slixmpp import ClientXMPP
-from logger import cmd_time  # Импорт логирования
+from logger import cmd_time, log_csv  # Импорт логирования
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
@@ -55,6 +55,9 @@ class SendMsgBot(ClientXMPP):
 
         self.disconnect()  # Отключение от сервера
 
+        # Запись лога в csv файл
+        # protocol;time;resource;size;from;to;msg;error;
+        log_csv(f"IM-send;{cmd_time()};;;{self.jid};{self.recipient};{self.msg};;")
 
 class ReadMsgBot(ClientXMPP):
     # Класс для чтения сообщения, аргументы:
@@ -79,6 +82,8 @@ class ReadMsgBot(ClientXMPP):
             print("----------------------------------------------------------------------------")
 
         msg_list = str(msg).split('"')  # Преобразование сообщения в список для логирования
+        msg_list_from = msg_list[1].split('/')[0]  # Определение отправителя
+        msg_list_to = msg_list[3]  # Определение получателя
 
         for el in msg_list:
             if "<body>" in el:
@@ -87,10 +92,15 @@ class ReadMsgBot(ClientXMPP):
         if READ_WAIT_MSG == ANSWER_WAIT_MSG:
             # Логирование
             print(f"READ  {cmd_time()}")
-            print(f"FROM: {msg_list[1].split('/')[0]}")  # Определение отправителя
-            print(f"  TO: {msg_list[3]}")  # Определение получателя
+            print(f"FROM: {msg_list_from}")
+            print(f"  TO: {msg_list_to}")
             print(f" MSG: {READ_WAIT_MSG}")
+
             self.disconnect()
+
+            # Запись лога в csv файл
+            # protocol;time;resource;size;from;to;msg;error;
+            log_csv(f"IM-read;{cmd_time()};;;{msg_list_from};{msg_list_to};{READ_WAIT_MSG};;")
 
 
 def fun_sender(jid: str, password: str, recipient: str, message: str):

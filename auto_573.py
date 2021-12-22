@@ -12,8 +12,7 @@ from selenium import webdriver, common
 import test_email
 import test_im
 # Импорт логирования
-
-from logger import cmd_time, RELEASE, file_for_log
+from logger import cmd_time, RELEASE, file_for_log, log_csv
 
 
 def web_test(protocol: str, websait_list: list):
@@ -38,8 +37,16 @@ def web_test(protocol: str, websait_list: list):
         try:
             # Метод get сообщает браузеру, что нужно открыть сайт по указанной ссылке.
             driver.get(el)
+
+            # Запись лога в csv файл
+            # protocol;time;resource;size;from;to;msg;error;
+            log_csv(f"{protocol};{cmd_time()};{el};;;;;;")
         except common.exceptions.WebDriverException:
-            print("***** WEB: CONTROL ERROR - NOT ANSWER *****")  # Логирование.
+            msg_error = "***** WEB: CONTROL ERROR - NOT ANSWER *****"
+            print(msg_error)  # Логирование.
+            # Запись лога в csv файл
+            # protocol;time;resource;size;from;to;msg;error;
+            log_csv(f"{protocol};{cmd_time()};{el};;;;;{msg_error};")
         time.sleep(10)  # Пауза 10 секунд.
 
     # Метод для закрытия окна браузера.
@@ -71,15 +78,26 @@ def ftp_test(download_list: list):
         print(f"\n{cmd_time()}\nFTP {el}")
         print(f"Download {el[28:]}")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
 
+        # Запись лога в csv файл
+        # protocol;time;resource;size;from;to;msg;error;
+        log_csv(f"FTP;{cmd_time()};{el};0;;;;;")
+
         # Метод для выполнения команды в консоли, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
         subprocess.run(["wget", "-P", "FTP_573", el])
+
+        # Логирование
         file_size = os.path.getsize(f"./FTP_573/{el[28:]}")
         if len(str(file_size)) < 10:
             file_size_mb_or_gb = str(round(file_size / (1024 ** 2), 1)) + " MB"
         else:
             file_size_mb_or_gb = str(round(file_size / (1024 ** 3), 1)) + " GB"
         print(f"End {cmd_time()} {el[28:]} {file_size_mb_or_gb} ({file_size} B)")
+
+        # Запись лога в csv файл
+        # protocol;time;resource;size;from;to;msg;error;
+        log_csv(f"FTP;{cmd_time()};{el};{file_size_mb_or_gb} ({file_size} B);;;;;")
+
         time.sleep(60)  # Пауза 60 секунд.
 
     # Логирование.
@@ -113,12 +131,22 @@ def terminal_test(protocol: str, servers_list: list, ):
             # Windows
             # Метод для выполнения команды в консоли, который ожидает завершения команды.
             subprocess.run(["taskkill", "/IM", "putty.exe", "/F"])
+
+            # Запись лога в csv файл
+            # protocol;time;resource;size;from;to;msg;error;
+            log_csv(f"{protocol};{cmd_time()};{el};;;;;;")
+
         except FileNotFoundError:
             # Linux
             # Метод для выполнения команды в консоли, который ожидает завершения команды.
             subprocess.run(["pkill", "putty"])
-            print("***** TERM: CONTROL ERROR - NOT WINDOWS *****")
 
+            # Логирование.
+            msg_error = "***** TERM: CONTROL ERROR - NOT WINDOWS *****"
+            print(msg_error)
+            # Запись лога в csv файл
+            # protocol;time;resource;size;from;to;msg;error;
+            log_csv(f"{protocol};{cmd_time()};{el};;;;;{msg_error};")
         print() if el != servers_list[-1] else None
 
     # Логирование.

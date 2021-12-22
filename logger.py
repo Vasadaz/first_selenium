@@ -62,12 +62,12 @@ def file_for_log():
 
     os.chdir("logs")  # Меняем рабочую директорию
     logs_file = open(cmd_time("for_log"), mode="x", encoding="utf-8")  # Создаём и открываем файл в режиме записи
-    logs_file.write("")
+    logs_file.write("protocol;time;resource;size;from;to;msg;error;")
     logs_file.close()  # Закрываем файл
     os.chdir("../")  # Меняем рабочую директорию
 
 
-def log_csv(text=""):
+def log_csv(text):
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
 
     try:
@@ -76,9 +76,6 @@ def log_csv(text=""):
         name_file.sort()
     except IndexError:
         os.chdir("../")  # Меняем рабочую директорию
-        return
-    except FileNotFoundError:
-        print(text)
         return
 
     if len(name_file) == 0:
@@ -91,13 +88,6 @@ def log_csv(text=""):
         os.remove(name_file[0])
 
     logs_file = open(name_file[-1], mode="a", encoding="utf-8")  # Открываем файл в режиме дозаписи
-    # Условие обработки print() перехода на другую строку
-    if text == "":
-        logs_file.write("\n")  # Дозаписываем в файл
-    else:
-        logs_file.write(text + "\n")  # Дозаписываем в файл
+    logs_file.write("\n" + text)  # Дозаписываем в файл
     logs_file.close()  # Закрываем файл
     os.chdir("../")  # Меняем рабочую директорию
-    print(text)
-
-
