@@ -4,6 +4,8 @@
 """
 import os
 import time
+import http.client  # Для определения своего WAN адреса
+import socket  # Для определения своего LAN адреса
 
 # Release v1.5.5
 RELEASE = "v1.5.5"
@@ -51,6 +53,18 @@ def cmd_time(time_or_date="time") -> str:
         return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
 
 
+def my_wan_ip():
+    # Определение моего WAN адреса
+    wan_ip = http.client.HTTPConnection("ifconfig.me")
+    wan_ip.request("GET", "/ip")
+    return wan_ip.getresponse().read().decode('utf-8')
+
+
+def my_lan_ip():
+    # Определение моего LAN адреса
+    return socket.gethostbyname(socket.gethostname())
+
+
 def file_for_log():
     # Функция создания лог файла ГГММДД_ччммсс_GMT.log
 
@@ -62,7 +76,8 @@ def file_for_log():
 
     os.chdir("logs")  # Меняем рабочую директорию
     logs_file = open(cmd_time("for_log"), mode="x", encoding="utf-8")  # Создаём и открываем файл в режиме записи
-    logs_file.write("protocol;time;resource;size;from;to;msg;error;")
+    logs_file.write("protocol;time;resource;size;from;to;msg;error;\n")
+    logs_file.write(f"INFO;{cmd_time()};WAN {my_wan_ip()};LAN {my_lan_ip()};;;;;")
     logs_file.close()  # Закрываем файл
     os.chdir("../")  # Меняем рабочую директорию
 

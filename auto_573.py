@@ -3,19 +3,20 @@
 Скрипт для автоматического тестирования 573.
 Логирование команд происходит в консоли.
 """
-import http.client  # Для определения своего WAN адреса
-import socket  # Для определения своего LAN адреса
-import sys
-import time
-import subprocess  # библиотека для работы с командами и процессами ОС
 import os
 import shutil  # Для удаления папки FTP
+import subprocess  # библиотека для работы с командами и процессами ОС
+import sys
+import time
+
 # webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
 from selenium import webdriver, common
+
 import test_email
 import test_im
+
 # Импорт логирования
-from logger import cmd_time, RELEASE, file_for_log, log_csv
+from logger import cmd_time, RELEASE, file_for_log, log_csv, my_lan_ip, my_wan_ip
 
 
 def web_test(protocol: str, websait_list: list):
@@ -194,8 +195,6 @@ https_list = ["https://yandex.ru",
               "https://sis.gov.uk",
               "https://bnd.bund.de"]
 
-
-
 # Условие определения режима автоответчика
 if len(sys.argv) == 2:
     if sys.argv[1] == "e":
@@ -213,17 +212,11 @@ if len(sys.argv) == 2:
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоли без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
-    # Определение моего WAN адреса
-    my_wan_ip = http.client.HTTPConnection("ifconfig.me")
-    my_wan_ip.request("GET", "/ip")
-
-    # Определение моего LAN адреса
-    my_lan_ip = socket.gethostbyname(socket.gethostname())
 
     print(f"""
 Тестирование 573 {RELEASE}
-WAN: {my_wan_ip.getresponse().read().decode('utf-8')}
-LAN: {my_lan_ip}
+WAN: {my_wan_ip()}
+LAN: {my_lan_ip()}
 
 1 - http         5 - ftp
 2 - email*       6 - telnet  

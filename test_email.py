@@ -58,16 +58,16 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     msg.attach(MIMEText(list_msg[1], "plain"))  # Добавляем в сообщение текст
 
     # Логирование
-    msg_TO = f"TO:{list_to}" \
-             + f"  CC:{list_cc}" if len(list_cc) != 0 else "" \
-                                                           + f"  BCC:{list_bcc}" if len(list_bcc) != 0 else ""
+    msg_TO = f"TO:{list_to}"
+    msg_TO += f"  CC:{list_cc}" if len(list_cc) != 0 else ""
+    msg_TO += f"  BCC:{list_bcc}" if len(list_bcc) != 0 else ""
 
-    msg_TEXT = f"SUB:{list_msg[0]}  TEXT:{list_msg[1]}" \
-               + f"  FILE:{list_msg[2]}" if len(list_msg) > 2 else ""
+    msg_TEXT = f"SUB:{list_msg[0]}  TEXT:{list_msg[1]}"
+    msg_TEXT += f"  FILE:{list_msg[2]}" if len(list_msg) > 2 else ""
 
     # Запись лога в csv файл
     # protocol;time;resource;size;from;to;msg;error;
-    log_csv(f"EMAIL-SMTP;{cmd_time()};;;{list_from[0]};{msg_TO};{msg_TEXT};;")
+    log_csv(f"EMAIL-SMTP;{cmd_time()};;;{list_from[0]};{msg_TO};  {msg_TEXT}  ;;")
 
     # Условие для определения вложения у письма
     if len(list_msg) > 2:
@@ -213,16 +213,16 @@ def read_email(info_email: list, protocol: str):
         print(f"FILE: {msg_file}") if msg_file is not None else None  # Имя вложенного файла если оно есть
 
         # Логирование
-        msg_TO = f"TO:{msg_head.get('To')}" \
-                 + f"  CC: {msg_head.get('Cc')}" if msg_head.get('Cc') != (None or "") else "" \
-                 + f" BCC: {msg_head.get('Bcc')}" if msg_head.get('Bcc') != None else ""
+        msg_TO = f"TO:{msg_head.get('To')}"
+        msg_TO += f"  CC: {msg_head.get('Cc')}" if msg_head.get('Cc') != (None or "") else ""
+        msg_TO += f" BCC: {msg_head.get('Bcc')}" if msg_head.get('Bcc') is not None else ""
 
-        msg_TEXT = f"SUB:{msg_subject_decode}  TEXT:{msg_text}" \
-                   + f"  FILE:{msg_file}" if msg_file is not None else ""
+        msg_TEXT = f"SUB:{msg_subject_decode}  TEXT:{msg_text}"
+        msg_TEXT += f"  FILE:{msg_file}" if msg_file is not None else ""
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
-        log_csv(f"EMAIL-{protocol};{cmd_time()};;;{msg_head.get('From')};{msg_TO};{msg_TEXT};;")
+        log_csv(f"EMAIL-{protocol};{cmd_time()};;;{msg_head.get('From')};{msg_TO};  {msg_TEXT}  ;;")
 
         # pop3 Удаление старых писем
         if mails > max_mails_in_box and protocol == "POP3":
