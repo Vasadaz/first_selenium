@@ -7,8 +7,8 @@ import time
 import http.client  # Для определения своего WAN адреса
 import socket  # Для определения своего LAN адреса
 
-# Release v1.5.5
-RELEASE = "v1.5.5"
+# Release v1.5.6
+RELEASE = "v1.5.6"
 
 
 def cmd_time(time_or_date="time") -> str:
