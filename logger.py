@@ -78,7 +78,7 @@ def file_for_log():
 
     # Очищаем папку logs оставляя максимум 20 файлов
     os.chdir("logs")  # Меняем рабочую директорию
-    files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]
+    files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs
     for i in range(len(files_in_dir_logs) - 20):
         os.remove(files_in_dir_logs[i])
     os.chdir("../")  # Меняем рабочую директорию
@@ -91,7 +91,7 @@ def file_for_log():
 
     # Очищаем папку logs_in_docx оставляя максимум 5 файлов
     os.chdir("logs_in_docx")  # Меняем рабочую директорию
-    files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]
+    files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs_in_docx
     for i in range(len(files_in_dir_logs) - 5):
         os.remove(files_in_dir_logs[i])
     os.chdir("../")  # Меняем рабочую директорию
@@ -108,14 +108,8 @@ def log_csv(text):
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
 
     os.chdir("logs")  # Меняем рабочую директорию
-    name_file = tuple(os.walk(os.getcwd()))[0][-1]
+    name_file = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs
     name_file.sort()
-
-    if len(name_file) == 0:
-        # Условие для пустой директории logs
-        os.chdir("../")  # Меняем рабочую директорию
-        return
-
     logs_file = open(name_file[-1], mode="a", encoding="utf-8")  # Открываем файл в режиме дозаписи
     logs_file.write("\n" + text)  # Дозаписываем в файл
     logs_file.close()  # Закрываем файл
@@ -198,5 +192,4 @@ def csv_to_docx():
     print(wordDoc.tables[1].rows[45].cells[3].text)  # HTTPS Время https://bnd.bund.de
     """
 
-
-#csv_to_docx()
+# csv_to_docx()
