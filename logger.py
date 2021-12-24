@@ -133,6 +133,11 @@ def csv_to_docx():
     # размер шрифта
     style.font.size = Pt(14)
 
+    print(wordDoc.tables[1].rows[26].cells[3].text)  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
+    print(wordDoc.tables[1].rows[27].cells[3].text)  # FTP Время start - end ts.zip
+    print(wordDoc.tables[1].rows[28].cells[3].text)  # FTP Время start - end  gtdw.zip
+    print(wordDoc.tables[1].rows[29].cells[3].text)  # FTP Время start - end  maximum.zip
+
     # Вносим данные в Таблица №1 (wordDoc.tables[0])
     wordDoc.tables[0].rows[1].cells[2].text = f"Дата: {cmd_time('date')[5:15]}"  # Дата:
     wordDoc.tables[0].rows[3].cells[0].text = f"https://2ip.ru = {my_wan_ip()}"  # https://2ip.ru =
@@ -167,11 +172,9 @@ def csv_to_docx():
     print(wordDoc.tables[1].rows[22].cells[3].text)  # VOIP Время Исходящее голосовое соединение
     print(wordDoc.tables[1].rows[24].cells[3].text)  # VOIP Время Входящее голосовое соединение
     print(wordDoc.tables[1].rows[26].cells[3].text)  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
-    print(wordDoc.tables[1].rows[27].cells[3].text)  # FTP Время start ts.zip
-    print(wordDoc.tables[1].rows[28].cells[3].text)  # FTP Время start gtdw.zip
-    print(wordDoc.tables[1].rows[28].cells[5].text)  # FTP Время end gtdw.zip
-    print(wordDoc.tables[1].rows[29].cells[3].text)  # FTP Время start maximum.zip
-    print(wordDoc.tables[1].rows[29].cells[5].text)  # FTP Время end maximum.zip
+    print(wordDoc.tables[1].rows[27].cells[3].text)  # FTP Время start - end ts.zip
+    print(wordDoc.tables[1].rows[28].cells[3].text)  # FTP Время start - end  gtdw.zip
+    print(wordDoc.tables[1].rows[29].cells[3].text)  # FTP Время start - end  maximum.zip
     print(wordDoc.tables[1].rows[31].cells[3].text)  # TELNET Время towel.blinkenlights.nl
     print(wordDoc.tables[1].rows[32].cells[3].text)  # TELNET Время lord.stabs.org
     print(wordDoc.tables[1].rows[33].cells[3].text)  # TELNET Время 35.185.12.150
@@ -188,6 +191,7 @@ def csv_to_docx():
     print(wordDoc.tables[1].rows[44].cells[3].text)  # HTTPS Время https://sis.gov.uk
     print(wordDoc.tables[1].rows[45].cells[3].text)  # HTTPS Время https://bnd.bund.de
     """
+
 
 file_for_log()
 csv_to_docx()
