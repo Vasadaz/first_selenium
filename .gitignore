@@ -137,4 +137,6 @@ logs_in_docx
 # Файлы с данными для подключения
 email_data.csv
 im_data.csv
+name_object.txt
 .docx#
+.pylintrc

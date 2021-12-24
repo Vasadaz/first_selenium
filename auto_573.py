@@ -23,6 +23,7 @@ def web_test(protocol: str, websait_list: list):
     # Функция для теста web соединений. Аргументы:
     # protocol - нужен для логирования;
     # websait_list - список сайтов для теста.
+    # selenium.common.exceptions.SessionNotCreatedException:
 
     # Логирование.
     print(f"\n\n{protocol}")

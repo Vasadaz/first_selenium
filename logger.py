@@ -21,22 +21,27 @@ def object_name():
     # Название объекта для логирования
     global OBJECT_NAME
 
-    if my_lan_ip() == "192.168.1.127":
+    if my_lan_ip() in ["192.168.1.127", "172.24.64.1"]:
         OBJECT_NAME = "РТК-НТ"
         return OBJECT_NAME
 
-    with open("name_object.txt", "r+") as name_object_txt:
-        line = name_object_txt.readline()
+    name_file = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри
 
-        if line == "РТК-НТ":
-            line = ""
-
-        if len(line) == 0:
+    if "name_object.txt" in name_file:
+        with open("name_object.txt", "r+") as name_object_txt:
+            line = name_object_txt.readline()
+            if len(line) == 0:
+                OBJECT_NAME = input("Имя объекта для логирования:\n")
+                name_object_txt.write(OBJECT_NAME)
+            else:
+                OBJECT_NAME = line
+            name_object_txt.close()
+    else:
+        with open("name_object.txt", "x+") as name_object_txt:
+            line = name_object_txt.readline()
             OBJECT_NAME = input("Имя объекта для логирования:\n")
             name_object_txt.write(OBJECT_NAME)
-        else:
-            OBJECT_NAME = line
-        name_object_txt.close()
+            name_object_txt.close()
 
     return OBJECT_NAME
 
@@ -78,7 +83,7 @@ def cmd_time(time_or_date="time") -> str:
         # GMT дата
         gmt_date_log = "{}{:0>2d}{:0>2d}".format(gmt_time.tm_year - 2000, gmt_time.tm_mon, gmt_time.tm_mday)
         # Возврат даты в формате "ГГММДД_ччммсс_GMT)"
-        return f"{OBJECT_NAME} {gmt_date_log} {gmt_time_log} GMT.csv"
+        return f"{gmt_date_log}_{gmt_time_log}_GMT  {OBJECT_NAME}.csv"
     else:
         return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
 
@@ -164,7 +169,7 @@ def csv_to_docx():
     os.chdir("logs")  # Меняем рабочую директорию
     name_file = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs
     name_file.sort()
-    with open(name_file[-1], "r") as log_in_csv:
+    with open(name_file[-1], "r", encoding="utf-8") as log_in_csv:
         log_list = [line[0].split(";") for line in csv.reader(log_in_csv)]  # Преобразуем строку из файла в список
         log_in_csv.close()
     os.chdir("../")  # Меняем рабочую директорию
@@ -192,7 +197,7 @@ def csv_to_docx():
                 ftp_time_list.append(test[1][:5])
             else:  # end
                 # Получаем строку "start - hh:mi (size MB/GB)"
-                ftp_time_list[-1] += f" - ({test[1][:5]} {test[3].replace(' (', '    ')[:8]})"
+                ftp_time_list[-1] += f" - {test[1][:5]} ({test[3].replace(' (', '    ')[:8].strip(' ')})"
         elif "TELNET" in test[0]:
             telnet_time_list.append(test[1][:5])
         elif "SSH" in test[0]:
