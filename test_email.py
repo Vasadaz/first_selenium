@@ -17,6 +17,7 @@ POP3 https://www.code-learner.com/python-use-pop3-to-read-email-example/
 IMAP http://python-3.ru/page/imap-email-python
 """
 import time
+import os
 import smtplib  # Импортируем библиотеку по работе с SMTP
 from email import message_from_string
 from email import encoders  # Импортируем энкодер
@@ -59,7 +60,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     msg["Subject"] = list_msg[0]  # Добавление темы сообщения
     msg.attach(MIMEText(list_msg[1], "plain"))  # Добавляем в сообщение текст
 
-    if I_FIRST:
+    if I_FIRST and len(list_msg) <= 3:
         # Логирование
         msg_TO = f"TO:{list_to}"
         msg_TO += f"  CC:{list_cc}" if len(list_cc) != 0 else ""
@@ -73,7 +74,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
         log_csv(f"EMAIL-SMTP;{cmd_time()};;;{list_from[0]};{msg_TO};  {msg_TEXT}  ;;")
 
     # Условие для определения вложения у письма
-    if len(list_msg) > 2:
+    if len(list_msg) == 3:
         filepath = f"./email/{list_msg[2]}"  # Путь к файлу. Файлы для отправки должны лежать в ./email/
         filename = f"{list_msg[2]}"  # Только имя файла
 
@@ -86,11 +87,40 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
         file.add_header("Content-Disposition", "attachment", filename=filename)  # Добавляем заголовки
         msg.attach(file)  # Присоединяем файл к сообщению
 
+    # Условие для отправки письма о выполненном тесте
+    elif len(list_msg) == 4:
+        # Добавляем к письму файл DOCX
+        filepath_docx = f"./logs_in_docx/{list_msg[2]}"  # Путь к файлу
+        filename_docx = f"{list_msg[2]}"  # Только имя файла
+        with open(filepath_docx, "rb") as fp:
+            file_docx = MIMEBase("application", "docx")  # Используем общий MIME-тип
+            file_docx.set_payload(fp.read())  # Добавляем содержимое общего типа (полезную нагрузку)
+            fp.close()
+        encoders.encode_base64(file_docx)  # Содержимое должно кодироваться как Base64
+        file_docx.add_header("Content-Disposition", "attachment", filename=filename_docx)  # Добавляем заголовки
+        msg.attach(file_docx)  # Присоединяем файл к сообщению
+
+        # Добавляем к письму файл CSV
+        filepath_csv = f"./logs/{list_msg[3]}"  # Путь к файлу
+        filename_csv = f"{list_msg[3]}"  # Только имя файла
+        with open(filepath_csv, "rb") as fp:
+            file_csv = MIMEBase("application", "csv")  # Используем общий MIME-тип
+            file_csv.set_payload(fp.read())  # Добавляем содержимое общего типа (полезную нагрузку)
+            fp.close()
+        encoders.encode_base64(file_csv)  # Содержимое должно кодироваться как Base64
+        file_csv.add_header("Content-Disposition", "attachment", filename=filename_csv)  # Добавляем заголовки
+        msg.attach(file_csv)  # Присоединяем файл к сообщению
+
     server = smtplib.SMTP(list_from[2], int(list_from[3]))  # Создаем объект SMTP (сервер, порт)
     # server.set_debuglevel(1)  # Системные логи, дебагер
     server.starttls() if list_from[2] != "mail.nic.ru" else None  # Начинаем шифрованный обмен по TLS, нужен для яндекса
     server.login(list_from[0], list_from[1])  # Получаем доступ (email, пароль)
     server.send_message(msg)  # Отправляем сообщение
+
+    # Убираем лог при отправке письма с тестовыми файлами
+    if len(list_msg) == 4:
+        server.quit()  # Выходим
+        return
 
     # Логирование
     print(f"SEND  {cmd_time()}")
@@ -339,3 +369,20 @@ def i_answer():  # Автоответчик
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
         print("--------------------------------------------------------------------------")
         print(f"EMAIL end {cmd_time('date')}")
+
+
+def send_end_test(object_name):
+    # Функция отправки сообщения о выполненном тесте
+
+    os.chdir("logs")  # Меняем рабочую директорию
+    list_files = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs
+    list_files.sort()
+    os.chdir("../")  # Меняем рабочую директорию
+
+    file_name_docx = f"Проверен {list_files[-1][:-4]} Тесты ПСИ 573 ПД.docx"  # Только имя файла
+    file_name_csv = list_files[-1]
+
+    to_me = ["ns@rtc-nt.ru"]
+    msg_end_test = [f"АВТО Тесты ПД 573 {object_name}", "На проверку", file_name_docx, file_name_csv]
+
+    send_email(sender_1, to_me, msg_end_test)

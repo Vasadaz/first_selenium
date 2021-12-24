@@ -10,6 +10,7 @@ import socket  # Для определения своего LAN адреса
 import docx  # Для работы с .docx
 from docx.shared import Pt  # Для работы с .docx
 
+
 # Release v1.5.6
 RELEASE = "v1.5.6"
 
@@ -310,3 +311,4 @@ def csv_to_docx():
 
     # Сохраняем заполненный файл "Проверен YYMMDD_hh24miss_GMT Тесты ПСИ 573 ПД.docx" в директории logs_in_docx
     wordDoc.save(f"./logs_in_docx/Проверен {name_file[-1][:-4]} Тесты ПСИ 573 ПД.docx")
+

@@ -336,3 +336,5 @@ e - email        i - im
 
     # Создаём по тесту файл .docx
     csv_to_docx()
+
+    test_email.send_end_test(object_name())
