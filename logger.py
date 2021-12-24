@@ -11,8 +11,8 @@ import docx  # Для работы с .docx
 from docx.shared import Pt  # Для работы с .docx
 
 
-# Release v1.5.7
-RELEASE = "v1.5.7"
+# Release v1.5.7.1
+RELEASE = "v1.5.7.1"
 
 OBJECT_NAME = "UNKNOWN"
 
