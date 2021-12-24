@@ -16,7 +16,7 @@ import test_email
 import test_im
 
 # Импорт логирования
-from logger import cmd_time, RELEASE, file_for_log, log_csv, my_lan_ip, my_wan_ip
+from logger import cmd_time, file_for_log, log_csv, my_lan_ip, my_wan_ip, object_name, csv_to_docx, RELEASE
 
 
 def web_test(protocol: str, websait_list: list):
@@ -209,12 +209,16 @@ if len(sys.argv) == 2:
             test_im.i_answer()
             continue
 
+# Проверка, что есть название
+# object_name()
+
 # Постоянный цикл для запуска тестов и просмотра логирования. Постоянный для просмотра логирования,
 # так как лог идёт в консоли без записи в файл. Выход из цикла осуществляется путём закрытия консоли.
 while True:
 
     print(f"""
 Тестирование 573 {RELEASE}
+{object_name()}
 WAN: {my_wan_ip()}
 LAN: {my_lan_ip()}
 
@@ -329,3 +333,6 @@ e - email        i - im
     print(cmd_time(time_or_date="date"))  # Логирование - дата
     print("END___" * 8)
     print("\n\n\n")
+
+    # Создаём по тесту файл .docx
+    csv_to_docx()

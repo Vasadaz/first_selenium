@@ -13,6 +13,32 @@ from docx.shared import Pt  # Для работы с .docx
 # Release v1.5.6
 RELEASE = "v1.5.6"
 
+OBJECT_NAME = "UNKNOWN"
+
+
+def object_name():
+    # Название объекта для логирования
+    global OBJECT_NAME
+
+    if my_lan_ip() == "192.168.1.127":
+        OBJECT_NAME = "РТК-НТ"
+        return OBJECT_NAME
+
+    with open("name_object.txt", "r+") as name_object_txt:
+        line = name_object_txt.readline()
+
+        if line == "РТК-НТ":
+            line = ""
+
+        if len(line) == 0:
+            OBJECT_NAME = input("Имя объекта для логирования:\n")
+            name_object_txt.write(OBJECT_NAME)
+        else:
+            OBJECT_NAME = line
+        name_object_txt.close()
+
+    return OBJECT_NAME
+
 
 def cmd_time(time_or_date="time") -> str:
     # Функция для возврата местного и GMT времени.
@@ -51,7 +77,7 @@ def cmd_time(time_or_date="time") -> str:
         # GMT дата
         gmt_date_log = "{}{:0>2d}{:0>2d}".format(gmt_time.tm_year - 2000, gmt_time.tm_mon, gmt_time.tm_mday)
         # Возврат даты в формате "ГГММДД_ччммсс_GMT)"
-        return gmt_date_log + "_" + gmt_time_log + "_GMT.csv"
+        return f"{OBJECT_NAME} {gmt_date_log} {gmt_time_log} GMT.csv"
     else:
         return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
 
@@ -71,16 +97,18 @@ def my_lan_ip():
 def file_for_log():
     # Функция создания лог файла ГГММДД_ччммсс_GMT.log
 
+    global OBJECT_NAME
+
     # Создаём директорию logs
     try:
         os.mkdir("logs")
     except FileExistsError:
         pass
 
-    # Очищаем папку logs оставляя максимум 20 файлов
+    # Очищаем папку logs оставляя максимум 10 файлов
     os.chdir("logs")  # Меняем рабочую директорию
     files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs
-    for i in range(len(files_in_dir_logs) - 20):
+    for i in range(len(files_in_dir_logs) - 10):
         os.remove(files_in_dir_logs[i])
     os.chdir("../")  # Меняем рабочую директорию
 
@@ -90,17 +118,17 @@ def file_for_log():
     except FileExistsError:
         pass
 
-    # Очищаем папку logs_in_docx оставляя максимум 5 файлов
+    # Очищаем папку logs_in_docx оставляя максимум 10 файлов
     os.chdir("logs_in_docx")  # Меняем рабочую директорию
     files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs_in_docx
-    for i in range(len(files_in_dir_logs) - 5):
+    for i in range(len(files_in_dir_logs) - 10):
         os.remove(files_in_dir_logs[i])
     os.chdir("../")  # Меняем рабочую директорию
 
     os.chdir("logs")  # Меняем рабочую директорию
     logs_file = open(cmd_time("for_log"), mode="x", encoding="utf-8")  # Создаём и открываем файл в режиме записи
     logs_file.write("protocol;time;resource;size;from;to;msg;error;\n")
-    logs_file.write(f"INFO;{cmd_time()};WAN {my_wan_ip()};LAN {my_lan_ip()};;;;;")
+    logs_file.write(f"{OBJECT_NAME};{cmd_time()};WAN {my_wan_ip()};LAN {my_lan_ip()};;;;;")
     logs_file.close()  # Закрываем файл
     os.chdir("../")  # Меняем рабочую директорию
 
@@ -162,7 +190,7 @@ def csv_to_docx():
             if test[3] == "0":  # start
                 ftp_time_list.append(test[1][:5])
             else:  # end
-                # Получем строку "satart - hh:mi (size MB/GB)"
+                # Получаем строку "start - hh:mi (size MB/GB)"
                 ftp_time_list[-1] += f" - ({test[1][:5]} {test[3].replace(' (', '    ')[:8]})"
         elif "TELNET" in test[0]:
             telnet_time_list.append(test[1][:5])
@@ -173,9 +201,12 @@ def csv_to_docx():
 
     # VOIP тест не готов, поэтому заменим его первым временем HTTP,
     # т.к. он делается вручную перед запуском авто-теста
-    if len(voip_time_list) == 0:
-        voip_time_list.append(http_time_list[0])
-        voip_time_list.append(http_time_list[0])
+    try:
+        if len(voip_time_list) == 0:
+            voip_time_list.append(http_time_list[0])
+            voip_time_list.append(http_time_list[0])
+    except IndexError:
+        pass
 
     # Открываем чистую таблицу
     wordDoc = docx.Document("./clear.docx")
@@ -187,6 +218,7 @@ def csv_to_docx():
     # Вносим данные в Таблица №1 (wordDoc.tables[0])
     # размер шрифта
     style.font.size = Pt(14)
+    wordDoc.tables[0].rows[0].cells[0].text = f"Оператор: {OBJECT_NAME}"  # Оператор
     wordDoc.tables[0].rows[1].cells[2].text = f"Дата: {cmd_time('date')[5:15]}"  # Дата:
     wordDoc.tables[0].rows[3].cells[0].text = f"https://2ip.ru = {log_list[1][2][4:]}"  # https://2ip.ru =
     wordDoc.tables[0].rows[4].cells[0].text = f"Серый IP = {log_list[1][3][4:]}"  # Серый IP =
@@ -194,55 +226,87 @@ def csv_to_docx():
     # Таблица №2 (wordDoc.tables[1]
     # размер шрифта
     style.font.size = Pt(12)
-    # HTTP
-    wordDoc.tables[1].rows[2].cells[3].text = http_time_list[0]  # HTTP Время http://kremlin.ru
-    wordDoc.tables[1].rows[3].cells[3].text = http_time_list[1]  # HTTP Время http://kremlin.ru/acts/constitution
-    wordDoc.tables[1].rows[4].cells[3].text = http_time_list[2]  # HTTP Время constitution.pdf
-    wordDoc.tables[1].rows[5].cells[3].text = http_time_list[3]  # HTTP Время http://fsb.ru
-    wordDoc.tables[1].rows[6].cells[3].text = http_time_list[4]  # HTTP Время http://khann.ru
-    wordDoc.tables[1].rows[7].cells[3].text = http_time_list[5]  # HTTP Время http://khann.ru/wallpapers/
-    wordDoc.tables[1].rows[8].cells[3].text = http_time_list[5]  # HTTP Время *.jpg
-    wordDoc.tables[1].rows[9].cells[3].text = http_time_list[6]  # HTTP Время http://alex-kuznetsov.ru/test
-    wordDoc.tables[1].rows[10].cells[3].text = http_time_list[7]  # HTTP Время http://www.thesheep.info
-    wordDoc.tables[1].rows[11].cells[3].text = http_time_list[8]  # HTTP Время http://www.grani.ru
-    # EMAIL
-    wordDoc.tables[1].rows[12].cells[3].text = email_time_list[
-        0]  # EMAIL Время Отправка письма с 3 получателями, вложением и копией
-    wordDoc.tables[1].rows[14].cells[3].text = email_time_list[
-        1]  # EMAIL Время Получение письма с 3 получателями и вложением
-    wordDoc.tables[1].rows[16].cells[3].text = email_time_list[2]  # EMAIL Время Отправка письма с 2 копиями и иероглифы
-    wordDoc.tables[1].rows[18].cells[3].text = email_time_list[
-        3]  # EMAIL Время Получение письма с 2 копиями и иероглифы
-    # IM
-    wordDoc.tables[1].rows[20].cells[3].text = im_time_list[0]  # IM Время Отправка сообщений
-    wordDoc.tables[1].rows[21].cells[3].text = im_time_list[1]  # IM Время Получение сообщений
-    # VOIP
-    wordDoc.tables[1].rows[22].cells[3].text = voip_time_list[0]  # VOIP Время Исходящее голосовое соединение
-    wordDoc.tables[1].rows[24].cells[3].text = voip_time_list[1]  # VOIP Время Входящее голосовое соединение
-    # FTP
-    wordDoc.tables[1].rows[26].cells[3].text = ftp_time_list[0][
-                                               :5]  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
-    wordDoc.tables[1].rows[27].cells[3].text = ftp_time_list[0]  # FTP Время start - end ts.zip
-    wordDoc.tables[1].rows[28].cells[3].text = ftp_time_list[1]  # FTP Время start - end  gtdw.zip
-    wordDoc.tables[1].rows[29].cells[3].text = ftp_time_list[2]  # FTP Время start - end  maximum.zip
-    # TELNET
-    wordDoc.tables[1].rows[31].cells[3].text = telnet_time_list[0]  # TELNET Время towel.blinkenlights.nl
-    wordDoc.tables[1].rows[32].cells[3].text = telnet_time_list[1]  # TELNET Время lord.stabs.org
-    wordDoc.tables[1].rows[33].cells[3].text = telnet_time_list[2]  # TELNET Время 35.185.12.150
-    # SSH
-    wordDoc.tables[1].rows[34].cells[3].text = ssh_time_list[0]  # SSH Время 195.144.107.198
-    wordDoc.tables[1].rows[35].cells[3].text = ssh_time_list[1]  # SSH Время sdf.org
-    # HTTPS
-    wordDoc.tables[1].rows[36].cells[3].text = https_time_list[0]  # HTTPS Время https://yandex.ru
-    wordDoc.tables[1].rows[37].cells[3].text = https_time_list[1]  # HTTPS Время https://mail.ru
-    wordDoc.tables[1].rows[38].cells[3].text = https_time_list[2]  # HTTPS Время https://rambler.ru
-    wordDoc.tables[1].rows[39].cells[3].text = https_time_list[3]  # HTTPS Время https://2ip.ru
-    wordDoc.tables[1].rows[40].cells[3].text = https_time_list[4]  # HTTPS Время https://cia.gov
-    wordDoc.tables[1].rows[41].cells[3].text = https_time_list[5]  # HTTPS Время https://nsa.gov
-    wordDoc.tables[1].rows[42].cells[3].text = https_time_list[6]  # HTTPS Время https://ssu.gov.ua
-    wordDoc.tables[1].rows[43].cells[3].text = https_time_list[7]  # HTTPS Время https://mossad.gov.il
-    wordDoc.tables[1].rows[44].cells[3].text = https_time_list[5]  # HTTPS Время https://sis.gov.uk
-    wordDoc.tables[1].rows[45].cells[3].text = https_time_list[9]  # HTTPS Время https://bnd.bund.de
+    try:
+        # HTTP
+        wordDoc.tables[1].rows[2].cells[3].text = http_time_list[0]  # HTTP Время http://kremlin.ru
+        wordDoc.tables[1].rows[3].cells[3].text = http_time_list[1]  # HTTP Время http://kremlin.ru/acts/constitution
+        wordDoc.tables[1].rows[4].cells[3].text = http_time_list[2]  # HTTP Время constitution.pdf
+        wordDoc.tables[1].rows[5].cells[3].text = http_time_list[3]  # HTTP Время http://fsb.ru
+        wordDoc.tables[1].rows[6].cells[3].text = http_time_list[4]  # HTTP Время http://khann.ru
+        wordDoc.tables[1].rows[7].cells[3].text = http_time_list[5]  # HTTP Время http://khann.ru/wallpapers/
+        wordDoc.tables[1].rows[8].cells[3].text = http_time_list[5]  # HTTP Время *.jpg
+        wordDoc.tables[1].rows[9].cells[3].text = http_time_list[6]  # HTTP Время http://alex-kuznetsov.ru/test
+        wordDoc.tables[1].rows[10].cells[3].text = http_time_list[7]  # HTTP Время http://www.thesheep.info
+        wordDoc.tables[1].rows[11].cells[3].text = http_time_list[8]  # HTTP Время http://www.grani.ru
+    except IndexError:
+        pass
+
+    try:
+        # EMAIL
+        wordDoc.tables[1].rows[12].cells[3].text = email_time_list[
+            0]  # EMAIL Время Отправка письма с 3 получателями, вложением и копией
+        wordDoc.tables[1].rows[14].cells[3].text = email_time_list[
+            1]  # EMAIL Время Получение письма с 3 получателями и вложением
+        wordDoc.tables[1].rows[16].cells[3].text = email_time_list[
+            2]  # EMAIL Время Отправка письма с 2 копиями и иероглифы
+        wordDoc.tables[1].rows[18].cells[3].text = email_time_list[
+            3]  # EMAIL Время Получение письма с 2 копиями и иероглифы
+    except IndexError:
+        pass
+
+    try:
+        # IM
+        wordDoc.tables[1].rows[20].cells[3].text = im_time_list[0]  # IM Время Отправка сообщений
+        wordDoc.tables[1].rows[21].cells[3].text = im_time_list[1]  # IM Время Получение сообщений
+    except IndexError:
+        pass
+
+    try:
+        # VOIP
+        wordDoc.tables[1].rows[22].cells[3].text = voip_time_list[0]  # VOIP Время Исходящее голосовое соединение
+        wordDoc.tables[1].rows[24].cells[3].text = voip_time_list[1]  # VOIP Время Входящее голосовое соединение
+    except IndexError:
+        pass
+
+    try:
+        # FTP
+        wordDoc.tables[1].rows[26].cells[3].text = ftp_time_list[0][
+                                                   :5]  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
+        wordDoc.tables[1].rows[27].cells[3].text = ftp_time_list[0]  # FTP Время start - end ts.zip
+        wordDoc.tables[1].rows[28].cells[3].text = ftp_time_list[1]  # FTP Время start - end  gtdw.zip
+        wordDoc.tables[1].rows[29].cells[3].text = ftp_time_list[2]  # FTP Время start - end  maximum.zip
+    except IndexError:
+        pass
+
+    try:
+        # TELNET
+        wordDoc.tables[1].rows[31].cells[3].text = telnet_time_list[0]  # TELNET Время towel.blinkenlights.nl
+        wordDoc.tables[1].rows[32].cells[3].text = telnet_time_list[1]  # TELNET Время lord.stabs.org
+        wordDoc.tables[1].rows[33].cells[3].text = telnet_time_list[2]  # TELNET Время 35.185.12.150
+    except IndexError:
+        pass
+
+    try:
+        # SSH
+        wordDoc.tables[1].rows[34].cells[3].text = ssh_time_list[0]  # SSH Время 195.144.107.198
+        wordDoc.tables[1].rows[35].cells[3].text = ssh_time_list[1]  # SSH Время sdf.org
+    except IndexError:
+        pass
+
+    try:
+        # HTTPS
+        wordDoc.tables[1].rows[36].cells[3].text = https_time_list[0]  # HTTPS Время https://yandex.ru
+        wordDoc.tables[1].rows[37].cells[3].text = https_time_list[1]  # HTTPS Время https://mail.ru
+        wordDoc.tables[1].rows[38].cells[3].text = https_time_list[2]  # HTTPS Время https://rambler.ru
+        wordDoc.tables[1].rows[39].cells[3].text = https_time_list[3]  # HTTPS Время https://2ip.ru
+        wordDoc.tables[1].rows[40].cells[3].text = https_time_list[4]  # HTTPS Время https://cia.gov
+        wordDoc.tables[1].rows[41].cells[3].text = https_time_list[5]  # HTTPS Время https://nsa.gov
+        wordDoc.tables[1].rows[42].cells[3].text = https_time_list[6]  # HTTPS Время https://ssu.gov.ua
+        wordDoc.tables[1].rows[43].cells[3].text = https_time_list[7]  # HTTPS Время https://mossad.gov.il
+        wordDoc.tables[1].rows[44].cells[3].text = https_time_list[5]  # HTTPS Время https://sis.gov.uk
+        wordDoc.tables[1].rows[45].cells[3].text = https_time_list[9]  # HTTPS Время https://bnd.bund.de
+    except IndexError:
+        pass
 
     # Сохраняем заполненный файл "Проверен YYMMDD_hh24miss_GMT Тесты ПСИ 573 ПД.docx" в директории logs_in_docx
-    wordDoc.save(f"./logs_in_docx/Проверен {cmd_time('for_log')[:-4]} Тесты ПСИ 573 ПД.docx")
+    wordDoc.save(f"./logs_in_docx/Проверен {name_file[-1][:-4]} Тесты ПСИ 573 ПД.docx")
