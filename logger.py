@@ -76,11 +76,25 @@ def file_for_log():
     except FileExistsError:
         pass
 
+    # Очищаем папку logs оставляя максимум 20 файлов
+    os.chdir("logs")  # Меняем рабочую директорию
+    files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]
+    for i in range(len(files_in_dir_logs) - 20):
+        os.remove(files_in_dir_logs[i])
+    os.chdir("../")  # Меняем рабочую директорию
+
     # Создаём директорию logs_in_docx
     try:
         os.mkdir("logs_in_docx")
     except FileExistsError:
         pass
+
+    # Очищаем папку logs_in_docx оставляя максимум 5 файлов
+    os.chdir("logs_in_docx")  # Меняем рабочую директорию
+    files_in_dir_logs = tuple(os.walk(os.getcwd()))[0][-1]
+    for i in range(len(files_in_dir_logs) - 5):
+        os.remove(files_in_dir_logs[i])
+    os.chdir("../")  # Меняем рабочую директорию
 
     os.chdir("logs")  # Меняем рабочую директорию
     logs_file = open(cmd_time("for_log"), mode="x", encoding="utf-8")  # Создаём и открываем файл в режиме записи
@@ -93,22 +107,14 @@ def file_for_log():
 def log_csv(text):
     # Функция для записи данных в файл ГГММДД_ччммсс_GMT.log
 
-    try:
-        os.chdir("logs")  # Меняем рабочую директорию
-        name_file = tuple(os.walk(os.getcwd()))[0][-1]
-        name_file.sort()
-    except IndexError:
-        os.chdir("../")  # Меняем рабочую директорию
-        return
+    os.chdir("logs")  # Меняем рабочую директорию
+    name_file = tuple(os.walk(os.getcwd()))[0][-1]
+    name_file.sort()
 
     if len(name_file) == 0:
         # Условие для пустой директории logs
         os.chdir("../")  # Меняем рабочую директорию
         return
-
-    elif len(name_file) > 20:
-        # Очищаем папку logs оставляя максимум 20 файлов
-        os.remove(name_file[0])
 
     logs_file = open(name_file[-1], mode="a", encoding="utf-8")  # Открываем файл в режиме дозаписи
     logs_file.write("\n" + text)  # Дозаписываем в файл
@@ -193,5 +199,4 @@ def csv_to_docx():
     """
 
 
-file_for_log()
-csv_to_docx()
+#csv_to_docx()
