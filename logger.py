@@ -3,12 +3,26 @@
 Также определения времени выполнения команды.
 """
 import os
+import subprocess
 import time
 import csv
 import http.client  # Для определения своего WAN адреса
 import socket  # Для определения своего LAN адреса
-import docx  # Для работы с .docx
-from docx.shared import Pt  # Для работы с .docx
+
+
+# Импорт модуля docx, в случае отсутствия будет сделана его установка
+# Для работы с файлами .docx
+try:
+    import docx
+    from docx.shared import Pt  # Для работы с .docx
+except ModuleNotFoundError:
+    print("Installing python-docx==0.8.11")
+    # Установка модуля с отключенным stdout
+    mod_inst = subprocess.Popen("pip3 install python-docx==0.8.11", shell=True,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    mod_inst.wait()  # Вызов и ожидание установки
+    import docx
+    from docx.shared import Pt  # Для работы с .docx
 
 
 # Release v1.5.7.1

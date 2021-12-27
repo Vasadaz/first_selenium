@@ -9,8 +9,19 @@ import subprocess  # библиотека для работы с команда�
 import sys
 import time
 
-# webdriver набор методов для управления браузером, common для контроля ошибок если сайт недоступен
-from selenium import webdriver, common
+# Импорт модуля selenium, в случае отсутствия будет сделана его установка
+# selenium набор методов для управления браузером, common для контроля ошибок если сайт недоступен
+try:
+    from selenium import webdriver, common
+except ModuleNotFoundError:
+    print("Installing selenium==3.141.0")
+    # Установка модуля с отключенным stdout
+    mod_inst = subprocess.Popen("pip3 install selenium==3.141.0", shell=True,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    mod_inst.wait()  # Вызов и ожидание установки
+    from selenium import webdriver, common
+
+
 
 import test_email
 import test_im

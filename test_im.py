@@ -10,9 +10,21 @@ https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
 https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
 """
 import csv
+import subprocess
 import time
-from slixmpp import ClientXMPP
+
 from logger import cmd_time, log_csv  # Импорт логирования
+
+# Импорт модуля slixmpp, в случае отсутствия будет сделана его установка
+try:
+    from slixmpp import ClientXMPP
+except ModuleNotFoundError:
+    print("Installing slixmpp==1.7.1")
+    # Установка модуля с отключенным stdout
+    mod_inst = subprocess.Popen("pip3 install slixmpp==1.7.1", shell=True,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    mod_inst.wait()  # Вызов и ожидание установки
+    from slixmpp import ClientXMPP
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
@@ -58,6 +70,7 @@ class SendMsgBot(ClientXMPP):
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
         log_csv(f"IM-send;{cmd_time()};;;{self.jid};{self.recipient};{self.msg};;")
+
 
 class ReadMsgBot(ClientXMPP):
     # Класс для чтения сообщения, аргументы:
