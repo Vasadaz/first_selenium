@@ -2,6 +2,11 @@
 """
 Скрипт для автоматического тестирования 573.
 Логирование команд происходит в консоли.
+pip uninstall chromedriver-autoinstaller
+pip uninstall slixmpp
+pip uninstall selenium
+pip uninstall python-docx
+
 """
 import os
 import shutil  # Для удаления папки FTP
@@ -11,17 +16,26 @@ import time
 
 # Импорт модуля selenium, в случае отсутствия будет сделана его установка
 # selenium набор методов для управления браузером, common для контроля ошибок если сайт недоступен
+# chromedriver_autoinstaller автоустановщик и инициализатор chromedriver
 try:
     from selenium import webdriver, common
+    import chromedriver_autoinstaller
+
 except ModuleNotFoundError:
     print("Installing selenium==3.141.0")
     # Установка модуля с отключенным stdout
     mod_inst = subprocess.Popen("pip3 install selenium==3.141.0", shell=True,
                                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     mod_inst.wait()  # Вызов и ожидание установки
+
+    print("Installing chromedriver-autoinstaller==0.3.1")
+    # Установка модуля с отключенным stdout
+    drive_inst = subprocess.Popen("pip3 install chromedriver-autoinstaller==0.3.1", shell=True,
+                                  stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    drive_inst.wait()  # Вызов и ожидание установки
+
     from selenium import webdriver, common
-
-
+    import chromedriver_autoinstaller
 
 import test_email
 import test_im
@@ -39,7 +53,12 @@ def web_test(protocol: str, websait_list: list):
     # Логирование.
     print(f"\n\n{protocol}")
     print("----------------------------------------------------------------------------")
-    print("Open browser")
+    print("Open browser", end=" ")
+
+    # Запуск webdriver для chrome
+    chromedriver_autoinstaller.install()
+    # Вывод версии chrome + лечит WARNING:urllib3.connectionpool:Retrying
+    print(f"CHROME v{chromedriver_autoinstaller.get_chrome_version()}")
 
     # Инициализируем драйвер браузера. После этой команды будет открыто новое окно браузера.
     driver = webdriver.Chrome()
@@ -67,7 +86,6 @@ def web_test(protocol: str, websait_list: list):
 
     # Метод для закрытия окна браузера.
     driver.quit()
-    driver.quit()  # Дублирование метода для надёжности, не всегда выполняется с первого раза.
 
     # Логирование.
     print("\nClose browser")
