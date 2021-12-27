@@ -2,11 +2,6 @@
 """
 Скрипт для автоматического тестирования 573.
 Логирование команд происходит в консоли.
-pip uninstall chromedriver-autoinstaller
-pip uninstall slixmpp
-pip uninstall selenium
-pip uninstall python-docx
-
 """
 import os
 import shutil  # Для удаления папки FTP
@@ -36,6 +31,19 @@ except ModuleNotFoundError:
 
     from selenium import webdriver, common
     import chromedriver_autoinstaller
+
+# Импорт модуля wget, в случае отсутствия будет сделана его установка
+# Для тестов FTP
+try:
+    import wget
+except ModuleNotFoundError:
+    print("Installing wget==3.2")
+    # Установка модуля с отключенным stdout
+    mod_inst = subprocess.Popen("pip3 install wget==3.2", shell=True,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    mod_inst.wait()  # Вызов и ожидание установки
+
+    import wget
 
 import test_email
 import test_im
@@ -106,31 +114,47 @@ def ftp_test(download_list: list):
     except FileNotFoundError:
         pass
 
+    os.mkdir("FTP_573")  # Создание пустой папки
+
+    # Индикатор процесса для ftp тестов
+    def bar_progress(current, total, width=100):
+        procents_download = round(current / total * width, 1)
+        progress_message = f"Downloading: {procents_download}% [{current} / {total}] bytes"
+        # Don't use print() as it will print in new line every time.
+        sys.stdout.write("\r" + progress_message)
+        sys.stdout.flush()
+
     # Итерация по элементам списка download_list.
-    for el in download_list:
+    for link in download_list:
         # Логирование.
-        print(f"\n{cmd_time()}\nFTP {el}")
-        print(f"Download {el[28:]}")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
+        print(f"\n{cmd_time()}\nFTP {link}")
+        print(f"Download {link[28:]}")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
-        log_csv(f"FTP;{cmd_time()};{el};0;;;;;")
+        log_csv(f"FTP;{cmd_time()};{link};0;;;;;")
+
+        os.chdir("FTP_573")  # Меняем рабочую директорию
 
         # Метод для выполнения команды в консоли, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
-        subprocess.run(["wget", "-P", "FTP_573", el])
+
+        wget.download(link, bar=bar_progress)
+
+        os.chdir("../")  # Меняем рабочую директорию
 
         # Логирование
-        file_size = os.path.getsize(f"./FTP_573/{el[28:]}")
+        print()
+        file_size = os.path.getsize(f"./FTP_573/{link[28:]}")
         if len(str(file_size)) < 10:
             file_size_mb_or_gb = str(round(file_size / (1024 ** 2), 1)) + " MB"
         else:
             file_size_mb_or_gb = str(round(file_size / (1024 ** 3), 1)) + " GB"
-        print(f"End {cmd_time()} {el[28:]} {file_size_mb_or_gb} ({file_size} B)")
+        print(f"End {cmd_time()} {link[28:]} {file_size_mb_or_gb} ({file_size} B)")
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
-        log_csv(f"FTP;{cmd_time()};{el};{file_size_mb_or_gb} ({file_size} B);;;;;")
+        log_csv(f"FTP;{cmd_time()};{link};{file_size_mb_or_gb} ({file_size} B);;;;;")
 
         time.sleep(60)  # Пауза 60 секунд.
 
