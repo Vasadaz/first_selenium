@@ -42,7 +42,7 @@ def object_name():
     name_file = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри
 
     if "name_object.txt" in name_file:
-        with open("name_object.txt", "r+") as name_object_txt:
+        with open("name_object.txt", "r+", encoding='UTF-8') as name_object_txt:
             line = name_object_txt.readline()
             if len(line) == 0:
                 OBJECT_NAME = input("Имя объекта для логирования:\n")
@@ -51,8 +51,7 @@ def object_name():
                 OBJECT_NAME = line
             name_object_txt.close()
     else:
-        with open("name_object.txt", "x+") as name_object_txt:
-            line = name_object_txt.readline()
+        with open("name_object.txt", "x+", encoding='UTF-8') as name_object_txt:
             OBJECT_NAME = input("Имя объекта для логирования:\n")
             name_object_txt.write(OBJECT_NAME)
             name_object_txt.close()

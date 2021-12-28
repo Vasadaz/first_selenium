@@ -52,10 +52,10 @@ import test_im
 from logger import cmd_time, file_for_log, log_csv, my_lan_ip, my_wan_ip, object_name, csv_to_docx, RELEASE
 
 
-def web_test(protocol: str, websait_list: list):
+def web_test(protocol: str, website_list: list):
     # Функция для теста web соединений. Аргументы:
     # protocol - нужен для логирования;
-    # websait_list - список сайтов для теста.
+    # website_list - список сайтов для теста.
     # selenium.common.exceptions.SessionNotCreatedException:
 
     # Логирование.
@@ -72,8 +72,8 @@ def web_test(protocol: str, websait_list: list):
     driver = webdriver.Chrome()
     time.sleep(5)  # Пауза 5 секунд.
 
-    # Итерации по элементам списка websait_list.
-    for el in websait_list:
+    # Итерации по элементам списка website_list.
+    for el in website_list:
 
         print(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
         # Исключение для перенаправления ошибки заблокированных ресурсов.
@@ -118,8 +118,8 @@ def ftp_test(download_list: list):
 
     # Индикатор процесса для ftp тестов
     def bar_progress(current, total, width=100):
-        procents_download = round(current / total * width, 1)
-        progress_message = f"Downloading: {procents_download}% [{current} / {total}] bytes"
+        percent_download = round(current / total * width, 1)
+        progress_message = f"Downloading: {percent_download}% [{current} / {total}] bytes"
         # Don't use print() as it will print in new line every time.
         sys.stdout.write("\r" + progress_message)
         sys.stdout.flush()
@@ -138,7 +138,8 @@ def ftp_test(download_list: list):
 
         # Метод для выполнения команды в консоли, который ожидает завершения команды.
         # Команда для скачивания файлов >>> wget ftp://alta.ru/packets/distr/ts.zip
-
+        # В версиях python >= 3.9 идёт ошибка
+        # 'utf-8' codec can't decode byte 0xc0 in position 4: invalid start byte
         wget.download(link, bar=bar_progress)
 
         os.chdir("../")  # Меняем рабочую директорию

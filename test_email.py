@@ -204,7 +204,7 @@ def read_email(info_email: list, protocol: str):
 
             # Защита от ошибок при получении письма не от функции send_email
             if len(msg_content) < 3:
-                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                print("***** EMAIL: CONTROL ERROR - Not AUTO mail *****")
                 continue
         else:
             # для IMAP: *server.fetch(latest_email_id, "(RFC822)")[1][0]][1] Подготавливаем сообщение к декодированию
@@ -215,7 +215,7 @@ def read_email(info_email: list, protocol: str):
 
             # Защита от ошибок при получении письма не от функции send_email
             if len(msg_content) < 3:
-                print("***** EMAIL: CONTROL ERROR - Not AVTO mail *****")
+                print("***** EMAIL: CONTROL ERROR - Not AUTO mail *****")
                 continue
 
         msg_head = message_from_string(msg_content[0])  # Преобразуем str -> dict
