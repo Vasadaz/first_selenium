@@ -304,7 +304,7 @@ sender_1 = email_data_dict["sender_1"]
 # Письмо №1
 to_1 = ["rtc-nt-test1@yandex.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 bcc_1 = ["rtc-nt-test4@yandex.ru"]
-msg_1 = [f"АВТО Отправка письма с 3 получателями, вложением и скрытой копией {cmd_time()}",  # Тема письма
+msg_1 = [f"АВТО Отправка письма с 3 получателями, копией и вложением{cmd_time()}",  # Тема письма
          f"Текст письма Отправка -> {cmd_time()}",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №3
@@ -336,7 +336,7 @@ reader_2_imap = email_data_dict["reader_2_imap"]
 def i_sender():  # Отравитель
     print("\n\nEMAIL")
     print("----------------------------------------------------------------------------")
-    send_email(sender_1, to_1, msg_1, list_bcc=bcc_1)  # Отправка Письма №1
+    send_email(sender_1, to_1, msg_1, list_cc=bcc_1)  # Отправка Письма №1
     print()  # Логирование
     read_email(reader_1_pop3, "POP3")  # Получение письма № 2
     time.sleep(10)
