@@ -26,7 +26,7 @@ except ModuleNotFoundError:
 
 
 # Release v1.6.2
-RELEASE = "v1.6.2"
+RELEASE = "v1.6.3"
 
 OBJECT_NAME = "UNKNOWN"
 
