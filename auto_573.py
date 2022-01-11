@@ -8,6 +8,11 @@ import shutil  # Для удаления папки FTP
 import subprocess  # библиотека для работы с командами и процессами ОС
 import sys
 import time
+import test_email
+import test_im
+
+# Импорт логирования
+from logger import cmd_time, file_for_log, log_csv, my_lan_ip, my_wan_ip, object_name, csv_to_docx, RELEASE
 
 # Импорт модуля selenium, в случае отсутствия будет сделана его установка
 # selenium набор методов для управления браузером, common для контроля ошибок если сайт недоступен
@@ -44,12 +49,6 @@ except ModuleNotFoundError:
     mod_inst.wait()  # Вызов и ожидание установки
 
     import wget
-
-import test_email
-import test_im
-
-# Импорт логирования
-from logger import cmd_time, file_for_log, log_csv, my_lan_ip, my_wan_ip, object_name, csv_to_docx, RELEASE
 
 
 def web_test(protocol: str, website_list: list):
