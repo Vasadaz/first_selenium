@@ -4,11 +4,10 @@
 """
 import os
 import subprocess
-import time
+import datetime  # Для возврата дат и времени
 import csv
 import http.client  # Для определения своего WAN адреса
 import socket  # Для определения своего LAN адреса
-
 
 # Импорт модуля docx, в случае отсутствия будет сделана его установка
 # Для работы с файлами .docx
@@ -24,8 +23,7 @@ except ModuleNotFoundError:
     import docx
     from docx.shared import Pt  # Для работы с .docx
 
-
-# Release v1.6.2
+# Release v1.6.3
 RELEASE = "v1.6.3"
 
 OBJECT_NAME = "UNKNOWN"
@@ -66,39 +64,33 @@ def cmd_time(time_or_date="time") -> str:
     # По умолчанию возвращает время time_or_date="time".
 
     # Местное дата и время
-    local_time = time.localtime()
+    local_date = datetime.datetime.now().date()  # YYYY-MM-DD
+    local_time = str(datetime.datetime.now().time())[:-7]  # hh24:mi:ss
+
     # GMT дата и время
-    gmt_time = time.gmtime()
+    gmt_date = datetime.datetime.utcnow().date()  # YYYY-MM-DD
+    gmt_time = str(datetime.datetime.utcnow().time())[:-7]  # hh24:mi:ss
 
     # Условие для возврата даты или времени.
     if time_or_date == "time":
-        # Форматирование времени в привычный вид, т.е. из 1:14:3 в 01:14:03.
-        # tm_hour, tm_min, tm_sec методы для возвращения единиц времени.
-        # Местное время
-        local_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(local_time.tm_hour, local_time.tm_min, local_time.tm_sec)
-        # GMT время
-        gmt_time_str = "{:0>2d}:{:0>2d}:{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
-        # Возврат времени в формате "чч:мм:сс (GMT чч:мм:сс)"
-        return f"{local_time_str} (GMT {gmt_time_str})"
+        # Возврат времени в формате "hh24:mi:ss (GMT hh24:mi:ss)"
+        return f"{local_time} (GMT {gmt_time})"
     elif time_or_date == "date":
-        # Форматирование даты в привычный вид, т.е. из 6.1.21 в 06.01.21.
-        # tm_mday, tm_mon, tm_year методы для возвращения единиц времени.
-        # Местная дата
-        local_date_str = "{:0>2d}.{:0>2d}.{:4d}".format(local_time.tm_mday, local_time.tm_mon, local_time.tm_year)
-        # GMT дата
-        gmt_date_str = "{:0>2d}.{:0>2d}.{:0>2d}".format(gmt_time.tm_mday, gmt_time.tm_mon, gmt_time.tm_year)
-        # Возврат даты в формате "ДД.ММ.ГГ (GMT ДД.ММ.ГГ)"
-        return f"DATE {local_date_str} (GMT {gmt_date_str})"
+        # Возврат даты в формате "YYYY-MM-DD (GMT YYYY-MM-DD)"
+        return f"DATE {local_date} (GMT {gmt_date})"
     elif time_or_date == "for_log":
-        # Форматирование даты в привычный вид, т.е. из 6.1.21 в 06.01.21.
-        # GMT время
-        gmt_time_log = "{:0>2d}{:0>2d}{:0>2d}".format(gmt_time.tm_hour, gmt_time.tm_min, gmt_time.tm_sec)
-        # GMT дата
-        gmt_date_log = "{}{:0>2d}{:0>2d}".format(gmt_time.tm_year - 2000, gmt_time.tm_mon, gmt_time.tm_mday)
-        # Возврат даты в формате "ГГММДД_ччммсс_GMT)"
-        return f"{gmt_date_log}_{gmt_time_log}_GMT  {OBJECT_NAME}.csv"
+        # Форматирование даты и времени для логирования YYMMDD_hh24miss.
+        # Возврат даты в формате "YYMMDD_hh24miss_GMT NAME.csv"
+        return f"{str(gmt_date).replace('-', '')[2:] + '_' + gmt_time.replace(':', '')}_GMT  {OBJECT_NAME}.csv"
+    elif time_or_date == "test_end":
+        # Форматирование даты и времени для проверки в ПУ 573 210106000000Z.
+        gmt_date_test_today = f"{str(gmt_date).replace('-', '')[2:]}"
+        gmt_date_test_tomorrow = str(gmt_date + datetime.timedelta(days=1)).replace("-", "")[2:]
+
+        # Возврат даты в формате "YYMMDD000000Z"
+        return f"{gmt_date_test_today}000000Z\n{gmt_date_test_tomorrow}000000Z"
     else:
-        return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"\n'
+        return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"/"test_end"\n'
 
 
 def my_wan_ip():
@@ -275,8 +267,8 @@ def csv_to_docx():
 
     try:
         # IM
-        wordDoc.tables[1].rows[20].cells[3].text = im_time_list[0]  # IM Время Отправка сообщений
-        wordDoc.tables[1].rows[21].cells[3].text = im_time_list[1]  # IM Время Получение сообщений
+        wordDoc.tables[1].rows[20].cells[3].text = im_time_list[2]  # IM Время Отправка сообщений
+        wordDoc.tables[1].rows[21].cells[3].text = im_time_list[3]  # IM Время Получение сообщений
     except IndexError:
         pass
 

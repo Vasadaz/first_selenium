@@ -28,7 +28,7 @@ import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
 import csv  # Библиотека для работы с CSV файлами
-from logger import cmd_time, log_csv  # Импорт логирования
+from logger import cmd_time, log_csv, my_lan_ip, my_wan_ip  # Импорт логирования
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = None  # Маркер определения новых писем
@@ -57,7 +57,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     msg["To"] = ", ".join(list_to)  # Добавление получателей
     msg["Cc"] = ", ".join(list_cc)  # Добавление копии
     msg["Bcc"] = ", ".join(list_bcc)  # Добавление скрытой копии
-    msg["Subject"] = list_msg[0]  # Добавление темы сообщения
+    msg["Subject"] = f"{list_msg[0]} {cmd_time() if len(list_msg) != 4 else ''}"  # Добавление темы сообщения
     msg.attach(MIMEText(list_msg[1], "plain"))  # Добавляем в сообщение текст
 
     if I_FIRST and len(list_msg) <= 3:
@@ -124,11 +124,11 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
     # Логирование
     print(f"SEND  {cmd_time()}")
-    print(f"FROM: {list_from[0]}")
-    print(f"  TO: {', '.join(list_to)}")
-    print(f"  CC: {', '.join(list_cc)}") if len(list_cc) != 0 else None
-    print(f" BCC: {', '.join(list_bcc)}") if len(list_bcc) != 0 else None
-    print(f" SUB: {list_msg[0]}")
+    print(f"FROM: {msg['From']}")
+    print(f"  TO: {msg['To']}")
+    print(f"  CC: {msg['Cc']}") if len(list_cc) != 0 else None
+    print(f" BCC: {msg['Bcc']}") if len(list_bcc) != 0 else None
+    print(f" SUB: {msg['Subject']}")
     print(f"TEXT: {list_msg[1]}")
     print(f"FILE: {list_msg[2]}") if len(list_msg) > 2 else None
 
@@ -280,7 +280,7 @@ def read_email(info_email: list, protocol: str):
         return
 
 
-# Защит от отсутствия файла
+# Защита от отсутствия файла
 try:
     # Для защиты данных используется файл email_data.csv, пример заполнения:
     #   var_sender, var_reader, email, password, server_smtp, port_smtp, server_imap/pop3
@@ -304,13 +304,13 @@ sender_1 = email_data_dict["sender_1"]
 # Письмо №1
 to_1 = ["rtc-nt-test1@yandex.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
 bcc_1 = ["rtc-nt-test4@yandex.ru"]
-msg_1 = [f"АВТО Отправка письма с 3 получателями, копией и вложением{cmd_time()}",  # Тема письма
-         f"Текст письма Отправка -> {cmd_time()}",  # Текст письма
+msg_1 = ["АВТО Отправка письма с 3 получателями, копией и вложением",  # Тема письма
+         "Текст письма Отправка",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №3
 to_3 = ["rtc-nt-test1@yandex.ru"]
 cc_3 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_3 = [f"АВТО Отправка письма с 2 копиями и иероглифами {cmd_time()}",
+msg_3 = ["АВТО Отправка письма с 2 копиями и иероглифами",
          "لِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
 # Отравитель №2
@@ -318,13 +318,13 @@ sender_2 = email_data_dict["sender_2"]
 
 # Письмо №2
 to_2 = ["test@rtc-nt.ru", "rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_2 = [f"АВТО Получение письма с 3 получателями и вложением {cmd_time()}",  # Тема письма
-         f"Текст Получение <- {cmd_time()}",  # Текст письма
+msg_2 = ["АВТО Получение письма с 3 получателями и вложением",  # Тема письма
+         "Текст письма Получение",  # Текст письма
          "constitution.pdf"]  # Прикреплённый файл из ./email/
 # Письмо №4
 to_4 = ["test@rtc-nt.ru"]
 cc_4 = ["rtc-nt-test2@yandex.ru", "rtc-nt-test3@yandex.ru"]
-msg_4 = [f"АВТО Получение письма с 2 копиями и иероглифами {cmd_time()}",  # Тема письма
+msg_4 = ["АВТО Получение письма с 2 копиями и иероглифами",  # Тема письма
          "َلِيَتَقَدَّسِ اسْمُكَ"]  # Текст письма
 
 # Получатель №1 POP3
@@ -379,10 +379,12 @@ def send_end_test(object_name):
     list_files.sort()
     os.chdir("../")  # Меняем рабочую директорию
 
-    file_name_docx = f"Проверен {list_files[-1][:-4]} Тесты ПСИ 573 ПД.docx"  # Только имя файла
+    file_name_docx = f"Проверен {list_files[-1][:-4]} Тесты ПСИ 573 ПД.docx"  # Имя файла docx
     file_name_csv = list_files[-1]
 
+    msg_for_check = f"На проверку \n{cmd_time('test_end')}\n{my_lan_ip()}\n{my_wan_ip()}"
+
     to_me = ["ns@rtc-nt.ru"]
-    msg_end_test = [f"АВТО Тесты ПД 573 {object_name}", "На проверку", file_name_docx, file_name_csv]
+    msg_end_test = [f"АВТО Тесты ПД 573 {object_name}", msg_for_check, file_name_docx, file_name_csv]
 
     send_email(sender_1, to_me, msg_end_test)
