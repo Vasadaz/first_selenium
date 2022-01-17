@@ -314,7 +314,7 @@ def csv_to_docx():
         wordDoc.tables[1].rows[41].cells[3].text = https_time_list[5]  # HTTPS Время https://nsa.gov
         wordDoc.tables[1].rows[42].cells[3].text = https_time_list[6]  # HTTPS Время https://ssu.gov.ua
         wordDoc.tables[1].rows[43].cells[3].text = https_time_list[7]  # HTTPS Время https://mossad.gov.il
-        wordDoc.tables[1].rows[44].cells[3].text = https_time_list[5]  # HTTPS Время https://sis.gov.uk
+        wordDoc.tables[1].rows[44].cells[3].text = https_time_list[8]  # HTTPS Время https://sis.gov.uk
         wordDoc.tables[1].rows[45].cells[3].text = https_time_list[9]  # HTTPS Время https://bnd.bund.de
     except IndexError:
         pass
