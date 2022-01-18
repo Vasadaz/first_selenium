@@ -283,7 +283,7 @@ def csv_to_docx():
         # FTP
         wordDoc.tables[1].rows[26].cells[3].text = ftp_time_list[0][
                                                    :5]  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
-        wordDoc.tables[1].rows[27].cells[3].text = "\n" + ftp_time_list[0]  # FTP Время start - end ts.zip
+        wordDoc.tables[1].rows[27].cells[3].text = "\n\n" + ftp_time_list[0]  # FTP Время start - end ts.zip
         wordDoc.tables[1].rows[28].cells[3].text = ftp_time_list[1]  # FTP Время start - end  gtdw.zip
         wordDoc.tables[1].rows[29].cells[3].text = ftp_time_list[2]  # FTP Время start - end  maximum.zip
     except IndexError:
