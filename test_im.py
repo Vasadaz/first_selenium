@@ -12,7 +12,6 @@ https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti
 import csv
 import subprocess
 import time
-
 from logger import cmd_time, log_csv  # Импорт логирования
 
 # Импорт модуля slixmpp, в случае отсутствия будет сделана его установка
@@ -116,6 +115,12 @@ class ReadMsgBot(ClientXMPP):
             log_csv(f"IM-read;{cmd_time()};;;{msg_list_from};{msg_list_to};{READ_WAIT_MSG};;")
 
 
+def tasks_killer():
+    # Принудительное закрытие сопрограмм для избежания предупреждений со стороны asyncio.
+    tasks = [task for task in asyncio.Task.all_tasks() if not task.done()]
+    for i in tasks:
+        asyncio.Task.cancel(i)
+
 def fun_sender(jid: str, password: str, recipient: str, message: str):
     # Функция для отправки сообщения
     # jid аккаунт jabber и его пароль password
@@ -124,6 +129,8 @@ def fun_sender(jid: str, password: str, recipient: str, message: str):
     sender = SendMsgBot(jid, password, recipient, message)
     # Запуск процесса с отключением при первом же событии (forever=False) - здесь это отправка сообщения
     sender.process(forever=False)
+
+    tasks_killer()
 
 
 def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
@@ -145,6 +152,8 @@ def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
     else:
         # Запуск процесса на 60 секунд м последующим отключением
         reader.process(timeout=60)
+
+    tasks_killer()
 
 
 # Защит от отсутствия файла
@@ -182,13 +191,15 @@ def i_sender():
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_1)
     print()
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_1)
-    time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
     print()
+    time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_2)
     print()
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_2)
     print("----------------------------------------------------------------------------")
     print("IM end")
+
+    tasks_killer()
 
 
 def i_answer():
@@ -206,3 +217,5 @@ def i_answer():
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
         print("----------------------------------------------------------------------------")
         print(f"IM end {cmd_time('date')}")
+
+        tasks_killer()
