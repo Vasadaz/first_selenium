@@ -244,7 +244,7 @@ https_list = ["https://yandex.ru",
               "https://2ip.ru",
               "https://cia.gov",
               "https://nsa.gov",
-              "https://mps.gov.cn",
+              "https://www.mps.gov.cn",
               "https://mossad.gov.il",
               "https://sis.gov.uk",
               "https://bnd.bund.de"]
