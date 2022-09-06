@@ -93,7 +93,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
         filepath_docx = f"./logs_in_docx/{list_msg[2]}"  # Путь к файлу
         filename_docx = f"{list_msg[2]}"  # Только имя файла
         with open(filepath_docx, "rb") as fp:
-            file_docx = MIMEBase("application", "docx")  # Используем общий MIME-тип
+            file_docx = MIMEBase("application", "msword")  # Используем общий MIME-тип
             file_docx.set_payload(fp.read())  # Добавляем содержимое общего типа (полезную нагрузку)
             fp.close()
         encoders.encode_base64(file_docx)  # Содержимое должно кодироваться как Base64
@@ -104,7 +104,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
         filepath_csv = f"./logs/{list_msg[3]}"  # Путь к файлу
         filename_csv = f"{list_msg[3]}"  # Только имя файла
         with open(filepath_csv, "rb") as fp:
-            file_csv = MIMEBase("application", "csv")  # Используем общий MIME-тип
+            file_csv = MIMEBase("text", "csv")  # Используем общий MIME-тип
             file_csv.set_payload(fp.read())  # Добавляем содержимое общего типа (полезную нагрузку)
             fp.close()
         encoders.encode_base64(file_csv)  # Содержимое должно кодироваться как Base64
