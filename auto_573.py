@@ -22,15 +22,15 @@ try:
     import chromedriver_autoinstaller
 
 except ModuleNotFoundError:
-    print("Installing selenium==3.141.0")
+    print("Installing selenium==4.4.3")
     # Установка модуля с отключенным stdout
-    mod_inst = subprocess.Popen("pip3 install selenium==3.141.0", shell=True,
+    mod_inst = subprocess.Popen("pip3 install selenium==4.4.3", shell=True,
                                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     mod_inst.wait()  # Вызов и ожидание установки
 
-    print("Installing chromedriver-autoinstaller==0.3.1")
+    print("Installing chromedriver-autoinstaller==0.4.0")
     # Установка модуля с отключенным stdout
-    drive_inst = subprocess.Popen("pip3 install chromedriver-autoinstaller==0.3.1", shell=True,
+    drive_inst = subprocess.Popen("pip3 install chromedriver-autoinstaller==0.4.0", shell=True,
                                   stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     drive_inst.wait()  # Вызов и ожидание установки
 

@@ -18,9 +18,9 @@ from logger import cmd_time, log_csv  # Импорт логирования
 try:
     from slixmpp import ClientXMPP
 except ModuleNotFoundError:
-    print("Installing slixmpp==1.7.1")
+    print("Installing slixmpp==1.8.2")
     # Установка модуля с отключенным stdout
-    mod_inst = subprocess.Popen("pip3 install slixmpp==1.7.1", shell=True,
+    mod_inst = subprocess.Popen("pip3 install slixmpp==1.8.2", shell=True,
                                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     mod_inst.wait()  # Вызов и ожидание установки
     from slixmpp import ClientXMPP
@@ -117,9 +117,12 @@ class ReadMsgBot(ClientXMPP):
 
 def tasks_killer():
     # Принудительное закрытие сопрограмм для избежания предупреждений со стороны asyncio.
-    tasks = [task for task in asyncio.Task.all_tasks() if not task.done()]
-    for i in tasks:
-        asyncio.Task.cancel(i)
+    loop = asyncio.get_event_loop()
+    tasks = [task for task in asyncio.all_tasks(loop) if not task.done()]
+
+    for task in tasks:
+        asyncio.Task.cancel(task)
+
 
 def fun_sender(jid: str, password: str, recipient: str, message: str):
     # Функция для отправки сообщения
