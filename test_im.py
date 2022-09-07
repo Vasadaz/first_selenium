@@ -34,8 +34,8 @@ try:
 except AttributeError:
     print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
 
-READ_WAIT_MSG = None  # Для записи содержимого из прочитанного сообщений, используется для условий
-ANSWER_WAIT_MSG = None  # Для записи ожидаемого ответа
+READ_WAIT_MSG = "Прочитанное сообщение"  # Для записи содержимого из прочитанного сообщений, используется для условий
+ANSWER_WAIT_MSG = "Текст, который должен входить в READ_WAIT_MSG"  # Для записи ожидаемого ответа
 
 
 class SendMsgBot(ClientXMPP):
@@ -56,6 +56,7 @@ class SendMsgBot(ClientXMPP):
         self.sender_msg()  # Запуск функции sender_msg
 
     def sender_msg(self):
+        self.msg = f"{self.msg} {cmd_time()}"
         self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')  # Отправка сообщения
 
         # Логирование
@@ -101,7 +102,7 @@ class ReadMsgBot(ClientXMPP):
             if "<body>" in el:
                 READ_WAIT_MSG = el.split("body")[1][1:-2]  # Определение текста в сообщении
 
-        if READ_WAIT_MSG == ANSWER_WAIT_MSG:
+        if ANSWER_WAIT_MSG in READ_WAIT_MSG:
             # Логирование
             print(f"READ  {cmd_time()}")
             print(f"FROM: {msg_list_from}")
@@ -136,7 +137,7 @@ def fun_sender(jid: str, password: str, recipient: str, message: str):
     tasks_killer()
 
 
-def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
+def fun_reader(jid: str, password: str, waiting_msg: str, i_answer_fun=False):
     # Функция для чтения сообщения
     # jid аккаунт jabber и его пароль password
     # waiting_msg какое сообщение мы должны прочитать, т.е. на что потом отвечать
@@ -148,7 +149,7 @@ def fun_reader(jid: str, password: str, waiting_msg, i_answer_fun=False):
     reader = ReadMsgBot(jid, password, i_answer_fun)
 
     if i_answer_fun:
-        while READ_WAIT_MSG != ANSWER_WAIT_MSG:
+        while ANSWER_WAIT_MSG not in READ_WAIT_MSG:
             # Цикл работает до тех пор, пока не будет получено сообщение с текстом = waiting_msg
             # Запуск процесса с отключением при первом же событии (forever=False) - здесь это чтение сообщения
             reader.process(forever=False)
@@ -194,8 +195,8 @@ def i_sender():
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_1)
     print()
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_1)
-    print()
     time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
+    print()
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_2)
     print()
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_2)
@@ -210,13 +211,13 @@ def i_answer():
 
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
-        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
         print()
+        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_1)
         print()
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_2)
-        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
         print()
+        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
         print("----------------------------------------------------------------------------")
         print(f"IM end {cmd_time('date')}")
