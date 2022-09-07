@@ -233,15 +233,15 @@ def csv_to_docx():
     try:
         # HTTP
         wordDoc.tables[1].rows[1].cells[3].text = http_time_list[0]  # HTTP Время http://kremlin.ru
-        wordDoc.tables[1].rows[2].cells[3].text = http_time_list[1]  # HTTP Время http://kremlin.ru/acts/constitution
-        wordDoc.tables[1].rows[3].cells[3].text = http_time_list[2]  # HTTP Время constitution.pdf
+        wordDoc.tables[1].rows[2].cells[3].text = http_time_list[1]  # HTTP Время http://kremlin.ru/structure/president
+        wordDoc.tables[1].rows[3].cells[3].text = http_time_list[2]  # HTTP Время http://kremlin.ru/static/pdf/*.pdf
         wordDoc.tables[1].rows[4].cells[3].text = http_time_list[3]  # HTTP Время http://fsb.ru
-        wordDoc.tables[1].rows[5].cells[3].text = http_time_list[4]  # HTTP Время http://khann.ru
-        wordDoc.tables[1].rows[6].cells[3].text = http_time_list[5]  # HTTP Время http://khann.ru/wallpapers/
-        wordDoc.tables[1].rows[7].cells[3].text = http_time_list[5]  # HTTP Время *.jpg
-        wordDoc.tables[1].rows[8].cells[3].text = http_time_list[6]  # HTTP Время http://alex-kuznetsov.ru/test
-        wordDoc.tables[1].rows[9].cells[3].text = http_time_list[7]  # HTTP Время http://www.thesheep.info
-        wordDoc.tables[1].rows[10].cells[3].text = http_time_list[8]  # HTTP Время http://www.grani.ru
+        wordDoc.tables[1].rows[5].cells[3].text = http_time_list[4]  # HTTP Время http://rtc-nt.ru
+        wordDoc.tables[1].rows[6].cells[3].text = http_time_list[5]  # HTTP Время http://gramota.ru
+        wordDoc.tables[1].rows[7].cells[3].text = http_time_list[6]  # HTTP Время http://duma.gov.ru
+        wordDoc.tables[1].rows[8].cells[3].text = http_time_list[7]  # HTTP Время http://ivo.garant.ru
+        wordDoc.tables[1].rows[9].cells[3].text = http_time_list[8]  # HTTP Время http://www.thesheep.info
+        wordDoc.tables[1].rows[10].cells[3].text = http_time_list[9]  # HTTP Время http://www.grani.ru
     except IndexError:
         pass
 

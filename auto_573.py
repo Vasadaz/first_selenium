@@ -213,41 +213,52 @@ def terminal_test(protocol: str, servers_list: list, ):
 
 
 # Список сайтов для теста http
-http_list = ["http://kremlin.ru",
-             "http://kremlin.ru/acts/constitution",
-             "http://kremlin.ru/static/pdf/constitution.pdf?6fbd2dc717",
-             "http://fsb.ru",
-             "http://khann.ru",
-             "http://khann.ru/wallpapers/",
-             "http://alex-kuznetsov.ru/test",
-             "http://www.thesheep.info",
-             "http://www.grani.ru"]
+http_list = [
+    "http://kremlin.ru",
+    "http://kremlin.ru/structure/president",
+    "http://kremlin.ru/static/pdf/constitution.pdf",
+    "http://fsb.ru",
+    "http://rtc-nt.ru/",
+    "http://gramota.ru/",
+    "http://duma.gov.ru/",
+    "http://ivo.garant.ru/",
+    "http://thesheep.info",
+    "http://grani.ru",
+]
 
 # Список ресурсов для скачивания по ftp
-ftp_list = ["ftp://alta.ru/packets/distr/ts.zip",
-            "ftp://alta.ru/packets/distr/gtdw.zip",
-            "ftp://alta.ru/packets/distr/maximum.zip"]
+ftp_list = [
+    "ftp://alta.ru/packets/distr/ts.zip",
+    "ftp://alta.ru/packets/distr/gtdw.zip",
+    "ftp://alta.ru/packets/distr/maximum.zip",
+]
 
 # Список серверных адресов для подключения по telnet
-telnet_list = ["towel.blinkenlights.nl",
-               "lord.stabs.org",
-               "35.185.12.150"]
+telnet_list = [
+    "towel.blinkenlights.nl",
+    "lord.stabs.org",
+    "35.185.12.150",
+]
 
 # Список серверных адресов для подключения по ssh
-ssh_list = ["195.144.107.198",
-            "sdf.org"]
+ssh_list = [
+    "195.144.107.198",
+    "sdf.org"
+]
 
 # Список сайтов для теста https
-https_list = ["https://yandex.ru",
-              "https://mail.ru",
-              "https://rambler.ru",
-              "https://2ip.ru",
-              "https://cia.gov",
-              "https://nsa.gov",
-              "https://www.mps.gov.cn",
-              "https://mossad.gov.il",
-              "https://sis.gov.uk",
-              "https://bnd.bund.de"]
+https_list = [
+    "https://yandex.ru",
+    "https://mail.ru",
+    "https://rambler.ru",
+    "https://2ip.ru",
+    "https://cia.gov",
+    "https://nsa.gov",
+    "https://www.mps.gov.cn",
+    "https://mossad.gov.il",
+    "https://sis.gov.uk",
+    "https://bnd.bund.de",
+]
 
 # Условие определения режима автоответчика
 if len(sys.argv) == 2:
