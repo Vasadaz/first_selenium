@@ -116,10 +116,9 @@ def ftp_test(download_list: list):
     os.mkdir("FTP_573")  # Создание пустой папки
 
     # Индикатор процесса для ftp тестов
-    def bar_progress(current, total, width=100):
-        percent_download = round(current / total * width, 1)
+    def bar_progress(current: int, total: int, width: int=None):
+        percent_download = round(current / total * 100, 1)
         progress_message = f"Downloading: {percent_download}% [{current} / {total}] bytes"
-        # Don't use print() as it will print in new line every time.
         sys.stdout.write("\r" + progress_message)
         sys.stdout.flush()
 
@@ -127,11 +126,12 @@ def ftp_test(download_list: list):
     for link in download_list:
         # Логирование.
         print(f"\n{cmd_time()}\nFTP {link}")
-        print(f"Download {link[28:]}")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
         log_csv(f"FTP;{cmd_time()};{link};0;;;;;")
+
+        print(f"Download {link[28:]}")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
 
         os.chdir("FTP_573")  # Меняем рабочую директорию
 
