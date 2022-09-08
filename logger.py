@@ -274,8 +274,7 @@ def csv_to_docx():
 
     try:
         # FTP
-        wordDoc.tables[1].rows[25].cells[3].text = ftp_time_list[0][
-                                                   :5]  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
+        wordDoc.tables[1].rows[25].cells[3].text = ftp_time_list[0][:5]  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
         wordDoc.tables[1].rows[26].cells[3].text = "\n\n" + ftp_time_list[0]  # FTP Время start - end ts.zip
         wordDoc.tables[1].rows[27].cells[3].text = ftp_time_list[1]  # FTP Время start - end  gtdw.zip
         wordDoc.tables[1].rows[28].cells[3].text = ftp_time_list[2]  # FTP Время start - end  maximum.zip
@@ -284,31 +283,31 @@ def csv_to_docx():
 
     try:
         # TELNET
-        wordDoc.tables[1].rows[30].cells[3].text = telnet_time_list[0]  # TELNET Время towel.blinkenlights.nl
-        wordDoc.tables[1].rows[31].cells[3].text = telnet_time_list[1]  # TELNET Время lord.stabs.org
-        wordDoc.tables[1].rows[32].cells[3].text = telnet_time_list[2]  # TELNET Время 35.185.12.150
+        wordDoc.tables[1].rows[29].cells[3].text = telnet_time_list[0]  # TELNET Время 54.39.129.129
+        wordDoc.tables[1].rows[30].cells[3].text = telnet_time_list[1]  # TELNET Время 192.241.222.161
+        wordDoc.tables[1].rows[31].cells[3].text = telnet_time_list[2]  # TELNET Время 35.185.12.150
     except IndexError:
         pass
 
     try:
         # SSH
-        wordDoc.tables[1].rows[33].cells[3].text = ssh_time_list[0]  # SSH Время 195.144.107.198
-        wordDoc.tables[1].rows[34].cells[3].text = ssh_time_list[1]  # SSH Время sdf.org
+        wordDoc.tables[1].rows[32].cells[3].text = ssh_time_list[0]  # SSH Время 195.144.107.198
+        wordDoc.tables[1].rows[33].cells[3].text = ssh_time_list[1]  # SSH Время 205.166.94.16
     except IndexError:
         pass
 
     try:
         # HTTPS
-        wordDoc.tables[1].rows[35].cells[3].text = https_time_list[0]  # HTTPS Время https://yandex.ru
-        wordDoc.tables[1].rows[36].cells[3].text = https_time_list[1]  # HTTPS Время https://mail.ru
-        wordDoc.tables[1].rows[37].cells[3].text = https_time_list[2]  # HTTPS Время https://rambler.ru
-        wordDoc.tables[1].rows[38].cells[3].text = https_time_list[3]  # HTTPS Время https://2ip.ru
-        wordDoc.tables[1].rows[39].cells[3].text = https_time_list[4]  # HTTPS Время https://cia.gov
-        wordDoc.tables[1].rows[40].cells[3].text = https_time_list[5]  # HTTPS Время https://nsa.gov
-        wordDoc.tables[1].rows[41].cells[3].text = https_time_list[6]  # HTTPS Время https://ssu.gov.ua
-        wordDoc.tables[1].rows[42].cells[3].text = https_time_list[7]  # HTTPS Время https://mossad.gov.il
-        wordDoc.tables[1].rows[43].cells[3].text = https_time_list[8]  # HTTPS Время https://sis.gov.uk
-        wordDoc.tables[1].rows[44].cells[3].text = https_time_list[9]  # HTTPS Время https://bnd.bund.de
+        wordDoc.tables[1].rows[34].cells[3].text = https_time_list[0]  # HTTPS Время https://yandex.ru
+        wordDoc.tables[1].rows[35].cells[3].text = https_time_list[1]  # HTTPS Время https://mail.ru
+        wordDoc.tables[1].rows[36].cells[3].text = https_time_list[2]  # HTTPS Время https://rambler.ru
+        wordDoc.tables[1].rows[37].cells[3].text = https_time_list[3]  # HTTPS Время https://2ip.ru
+        wordDoc.tables[1].rows[38].cells[3].text = https_time_list[4]  # HTTPS Время https://cia.gov
+        wordDoc.tables[1].rows[39].cells[3].text = https_time_list[5]  # HTTPS Время https://nsa.gov
+        wordDoc.tables[1].rows[40].cells[3].text = https_time_list[6]  # HTTPS Время https://ssu.gov.ua
+        wordDoc.tables[1].rows[41].cells[3].text = https_time_list[7]  # HTTPS Время https://mossad.gov.il
+        wordDoc.tables[1].rows[42].cells[3].text = https_time_list[8]  # HTTPS Время https://sis.gov.uk
+        wordDoc.tables[1].rows[43].cells[3].text = https_time_list[9]  # HTTPS Время https://bnd.bund.de
     except IndexError:
         pass
 
