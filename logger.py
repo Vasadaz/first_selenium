@@ -23,8 +23,8 @@ except ModuleNotFoundError:
     import docx
     from docx.shared import Pt  # Для работы с .docx
 
-# Release v1.6.10
-RELEASE = "v1.6.10"
+# Release v1.6.11
+RELEASE = "v1.6.11"
 
 OBJECT_NAME = "UNKNOWN"
 
