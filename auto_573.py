@@ -44,8 +44,12 @@ try:
 except ModuleNotFoundError:
     print("Installing wget==3.2")
     # Установка модуля с отключенным stdout
-    mod_inst = subprocess.Popen("pip3 install wget==3.2", shell=True,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    mod_inst = subprocess.Popen(
+        "pip3 install wget==3.2",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT
+    )
     mod_inst.wait()  # Вызов и ожидание установки
 
     import wget
@@ -101,7 +105,7 @@ def web_test(protocol: str, sites: list):
     print(f"{protocol} end")
 
 
-def ftp_test(download_list: list):
+def ftp_test(links: list):
     # Функция для теста ftp загрузки. Аргументы:
     # download_list - список ресурсов для скачивания по ftp.
 
@@ -117,14 +121,14 @@ def ftp_test(download_list: list):
     os.mkdir("FTP_573")  # Создание пустой папки
 
     # Индикатор процесса для ftp тестов
-    def bar_progress(current: int, total: int, width: int=None):
+    def bar_progress(current: int, total: int, width: int = None):
         percent_download = round(current / total * 100, 1)
         progress_message = f"Downloading: {percent_download}% [{current} / {total}] bytes"
         sys.stdout.write("\r" + progress_message)
         sys.stdout.flush()
 
     # Итерация по элементам списка download_list.
-    for link in download_list:
+    for link in links:
         # Логирование.
         print(f"\n{cmd_time()}\nFTP {link}")
 
@@ -164,7 +168,7 @@ def ftp_test(download_list: list):
     print("FTP end")
 
 
-def terminal_test(protocol: str, servers_list: list, ):
+def terminal_test(protocol: str, servers: list, ):
     # Функция для теста telnet и ssh соединений. Сам тест происходит с помощью putty. Аргументы:
     # protocol - для нужен определения протокола(telnet, ssh) и логирования;
     # servers_list - список серверных адресов для теста.
@@ -177,12 +181,12 @@ def terminal_test(protocol: str, servers_list: list, ):
     flag = "-telnet" if len(protocol) > 3 else "-ssh"
 
     # Итерация по элементам списка servers_list
-    for el in servers_list:
-        print(f"{cmd_time()}\n{protocol} {el}")  # Логирование.
+    for server in servers:
+        print(f"{cmd_time()}\n{protocol} {server}")  # Логирование.
 
         # Метод для выполнения команды в консоли, который НЕ ожидает завершения команды и переходит к следующей строке.
         # Команда для соединения по указанному протоколу через putty >>> putty -ssh 195.144.107.198
-        subprocess.Popen(["putty", flag, el])
+        subprocess.Popen(["putty", flag, server])
         time.sleep(10)  # Пауза 10 секунд.
 
         # Исключение для завершения процесса putty в зависимости от ОС
@@ -193,7 +197,7 @@ def terminal_test(protocol: str, servers_list: list, ):
 
             # Запись лога в csv файл
             # protocol;time;resource;size;from;to;msg;error;
-            log_csv(f"{protocol};{cmd_time()};{el};;;;;;")
+            log_csv(f"{protocol};{cmd_time()};{server};;;;;;")
 
         except FileNotFoundError:
             # Linux
@@ -205,16 +209,15 @@ def terminal_test(protocol: str, servers_list: list, ):
             print(msg_error)
             # Запись лога в csv файл
             # protocol;time;resource;size;from;to;msg;error;
-            log_csv(f"{protocol};{cmd_time()};{el};;;;;{msg_error};")
-        print() if el != servers_list[-1] else None
+            log_csv(f"{protocol};{cmd_time()};{server};;;;;{msg_error};")
+        print() if server != servers[-1] else None
 
     # Логирование.
     print("----------------------------------------------------------------------------")
     print(f"{protocol} end")
 
 
-# Список сайтов для теста http
-http_list = [
+http_sites = [
     "http://kremlin.ru",
     "http://kremlin.ru/structure/president",
     "http://kremlin.ru/static/pdf/constitution.pdf",
@@ -227,28 +230,24 @@ http_list = [
     "http://grani.ru",
 ]
 
-# Список ресурсов для скачивания по ftp
-ftp_list = [
+ftp_links = [
     "ftp://alta.ru/packets/distr/ts.zip",
     "ftp://alta.ru/packets/distr/gtdw.zip",
     "ftp://alta.ru/packets/distr/maximum.zip",
 ]
 
-# Список серверных адресов для подключения по telnet
-telnet_list = [
+telnet_servers = [
     "54.39.129.129",
     "192.241.222.161",
     "35.185.12.150",
 ]
 
-# Список серверных адресов для подключения по ssh
-ssh_list = [
+ssh_servers = [
     "195.144.107.198",
     "205.166.94.16"
 ]
 
-# Список сайтов для теста https
-https_list = [
+https_sites = [
     "https://yandex.ru",
     "https://mail.ru",
     "https://rambler.ru",
@@ -329,11 +328,11 @@ e - email        i - im
         # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
         if "1" in marker_test_list:
             marker_test_list.remove("1")  # Удаляем маркер теста из marker_test_list
-            # Защита от остановки тестов в случае ошибки
-            # try:
-            web_test("HTTP", http_list)
-            # except:
-            #    print_in_log("***** ERROR IN TEST *****")
+            try:  # Защита от остановки тестов в случае ошибки
+                web_test("HTTP", http_sites)
+            except Exception as err:
+                print("***** ERROR IN TEST *****")
+                print(err)
 
         if "2" in marker_test_list:
             marker_test_list.remove("2")  # Удаляем маркер теста из marker_test_list
@@ -362,7 +361,7 @@ e - email        i - im
         if "5" in marker_test_list:
             marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
-                ftp_test(ftp_list)
+                ftp_test(ftp_links)
             except Exception as err:
                 print("***** ERROR IN TEST *****")
                 print(err)
@@ -370,7 +369,7 @@ e - email        i - im
         if "6" in marker_test_list:
             marker_test_list.remove("6")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
-                terminal_test("TELNET", telnet_list)
+                terminal_test("TELNET", telnet_servers)
             except Exception as err:
                 print("***** ERROR IN TEST *****")
                 print(err)
@@ -378,7 +377,7 @@ e - email        i - im
         if "7" in marker_test_list:
             marker_test_list.remove("7")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
-                terminal_test("SSH", ssh_list)
+                terminal_test("SSH", ssh_servers)
             except Exception as err:
                 print("***** ERROR IN TEST *****")
                 print(err)
@@ -386,7 +385,7 @@ e - email        i - im
         if "8" in marker_test_list:
             marker_test_list.remove("8")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
-                web_test("HTTPS", https_list)
+                web_test("HTTPS", https_sites)
             except Exception as err:
                 print("***** ERROR IN TEST *****")
                 print(err)
