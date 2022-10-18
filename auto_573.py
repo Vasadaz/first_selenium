@@ -51,53 +51,54 @@ except ModuleNotFoundError:
     import wget
 
 
-def web_test(protocol: str, website_list: list):
+def web_test(protocol: str, sites: list):
     # Функция для теста web соединений. Аргументы:
     # protocol - нужен для логирования;
     # website_list - список сайтов для теста.
-    # selenium.common.exceptions.SessionNotCreatedException:
 
-    # Логирование.
     print(f"\n\n{protocol}")
     print("----------------------------------------------------------------------------")
-    print("Open browser", end=" ")
 
     # Запуск webdriver для chrome
     chromedriver_autoinstaller.install()
-    # Вывод версии chrome + лечит WARNING:urllib3.connectionpool:Retrying
-    print(f"CHROME v{chromedriver_autoinstaller.get_chrome_version()}")
 
-    # Инициализируем драйвер браузера. После этой команды будет открыто новое окно браузера.
-    driver = webdriver.Chrome()
-    time.sleep(5)  # Пауза 5 секунд.
+    try:
+        # Инициализируем драйвер браузера. После этой команды будет открыто новое окно браузера.
+        driver = webdriver.Chrome()
+    except common.exceptions.SessionNotCreatedException:
+        # При автоматическом обновлении браузера тест падает
+        print("***** CONTROL ERROR: updating Chrome browser *****")
+        # Инициализируем драйвер браузера. После этой команды будет открыто новое окно браузера.
+        driver = webdriver.Chrome()
+    time.sleep(5)
+
+    print(f"Open browser CHROME v{chromedriver_autoinstaller.get_chrome_version()}")
 
     # Итерации по элементам списка website_list.
-    for el in website_list:
+    for site in sites:
 
-        print(f"\n{cmd_time()}\n{protocol} {el}")  # Логирование.
+        print(f"\n{cmd_time()}\n{protocol} {site}")  # Логирование.
         # Исключение для перенаправления ошибки заблокированных ресурсов.
         try:
-            # Метод get сообщает браузеру, что нужно открыть сайт по указанной ссылке.
-            driver.get(el)
+            driver.get(site)
 
             # Запись лога в csv файл
             # protocol;time;resource;size;from;to;msg;error;
-            log_csv(f"{protocol};{cmd_time()};{el};;;;;;")
+            log_csv(f"{protocol};{cmd_time()};{site};;;;;;")
         except common.exceptions.WebDriverException:
             msg_error = "***** WEB: CONTROL ERROR - NOT ANSWER *****"
             print(msg_error)  # Логирование.
             # Запись лога в csv файл
             # protocol;time;resource;size;from;to;msg;error;
-            log_csv(f"{protocol};{cmd_time()};{el};;;;;{msg_error};")
+            log_csv(f"{protocol};{cmd_time()};{site};;;;;{msg_error};")
         time.sleep(10)  # Пауза 10 секунд.
 
     # Метод для закрытия окна браузера.
     driver.quit()
 
-    # Логирование.
     print("\nClose browser")
     print("----------------------------------------------------------------------------")
-    return print(f"{protocol} end")
+    print(f"{protocol} end")
 
 
 def ftp_test(download_list: list):
