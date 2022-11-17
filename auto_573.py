@@ -14,9 +14,13 @@ import test_im
 # Импорт логирования
 from logger import cmd_time, file_for_log, log_csv, my_lan_ip, my_wan_ip, object_name, csv_to_docx, RELEASE
 
+TIMEOUT = 30
+
 # Импорт модуля selenium, в случае отсутствия будет сделана его установка
 # selenium набор методов для управления браузером, common для контроля ошибок если сайт недоступен
 # chromedriver_autoinstaller автоустановщик и инициализатор chromedriver
+
+
 try:
     from selenium import webdriver, common
     import chromedriver_autoinstaller
@@ -95,7 +99,7 @@ def web_test(protocol: str, sites: list):
             # Запись лога в csv файл
             # protocol;time;resource;size;from;to;msg;error;
             log_csv(f"{protocol};{cmd_time()};{site};;;;;{msg_error};")
-        time.sleep(10)  # Пауза 10 секунд.
+        time.sleep(30)  # Пауза 30 секунд.
 
     # Метод для закрытия окна браузера.
     driver.quit()
@@ -161,7 +165,7 @@ def ftp_test(links: list):
         # protocol;time;resource;size;from;to;msg;error;
         log_csv(f"FTP;{cmd_time()};{link};{file_size_mb_or_gb} ({file_size} B);;;;;")
 
-        time.sleep(60)  # Пауза 60 секунд.
+        time.sleep(120)  # Пауза 120 секунд.
 
     # Логирование.
     print("----------------------------------------------------------------------------")
@@ -187,7 +191,7 @@ def terminal_test(protocol: str, servers: list, ):
         # Метод для выполнения команды в консоли, который НЕ ожидает завершения команды и переходит к следующей строке.
         # Команда для соединения по указанному протоколу через putty >>> putty -ssh 195.144.107.198
         subprocess.Popen(["putty", flag, server])
-        time.sleep(10)  # Пауза 10 секунд.
+        time.sleep(30)  # Пауза 30 секунд.
 
         # Исключение для завершения процесса putty в зависимости от ОС
         try:
@@ -325,6 +329,7 @@ e - email        i - im
         marker_test_list = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
     while True:
+
         # Блок тестов с условием для запуска >>> Если маркер "X" есть в списке marker_test_list
         if "1" in marker_test_list:
             marker_test_list.remove("1")  # Удаляем маркер теста из marker_test_list
@@ -334,13 +339,15 @@ e - email        i - im
                 print("***** ERROR IN TEST *****")
                 print(err)
 
+            time.sleep(TIMEOUT)
+
         if "2" in marker_test_list:
             marker_test_list.remove("2")  # Удаляем маркер теста из marker_test_list
-            try:  # Защита от остановки тестов в случае ошибки
-                test_email.i_sender()
-            except Exception as err:
-                print("***** ERROR IN TEST *****")
-                print(err)
+
+            test_email.i_sender()
+
+
+            time.sleep(TIMEOUT)
 
         if "3" in marker_test_list:
             marker_test_list.remove("3")  # Удаляем маркер теста из marker_test_list
@@ -350,6 +357,8 @@ e - email        i - im
                 print("***** ERROR IN TEST *****")
                 print(err)
 
+            time.sleep(TIMEOUT)
+
         if "4" in marker_test_list:
             marker_test_list.remove("4")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
@@ -357,6 +366,8 @@ e - email        i - im
             except Exception as err:
                 print("***** ERROR IN TEST *****")
                 print(err)
+
+            time.sleep(TIMEOUT)
 
         if "5" in marker_test_list:
             marker_test_list.remove("5")  # Удаляем маркер теста из marker_test_list
@@ -366,6 +377,8 @@ e - email        i - im
                 print("***** ERROR IN TEST *****")
                 print(err)
 
+            time.sleep(TIMEOUT)
+
         if "6" in marker_test_list:
             marker_test_list.remove("6")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
@@ -373,6 +386,8 @@ e - email        i - im
             except Exception as err:
                 print("***** ERROR IN TEST *****")
                 print(err)
+
+            time.sleep(TIMEOUT)
 
         if "7" in marker_test_list:
             marker_test_list.remove("7")  # Удаляем маркер теста из marker_test_list
@@ -382,6 +397,8 @@ e - email        i - im
                 print("***** ERROR IN TEST *****")
                 print(err)
 
+            time.sleep(TIMEOUT)
+
         if "8" in marker_test_list:
             marker_test_list.remove("8")  # Удаляем маркер теста из marker_test_list
             try:  # Защита от остановки тестов в случае ошибки
@@ -389,6 +406,8 @@ e - email        i - im
             except Exception as err:
                 print("***** ERROR IN TEST *****")
                 print(err)
+
+            time.sleep(TIMEOUT)
 
         if len(marker_test_list) == 0:
             break
