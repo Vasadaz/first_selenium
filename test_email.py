@@ -248,7 +248,7 @@ def read_email(info_email: list, protocol: str):
     print(f"TEXT: {msg_text}")
     print(f"FILE: {msg_file}") if msg_file is not None else None  # Имя вложенного файла если оно есть
 
-    if I_FIRST:
+    if I_FIRST and __COUNT_SUBJECTS:
         # Логирование
         msg_TO = f"TO:{msg_head.get('To')}"
         msg_TO += f"  CC: {msg_head.get('Cc')}" if msg_head.get('Cc') != (None or "") else ""
