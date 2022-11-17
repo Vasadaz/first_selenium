@@ -174,7 +174,7 @@ def read_email(info_email: list, protocol: str):
         time.sleep(TIMEOUT * 2)
 
         # Условие для завершения функции
-        if STOP_READ_EMAIL == 5 and I_FIRST:
+        if STOP_READ_EMAIL == 5 and I_FIRST and __COUNT_SUBJECTS:
             log_msg = f"*** NOT NEW MAILS {cmd_time()} ***"
             log_csv(f"ERROR EMAIL-{protocol};{cmd_time()};;;;;;{log_msg};")
             print(log_msg)
