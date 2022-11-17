@@ -36,6 +36,7 @@ except AttributeError:
 
 READ_WAIT_MSG = "Прочитанное сообщение"  # Для записи содержимого из прочитанного сообщений, используется для условий
 ANSWER_WAIT_MSG = "Текст, который должен входить в READ_WAIT_MSG"  # Для записи ожидаемого ответа
+TIMEOUT = 30
 
 
 class SendMsgBot(ClientXMPP):
@@ -53,7 +54,7 @@ class SendMsgBot(ClientXMPP):
     def session_start(self, event):
         self.send_presence()  # Должно работать, хз зачем, но иначе никак
         self.get_roster()  # Должно работать, хз зачем, но иначе никак
-        self.sender_msg()  # Запуск функции sender_msg
+        self.sender_msg()  # Запуск функции sender_msgz
 
     def sender_msg(self):
         self.msg = f"{self.msg} {cmd_time()}"
@@ -142,7 +143,7 @@ def fun_reader(jid: str, password: str, waiting_msg: str, i_answer_fun=False):
     # jid аккаунт jabber и его пароль password
     # waiting_msg какое сообщение мы должны прочитать, т.е. на что потом отвечать
     # i_answer_fun для определения будет находиться в режиме ожидания сообщения
-    global ANSWER_WAIT_MSG, READ_WAIT_MSG
+    global ANSWER_WAIT_MSG, READ_WAIT_MSG, TIMEOUT
 
     ANSWER_WAIT_MSG = waiting_msg
 
@@ -154,8 +155,8 @@ def fun_reader(jid: str, password: str, waiting_msg: str, i_answer_fun=False):
             # Запуск процесса с отключением при первом же событии (forever=False) - здесь это чтение сообщения
             reader.process(forever=False)
     else:
-        # Запуск процесса на 60 секунд м последующим отключением
-        reader.process(timeout=60)
+        # Запуск процесса на 120 секунд м последующим отключением
+        reader.process(timeout=(TIMEOUT * 2))
 
     tasks_killer()
 
@@ -194,11 +195,16 @@ def i_sender():
     print("----------------------------------------------------------------------------")
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_1)
     print()
+    time.sleep(TIMEOUT)
+
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_1)
-    time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
     print()
+    time.sleep(TIMEOUT)
+
     fun_sender(jid_1[0], jid_1[1], jid_2[0], jid_1_msg_2)
     print()
+    time.sleep(TIMEOUT)
+
     fun_reader(jid_1[0], jid_1[1], jid_2_msg_2)
     print("----------------------------------------------------------------------------")
     print("IM end")
@@ -211,13 +217,17 @@ def i_answer():
 
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
+        time.sleep(TIMEOUT)
         print()
-        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
+
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_1)
+        time.sleep(TIMEOUT)
         print()
+
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_2)
+        time.sleep(TIMEOUT)
         print()
-        time.sleep(10)  # пауза чтобы не слипалось чтение и отправка
+
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
         print("----------------------------------------------------------------------------")
         print(f"IM end {cmd_time('date')}")
