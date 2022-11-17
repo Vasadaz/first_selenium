@@ -23,8 +23,8 @@ except ModuleNotFoundError:
     import docx
     from docx.shared import Pt  # Для работы с .docx
 
-# Release v1.6.12
-RELEASE = "v1.6.12"
+# Release v1.7.0
+RELEASE = "v1.7.0"
 
 OBJECT_NAME = "UNKNOWN"
 
@@ -274,8 +274,8 @@ def csv_to_docx():
 
     try:
         # FTP
-        wordDoc.tables[1].rows[25].cells[3].text = ftp_time_list[0][:5]  # FTP Время Доступ к ресурсу: ftp://alta.ru/packets/distr/
-        wordDoc.tables[1].rows[26].cells[3].text = "\n\n" + ftp_time_list[0]  # FTP Время start - end ts.zip
+        wordDoc.tables[1].rows[25].cells[3].text = ftp_time_list[0][:5]  # FTP Время Доступ к ресурсу
+        wordDoc.tables[1].rows[26].cells[3].text = "\n" + ftp_time_list[0]  # FTP Время start - end ts.zip
         wordDoc.tables[1].rows[27].cells[3].text = ftp_time_list[1]  # FTP Время start - end  gtdw.zip
         wordDoc.tables[1].rows[28].cells[3].text = ftp_time_list[2]  # FTP Время start - end  maximum.zip
     except IndexError:
