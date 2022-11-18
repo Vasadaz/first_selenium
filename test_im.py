@@ -213,7 +213,7 @@ def i_sender():
 
 
 def i_answer():
-    print("\nАвтоответчик IM запущен\n")
+    print(f"\nАвтоответчик IM запущен {cmd_time('date')} {cmd_time()}\\n")
 
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)

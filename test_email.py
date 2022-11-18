@@ -33,7 +33,7 @@ from logger import cmd_time, log_csv, my_lan_ip, my_wan_ip  # Импорт ло�
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
 STOP_READ_EMAIL = 0  # Маркер завершения функции
-TIMEOUT = 30
+TIMEOUT = 20
 __COUNT_SUBJECTS = True  # Маркер для логирования
 
 
@@ -174,9 +174,9 @@ def read_email(info_email: list, protocol: str):
         time.sleep(TIMEOUT * 2)
 
         # Условие для завершения функции
-        if STOP_READ_EMAIL == 5 and I_FIRST and __COUNT_SUBJECTS:
+        if STOP_READ_EMAIL == 5 and I_FIRST:
             log_msg = f"*** NOT NEW MAILS {cmd_time()} ***"
-            log_csv(f"ERROR EMAIL-{protocol};{cmd_time()};;;;;;{log_msg};")
+            log_csv(f"ERROR EMAIL-{protocol};{cmd_time()};;;;;;{log_msg};") if __COUNT_SUBJECTS else None
             print(log_msg)
             STOP_READ_EMAIL = 0
             return
@@ -359,8 +359,7 @@ def i_answer():  # Автоответчик
 
     global I_FIRST, __COUNT_SUBJECTS
 
-
-    print("\nАвтоответчик EMAIL запущен\n")
+    print(f"\nАвтоответчик EMAIL запущен {cmd_time('date')} {cmd_time()}\n")
 
     while True:
         __COUNT_SUBJECTS = True
