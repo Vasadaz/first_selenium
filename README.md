@@ -66,8 +66,8 @@ sudo update-alternatives --config python3
   2            /usr/bin/python3.8    2         ручной режим
                                                                         
 Press <enter> to keep the current choice[*], or type selection number: 2
-                                                                       │
-Выбор версии python3.8 ────────────────────────────────────────────┘
+                                                                       │  
+Выбор версии python3.8 ────────────────────────────────────────────────┘
 
 ```
 
