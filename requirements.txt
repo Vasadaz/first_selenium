@@ -1,5 +1,5 @@
-python-docx==0.8.11
-selenium==4.4.3
-slixmpp==1.8.2
 chromedriver-autoinstaller==0.4.0
+python-docx==0.8.11
+selenium==4.8.3
+slixmpp==1.8.3
 wget==3.2
