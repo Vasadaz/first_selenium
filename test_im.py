@@ -9,34 +9,24 @@ https://slixmpp.readthedocs.io/en/latest/index.html
 https://slixmpp.readthedocs.io/en/latest/api/clientxmpp.html
 https://stackru.com/questions/4521237/kak-otklyuchit-shifrovanie-v-lokalnoj-seti-xmpp
 """
+import asyncio
 import csv
-import subprocess
 import time
-from logger import cmd_time, log_csv  # Импорт логирования
 
-# Импорт модуля slixmpp, в случае отсутствия будет сделана его установка
-try:
-    from slixmpp import ClientXMPP
-except ModuleNotFoundError:
-    print("Installing slixmpp==1.8.2")
-    # Установка модуля с отключенным stdout
-    mod_inst = subprocess.Popen("pip3 install slixmpp==1.8.2", shell=True,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    mod_inst.wait()  # Вызов и ожидание установки
-    from slixmpp import ClientXMPP
+from slixmpp import ClientXMPP
+
+from logger import get_time, log_csv  # Импорт логирования
 
 try:
     # Только для Windows. Для работы скрипта на Windows, иначе ошибка NotImplementedError
     # Источник: https://github.com/saghul/aiodns/issues/78
-    import asyncio
-
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 except AttributeError:
-    print("***** IM: CONTROL ERROR - NOT WINDOWS *****")
+    pass
 
 READ_WAIT_MSG = "Прочитанное сообщение"  # Для записи содержимого из прочитанного сообщений, используется для условий
 ANSWER_WAIT_MSG = "Текст, который должен входить в READ_WAIT_MSG"  # Для записи ожидаемого ответа
-TIMEOUT = 30
+TIMEOUT = 10
 
 
 class SendMsgBot(ClientXMPP):
@@ -57,11 +47,11 @@ class SendMsgBot(ClientXMPP):
         self.sender_msg()  # Запуск функции sender_msgz
 
     def sender_msg(self):
-        self.msg = f"{self.msg} {cmd_time()}"
+        self.msg = f"{self.msg} {get_time()}"
         self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')  # Отправка сообщения
 
         # Логирование
-        print(f"SEND  {cmd_time()}")
+        print(f"SEND  {get_time()}")
         print(f"FROM: {self.jid}")
         print(f"  TO: {self.recipient}")
         print(f" MSG: {self.msg}")
@@ -70,7 +60,7 @@ class SendMsgBot(ClientXMPP):
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
-        log_csv(f"IM-send;{cmd_time()};;;{self.jid};{self.recipient};{self.msg};;")
+        log_csv(f"IM-send;{get_time()};;;{self.jid};{self.recipient};{self.msg};;")
 
 
 class ReadMsgBot(ClientXMPP):
@@ -92,7 +82,7 @@ class ReadMsgBot(ClientXMPP):
         global ANSWER_WAIT_MSG, READ_WAIT_MSG
 
         if self.i_answer_obj:  # Условие логирование для режима answer
-            print(f"\n\nIM {cmd_time('date')}")
+            print(f"\n\nIM {get_time('date')}")
             print("----------------------------------------------------------------------------")
 
         msg_list = str(msg).split('"')  # Преобразование сообщения в список для логирования
@@ -105,7 +95,7 @@ class ReadMsgBot(ClientXMPP):
 
         if ANSWER_WAIT_MSG in READ_WAIT_MSG:
             # Логирование
-            print(f"READ  {cmd_time()}")
+            print(f"READ  {get_time()}")
             print(f"FROM: {msg_list_from}")
             print(f"  TO: {msg_list_to}")
             print(f" MSG: {READ_WAIT_MSG}")
@@ -114,7 +104,7 @@ class ReadMsgBot(ClientXMPP):
 
             # Запись лога в csv файл
             # protocol;time;resource;size;from;to;msg;error;
-            log_csv(f"IM-read;{cmd_time()};;;{msg_list_from};{msg_list_to};{READ_WAIT_MSG};;")
+            log_csv(f"IM-read;{get_time()};;;{msg_list_from};{msg_list_to};{READ_WAIT_MSG};;")
 
 
 def tasks_killer():
@@ -169,7 +159,7 @@ try:
     #   jid_2;test_1@ya.ru;pa$$word
 
     # Открываем файл im_data.csv c данными для подключения
-    with open("im_data.csv", "r") as im_data:
+    with open("config/im_data.csv", "r") as im_data:
         im_data_list = csv.reader(im_data)  # Преобразуем строку из файла в список
         im_data_dict = {}  # Словарь для записи данных
         for line in im_data_list:
@@ -213,7 +203,7 @@ def i_sender():
 
 
 def i_answer():
-    print(f"\nАвтоответчик IM запущен {cmd_time('date')} {cmd_time()}\\n")
+    print(f"\nАвтоответчик IM запущен {get_time('date')} {get_time()}\n")
 
     while True:
         fun_reader(jid_2[0], jid_2[1], jid_1_msg_1, i_answer_fun=True)
@@ -230,6 +220,6 @@ def i_answer():
 
         fun_sender(jid_2[0], jid_2[1], jid_1[0], jid_2_msg_2)
         print("----------------------------------------------------------------------------")
-        print(f"IM end {cmd_time('date')}")
+        print(f"IM end {get_time('date')}")
 
         tasks_killer()

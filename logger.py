@@ -2,95 +2,66 @@
 Скрипт для логирования и записи данных лога в файл.
 Также определения времени выполнения команды.
 """
-import os
-import subprocess
-import datetime  # Для возврата дат и времени
+
 import csv
+import datetime
+import os
 import http.client  # Для определения своего WAN адреса
 import socket  # Для определения своего LAN адреса
 
-# Импорт модуля docx, в случае отсутствия будет сделана его установка
-# Для работы с файлами .docx
-try:
-    import docx
-    from docx.shared import Pt  # Для работы с .docx
-except ModuleNotFoundError:
-    print("Installing python-docx==0.8.11")
-    # Установка модуля с отключенным stdout
-    mod_inst = subprocess.Popen("pip3 install python-docx==0.8.11", shell=True,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    mod_inst.wait()  # Вызов и ожидание установки
-    import docx
-    from docx.shared import Pt  # Для работы с .docx
+import docx
 
 # Release v1.7.1
 RELEASE = "v1.7.1"
-
 OBJECT_NAME = "UNKNOWN"
 
 
 def object_name():
-    # Название объекта для логирования
     global OBJECT_NAME
 
-    if my_lan_ip() in ["192.168.1.127", "172.24.64.1"]:
-        OBJECT_NAME = "РТК-НТ"
-        return OBJECT_NAME
+    file_path = "config/name_object.txt"
 
-    name_file = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding='UTF-8') as file:
+            OBJECT_NAME = file.readline()
 
-    if "name_object.txt" in name_file:
-        with open("name_object.txt", "r+", encoding='UTF-8') as name_object_txt:
-            line = name_object_txt.readline()
-            if len(line) == 0:
-                OBJECT_NAME = input("Имя объекта для логирования:\n")
-                name_object_txt.write(OBJECT_NAME)
-            else:
-                OBJECT_NAME = line
-            name_object_txt.close()
+            if len(OBJECT_NAME) == 0:
+                OBJECT_NAME = input("Введите имя объекта:\n")
+                file.write(OBJECT_NAME)
+
     else:
-        with open("name_object.txt", "x+", encoding='UTF-8') as name_object_txt:
-            OBJECT_NAME = input("Имя объекта для логирования:\n")
-            name_object_txt.write(OBJECT_NAME)
-            name_object_txt.close()
+        with open(file_path, "x", encoding='UTF-8') as file:
+            OBJECT_NAME = input("Введите имя объекта:\n")
+            file.write(OBJECT_NAME)
 
     return OBJECT_NAME
 
 
-def cmd_time(time_or_date="time") -> str:
-    # Функция для возврата местного и GMT времени.
-    # time_or_date - маркер для возврата времени(time_or_date="time") или даты(time_or_date="date").
-    # Для записи наименования лога используется формат time_or_date="for_log"
-    # По умолчанию возвращает время time_or_date="time".
+def get_time(format: str = "time") -> str:
+    local_date = datetime.datetime.now().date()
+    local_time = datetime.datetime.now().time()
+    gmt_date = datetime.datetime.utcnow().date()
+    gmt_time = datetime.datetime.utcnow().time()
 
-    # Местное дата и время
-    local_date = datetime.datetime.now().date()  # YYYY-MM-DD
-    local_time = str(datetime.datetime.now().time())[:-7]  # hh24:mi:ss
+    if format == "time":
+        time_format = '%H:%M:%S'
+        return f"{local_time.strftime(time_format)} (GMT {gmt_time.strftime(time_format)})"
 
-    # GMT дата и время
-    gmt_date = datetime.datetime.utcnow().date()  # YYYY-MM-DD
-    gmt_time = str(datetime.datetime.utcnow().time())[:-7]  # hh24:mi:ss
+    elif format == "date":
+        date_format = '%Y-%m-%d'
+        return f"DATE {local_date.strftime(date_format)} (GMT {date_format})"
 
-    # Условие для возврата даты или времени.
-    if time_or_date == "time":
-        # Возврат времени в формате "hh24:mi:ss (GMT hh24:mi:ss)"
-        return f"{local_time} (GMT {gmt_time})"
-    elif time_or_date == "date":
-        # Возврат даты в формате "YYYY-MM-DD (GMT YYYY-MM-DD)"
-        return f"DATE {local_date} (GMT {gmt_date})"
-    elif time_or_date == "for_log":
-        # Форматирование даты и времени для логирования YYMMDD_hh24miss.
-        # Возврат даты в формате "YYMMDD_hh24miss_GMT NAME.csv"
-        return f"{str(gmt_date).replace('-', '')[2:] + '_' + gmt_time.replace(':', '')}_GMT  {OBJECT_NAME}.csv"
-    elif time_or_date == "test_end":
-        # Форматирование даты и времени для проверки в ПУ 573 210106000000Z.
-        gmt_date_test_today = f"{str(gmt_date).replace('-', '')[2:]}"
-        gmt_date_test_tomorrow = str(gmt_date + datetime.timedelta(days=1)).replace("-", "")[2:]
+    elif format == "for_csv":
+        return f"{gmt_date}_{gmt_time.strftime('%H%M%S')}_GMT"
 
-        # Возврат даты в формате "YYMMDD000000Z"
-        return f"{gmt_date_test_today}000000Z\n{gmt_date_test_tomorrow}000000Z"
-    else:
-        return '\nНЕ ВЕРНЫЙ ФОРМАТ ДЫТЫ: time_or_date="time"/"date"/"for_log"/"test_end"\n'
+    elif format == "for_docx":
+        return local_date.strftime('%d%m%y')
+
+    elif format == "for_pu":
+        date_format = '%y%m%d'
+        gmt_tomorrow = gmt_date + datetime.timedelta(days=1)
+
+        return f"{gmt_date.strftime(date_format)}000000Z\n{gmt_tomorrow.strftime(date_format)}000000Z"
 
 
 def my_wan_ip():
@@ -105,7 +76,7 @@ def my_lan_ip():
     return socket.gethostbyname(socket.gethostname())
 
 
-def file_for_log():
+def file_for_csv():
     # Функция создания лог файла ГГММДД_ччммсс_GMT.log
 
     global OBJECT_NAME
@@ -137,9 +108,10 @@ def file_for_log():
     os.chdir("../")  # Меняем рабочую директорию
 
     os.chdir("logs")  # Меняем рабочую директорию
-    logs_file = open(cmd_time("for_log"), mode="x", encoding="utf-8")  # Создаём и открываем файл в режиме записи
+    logs_file_name = f"{OBJECT_NAME} {get_time('for_csv')}.csv"
+    logs_file = open(logs_file_name, mode="x", encoding="utf-8")  # Создаём и открываем файл в режиме записи
     logs_file.write("protocol;time;resource;size;from;to;msg;error;\n")
-    logs_file.write(f"{OBJECT_NAME};{cmd_time()};WAN {my_wan_ip()};LAN {my_lan_ip()};;;;;")
+    logs_file.write(f"{OBJECT_NAME};{get_time()};WAN {my_wan_ip()};LAN {my_lan_ip()};;;;;")
     logs_file.close()  # Закрываем файл
     os.chdir("../")  # Меняем рабочую директорию
 
@@ -156,28 +128,14 @@ def log_csv(text):
     os.chdir("../")  # Меняем рабочую директорию
 
 
-def csv_to_docx():
-    """
-    Источники
-    https://ru.stackoverflow.com/questions/921605
-    https://docs-python.ru/packages/modul-python-docx-python/
-    https://question-it.com/questions/1216223/vyravnivanie-teksta-v-biblioteke-python-docx
-    """
-
-    # Обработка последнего лога из csv файла вида:
-    # protocol;time;resource;size;from;to;msg;error;
-    #    ||     ||     ||     ||   ||  ||  ||   ||
-    #   [0]    [1]    [2]    [3]  [4] [5] [6]  [7]
-    # line[0] - headers
-    # line[1] - info about WAN and LAN addresses
-
-    os.chdir("logs")  # Меняем рабочую директорию
-    name_file = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs
+def csv_to_docx() -> str:
+    os.chdir("logs")
+    name_file = tuple(os.walk(os.getcwd()))[0][-1]
     name_file.sort()
     with open(name_file[-1], "r", encoding="utf-8") as log_in_csv:
-        log_list = [line[0].split(";") for line in csv.reader(log_in_csv)]  # Преобразуем строку из файла в список
+        log_list = [line[0].split(";") for line in csv.reader(log_in_csv)]
         log_in_csv.close()
-    os.chdir("../")  # Меняем рабочую директорию
+    os.chdir("../")
 
     http_time_list = []
     email_time_list = []
@@ -219,15 +177,15 @@ def csv_to_docx():
     except IndexError:
         pass
 
-    wordDoc = docx.Document("./template_report_test.docx")  # Открываем чистую таблицу
+    wordDoc = docx.Document("data/template_report_test.docx")  # Открываем чистую таблицу
     style = wordDoc.styles['Normal']  # задаем стиль текста по умолчанию
     style.font.name = 'Times New Roman'  # название шрифта
-    style.font.size = Pt(12)  # размер шрифта
+    style.font.size = docx.shared.Pt(12)  # размер шрифта
 
     # Таблица №1 wordDoc.tables[0]
     wordDoc.tables[0].rows[0].cells[0].text = f"Оператор: {OBJECT_NAME}"
     wordDoc.tables[0].rows[2].cells[0].text = f"IP-адрес тестового рабочего места: {log_list[1][2][4:]}"
-    wordDoc.tables[0].rows[3].cells[0].text = f"Дата выполнения тестов: {cmd_time('date')[5:15]}"
+    wordDoc.tables[0].rows[3].cells[0].text = f"Дата выполнения тестов: {get_time('date')}"
 
     # Таблица №2 wordDoc.tables[1]
     try:
@@ -311,5 +269,7 @@ def csv_to_docx():
     except IndexError:
         pass
 
-    # Сохраняем заполненный файл "Проверен YYMMDD_hh24miss_GMT Тесты ПСИ 573 ПД.docx" в директории logs_in_docx
-    wordDoc.save(f"./logs_in_docx/Проверен {name_file[-1][:-4]} Тесты ПСИ 573 ПД.docx")
+    docx_file_name = f"{OBJECT_NAME} {get_time('for_docx')} Тесты ПСИ 573 ПД.docx"
+    wordDoc.save(f"./logs_in_docx/{docx_file_name}")
+
+    return docx_file_name

@@ -28,12 +28,12 @@ import poplib  # Библиотека для POP3
 import imaplib  # Библиотека для IMAP
 import base64  # Библиотека кодировки Base64
 import csv  # Библиотека для работы с CSV файлами
-from logger import cmd_time, log_csv, my_lan_ip, my_wan_ip  # Импорт логирования
+from logger import get_time, log_csv, my_lan_ip, my_wan_ip  # Импорт логирования
 
 I_FIRST = True  # True - инициатор, False - автоответчик
 NEW_MILES = 0  # Маркер определения новых писем
 STOP_READ_EMAIL = 0  # Маркер завершения функции
-TIMEOUT = 20
+TIMEOUT = 30
 __COUNT_SUBJECTS = True  # Маркер для логирования
 
 
@@ -58,7 +58,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
     msg["To"] = ", ".join(list_to)  # Добавление получателей
     msg["Cc"] = ", ".join(list_cc)  # Добавление копии
     msg["Bcc"] = ", ".join(list_bcc)  # Добавление скрытой копии
-    msg["Subject"] = f"{list_msg[0]} {cmd_time() if len(list_msg) != 4 else ''}"  # Добавление темы сообщения
+    msg["Subject"] = f"{list_msg[0]} {get_time() if len(list_msg) != 4 else ''}"  # Добавление темы сообщения
     msg.attach(MIMEText(list_msg[1], "plain"))  # Добавляем в сообщение текст
 
     if I_FIRST and len(list_msg) <= 3:
@@ -72,11 +72,11 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
-        log_csv(f"EMAIL-SMTP;{cmd_time()};;;{list_from[0]};{msg_TO};  {msg_TEXT}  ;;")
+        log_csv(f"EMAIL-SMTP;{get_time()};;;{list_from[0]};{msg_TO};  {msg_TEXT}  ;;")
 
     # Условие для определения вложения у письма
     if len(list_msg) == 3:
-        filepath = f"./email/{list_msg[2]}"  # Путь к файлу. Файлы для отправки должны лежать в ./email/
+        filepath = f"data/{list_msg[2]}"  # Путь к файлу. Файлы для отправки должны лежать в ./email/
         filename = f"{list_msg[2]}"  # Только имя файла
 
         with open(filepath, "rb") as fp:
@@ -124,7 +124,7 @@ def send_email(list_from: list, list_to: list, list_msg: list, list_cc=None, lis
         return
 
     # Логирование
-    print(f"SEND  {cmd_time()}")
+    print(f"SEND  {get_time()}")
     print(f"FROM: {msg['From']}")
     print(f"  TO: {msg['To']}")
     print(f"  CC: {msg['Cc']}") if len(list_cc) != 0 else None
@@ -160,7 +160,7 @@ def read_email(info_email: list, protocol: str):
         id_list = dir_inbox[0].split()  # Получаем сроку номеров писем
         mails = int(id_list[-1]) if len(id_list) != 0 else 0  # Берем последний ID
     else:
-        raise NameError(f"{cmd_time()} PROTOCOL ERROR: not found type protocol POP3 or IMAP to email_data.csv")
+        raise NameError(f"{get_time()} PROTOCOL ERROR: not found type protocol POP3 or IMAP to email_data.csv")
 
     max_mails_in_box = 10
     NEW_MILES = mails
@@ -175,8 +175,8 @@ def read_email(info_email: list, protocol: str):
 
         # Условие для завершения функции
         if STOP_READ_EMAIL == 5 and I_FIRST:
-            log_msg = f"*** NOT NEW MAILS {cmd_time()} ***"
-            log_csv(f"ERROR EMAIL-{protocol};{cmd_time()};;;;;;{log_msg};") if __COUNT_SUBJECTS else None
+            log_msg = f"*** NOT NEW MAILS {get_time()} ***"
+            log_csv(f"ERROR EMAIL-{protocol};{get_time()};;;;;;{log_msg};") if __COUNT_SUBJECTS else None
             print(log_msg)
             STOP_READ_EMAIL = 0
             return
@@ -234,10 +234,10 @@ def read_email(info_email: list, protocol: str):
 
     if not I_FIRST and __COUNT_SUBJECTS:
         __COUNT_SUBJECTS = False
-        print(f"\n\nEMAIL {cmd_time('date')}")
+        print(f"\n\nEMAIL {get_time('date')}")
         print("--------------------------------------------------------------------------")
 
-    print(f"READ  {cmd_time()} {protocol}")
+    print(f"READ  {get_time()} {protocol}")
     print(f"FROM: {msg_head.get('From')}")  # Вытаскиваем значение по ключу
     print(f"  TO: {msg_head.get('To')}")  # Вытаскиваем значение по ключу
     # Вытаскиваем значение по ключу если оно есть
@@ -259,7 +259,7 @@ def read_email(info_email: list, protocol: str):
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
-        log_csv(f"EMAIL-{protocol};{cmd_time()};;;{msg_head.get('From')};{msg_TO};  {msg_TEXT}  ;;")
+        log_csv(f"EMAIL-{protocol};{get_time()};;;{msg_head.get('From')};{msg_TO};  {msg_TEXT}  ;;")
 
     # pop3 Удаление старых писем
     if mails > max_mails_in_box and protocol == "POP3":
@@ -290,7 +290,7 @@ try:
     #   sender_2,reader_2_imap,test_2@ya.ru,pa$$word,smtp.ya.ru,587,imap.yandex.ru
 
     # Открываем файл email_data.csv c данными для подключения:
-    with open("email_data.csv", "r") as email_data:
+    with open("config/email_data.csv", "r") as email_data:
         email_data_list = csv.reader(email_data)  # Преобразуем строку из файла в список
         email_data_dict = {}  # Словарь для записи данных
         for line in email_data_list:
@@ -359,7 +359,7 @@ def i_answer():  # Автоответчик
 
     global I_FIRST, __COUNT_SUBJECTS
 
-    print(f"\nАвтоответчик EMAIL запущен {cmd_time('date')} {cmd_time()}\n")
+    print(f"\nАвтоответчик EMAIL запущен {get_time('date')} {get_time()}\n")
 
     while True:
         __COUNT_SUBJECTS = True
@@ -381,21 +381,17 @@ def i_answer():  # Автоответчик
 
         send_email(sender_2, to_4, msg_4, list_cc=cc_3)  # Отправка Письма №4
         print("--------------------------------------------------------------------------")
-        print(f"EMAIL end {cmd_time('date')}")
+        print(f"EMAIL end {get_time('date')}")
 
 
-def send_end_test(object_name):
+def send_end_test(object_name, file_name_docx):
     # Функция отправки сообщения о выполненном тесте
 
-    os.chdir("logs")  # Меняем рабочую директорию
-    list_files = tuple(os.walk(os.getcwd()))[0][-1]  # Получаем список файлов внутри ./logs
+    list_files = tuple(os.walk("logs"))[0][-1]  # Получаем список файлов внутри ./logs
     list_files.sort()
-    os.chdir("../")  # Меняем рабочую директорию
 
-    file_name_docx = f"Проверен {list_files[-1][:-4]} Тесты ПСИ 573 ПД.docx"  # Имя файла docx
     file_name_csv = list_files[-1]
-
-    msg_for_check = f"На проверку \n{cmd_time('test_end')}\n{my_lan_ip()}\n{my_wan_ip()}"
+    msg_for_check = f"На проверку \n{get_time('for_pu')}\n{my_lan_ip()}\n{my_wan_ip()}"
 
     to_me = ["ns@rtc-nt.ru"]
     msg_end_test = [f"АВТО Тесты ПД 573 {object_name}", msg_for_check, file_name_docx, file_name_csv]

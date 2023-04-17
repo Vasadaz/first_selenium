@@ -132,12 +132,7 @@ dmypy.json
 # Папка для загрузки файлов по FTP
 FTP_573/
 logs/
-logs_in_docx
+logs_in_docx/
 
 # Файлы с данными для подключения
-email_data.csv
-im_data.csv
-name_object.txt
-.docx#
-.pylintrc
-ОШИБКИ.txt
+config/
