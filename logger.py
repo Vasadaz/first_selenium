@@ -72,8 +72,11 @@ def my_wan_ip():
 
 
 def my_lan_ip():
+    net_card = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    net_card.connect(("77.88.8.8", 80))
+
     # Определение моего LAN адреса
-    return socket.gethostbyname(socket.gethostname())
+    return net_card.getsockname()[0]
 
 
 def file_for_csv():
