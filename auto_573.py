@@ -26,15 +26,15 @@ try:
     import chromedriver_autoinstaller
 
 except ModuleNotFoundError:
-    print("Installing selenium==4.4.3")
+    print("Installing selenium==4.12.0")
     # Установка модуля с отключенным stdout
-    mod_inst = subprocess.Popen("pip3 install selenium==4.4.3", shell=True,
+    mod_inst = subprocess.Popen("pip3 install selenium==4.12.0", shell=True,
                                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     mod_inst.wait()  # Вызов и ожидание установки
 
-    print("Installing chromedriver-autoinstaller==0.4.0")
+    print("Installing chromedriver-autoinstaller==0.6.2")
     # Установка модуля с отключенным stdout
-    drive_inst = subprocess.Popen("pip3 install chromedriver-autoinstaller==0.4.0", shell=True,
+    drive_inst = subprocess.Popen("pip3 install chromedriver-autoinstaller==0.6.2", shell=True,
                                   stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     drive_inst.wait()  # Вызов и ожидание установки
 
@@ -140,7 +140,8 @@ def ftp_test(links: list):
         # protocol;time;resource;size;from;to;msg;error;
         log_csv(f"FTP;{get_time()};{link};0;;;;;")
 
-        print(f"Download {link[28:]}")  # el[28:] - название файла, удаляется ftp://alta.ru/packets/distr/
+        file_name = link[21:]
+        print(f"Download {file_name}")  # el[21:] - название файла, удаляется ftp://saas.rtc-nt.ru/
 
         os.chdir("FTP_573")  # Меняем рабочую директорию
 
@@ -154,12 +155,12 @@ def ftp_test(links: list):
 
         # Логирование
         print()
-        file_size = os.path.getsize(f"./FTP_573/{link[21:]}")
+        file_size = os.path.getsize(f"./FTP_573/{file_name}")
         if len(str(file_size)) < 10:
             file_size_mb_or_gb = str(round(file_size / (1024 ** 2), 1)) + " MB"
         else:
             file_size_mb_or_gb = str(round(file_size / (1024 ** 3), 1)) + " GB"
-        print(f"End {get_time()} {link[21:]} {file_size_mb_or_gb} ({file_size} B)")
+        print(f"End {get_time()} {file_name} {file_size_mb_or_gb} ({file_size} B)")
 
         # Запись лога в csv файл
         # protocol;time;resource;size;from;to;msg;error;
@@ -223,13 +224,13 @@ if __name__ == '__main__':
         "http://duma.gov.ru/",
         "http://ivo.garant.ru/",
         "http://thesheep.info",
-        "http://grani.ru",
+        "сьщкhttp://grani.ru",
     ]
 
     ftp_links = [
-        "ftp://saas.rtc-nt.ru/file_1.zip",
-        "ftp://saas.rtc-nt.ru/file_2.zip",
-        "ftp://saas.rtc-nt.ru/file_3.zip",
+        "ftp://saas.rtc-nt.ru/file_50M.zip",
+        "ftp://saas.rtc-nt.ru/file_150M.zip",
+        "ftp://saas.rtc-nt.ru/file_500M.zip",
     ]
 
     telnet_servers = [

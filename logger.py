@@ -11,8 +11,8 @@ import socket  # Для определения своего LAN адреса
 
 import docx
 
-# Release v1.7.1
-RELEASE = "v1.7.1"
+# Release v1.7.2
+RELEASE = "v1.7.2"
 OBJECT_NAME = "UNKNOWN"
 
 
@@ -22,7 +22,7 @@ def object_name():
     file_path = "config/name_object.txt"
 
     if os.path.exists(file_path):
-        with open(file_path, "r", encoding='UTF-8') as file:
+        with open(file_path, "r+", encoding='UTF-8') as file:
             OBJECT_NAME = file.readline()
 
             if len(OBJECT_NAME) == 0:
@@ -30,7 +30,7 @@ def object_name():
                 file.write(OBJECT_NAME)
 
     else:
-        with open(file_path, "x", encoding='UTF-8') as file:
+        with open(file_path, "a", encoding='UTF-8') as file:
             OBJECT_NAME = input("Введите имя объекта:\n")
             file.write(OBJECT_NAME)
 
@@ -49,7 +49,7 @@ def get_time(format: str = "time") -> str:
 
     elif format == "date":
         date_format = '%Y-%m-%d'
-        return f"DATE {local_date.strftime(date_format)} (GMT {date_format})"
+        return f"DATE {local_date.strftime(date_format)} (GMT {gmt_time.strftime(date_format)})"
 
     elif format == "for_csv":
         return f"{gmt_date}_{gmt_time.strftime('%H%M%S')}_GMT"
